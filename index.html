@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal RRHH & Finanzas - Preomed Salud</title>
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --primary-hover: #0056b3;
+            --bg-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --text-muted: #666666;
+            --border-color: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Aptos Display', Calibri, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* Encabezado */
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .logo-empresa {
+            max-height: 60px;
+            width: auto;
+            margin-bottom: 15px;
+        }
+
+        header h1 {
+            font-size: 22pt;
+            color: var(--text-color);
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        header p {
+            font-size: 11pt;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+        }
+
+        /* Secciones del Portal */
+        .portal-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 40px;
+        }
+
+        @media (min-width: 768px) {
+            .portal-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .categoria-modulo {
+            background: transparent;
+        }
+
+        .categoria-titulo {
+            font-size: 14pt;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Rejilla de tarjetas dentro de cada módulo */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        /* Tarjetas / Links */
+        .card-link {
+            display: flex;
+            align-items: center;
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            transition: all 0.25s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+
+        .card-link:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary-color);
+            box-shadow: 0 6px 12px rgba(0, 123, 255, 0.1);
+        }
+
+        .card-icon {
+            background: #e6f2ff;
+            color: var(--primary-color);
+            width: 45px;
+            height: 45px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16pt;
+            margin-right: 20px;
+            flex-shrink: 0;
+            transition: background 0.25s ease;
+        }
+
+        .card-link:hover .card-icon {
+            background: var(--primary-color);
+            color: #ffffff;
+        }
+
+        .card-body h2 {
+            font-size: 12pt;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .card-body p {
+            font-size: 9.5pt;
+            color: var(--text-muted);
+        }
+
+        /* Pie de página */
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            font-size: 9pt;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <header>
+            <img src="https://www.preomed.cl/wp-content/uploads/2025/05/350px-rgb-min.webp" alt="Logo Preomed Salud SpA" class="logo-empresa">
+            <h1>Portal Interno</h1>
+            <p>Plataforma de Gestión Operativa · RRHH & Finanzas</p>
+        </header>
+
+        <div class="portal-grid">
+            
+            <div class="categoria-modulo">
+                <div class="categoria-titulo">
+                    <span>👥</span> Recursos Humanos (RRHH)
+                </div>
+                <div class="cards-grid">
+                    
+                    <a href="https://preomed.github.io/Contrato/" class="card-link" target="_blank">
+                        <div class="card-icon">📄</div>
+                        <div class="card-body">
+                            <h2>Contratos de Trabajo</h2>
+                            <p>Generación y gestión dinámica de contratos de personal.</p>
+                        </div>
+                    </a>
+
+                    <a href="https://preomed.github.io/AnexoContrato/" class="card-link" target="_blank">
+                        <div class="card-icon">📎</div>
+                        <div class="card-body">
+                            <h2>Anexos de Contrato</h2>
+                            <p>Actualizaciones, extensiones y modificaciones contractuales.</p>
+                        </div>
+                    </a>
+
+                    <a href="https://preomed.github.io/FormularioIngreso/" class="card-link" target="_blank">
+                        <div class="card-icon">📝</div>
+                        <div class="card-body">
+                            <h2>Formulario de Ingreso</h2>
+                            <p>Registro de nuevos colaboradores e inducción.</p>
+                        </div>
+                    </a>
+
+                    <a href="https://preomed.github.io/CalculoFiniquito/" class="card-link" target="_blank">
+                        <div class="card-icon">🧮</div>
+                        <div class="card-body">
+                            <h2>Cálculo de Finiquito</h2>
+                            <p>Simulación y cálculo de cierres de relación laboral.</p>
+                        </div>
+                    </a>
+
+                </div>
+            </div>
+
+            <div class="categoria-modulo">
+                <div class="categoria-titulo">
+                    <span>💼</span> Finanzas & Contabilidad
+                </div>
+                <div class="cards-grid">
+                    
+                    <a href="https://preomed.github.io/Proveedores" class="card-link" target="_blank">
+                        <div class="card-icon">🤝</div>
+                        <div class="card-body">
+                            <h2>Portal de Proveedores</h2>
+                            <p>Gestión de pagos, cuentas y relaciones comerciales.</p>
+                        </div>
+                    </a>
+
+                    <a href="https://preomed.github.io/EERR" class="card-link" target="_blank">
+                        <div class="card-icon">📈</div>
+                        <div class="card-body">
+                            <h2>Estado de Resultados (EERR)</h2>
+                            <p>Monitoreo financiero, balances y reportes de rendimiento.</p>
+                        </div>
+                    </a>
+
+                </div>
+            </div>
+
+        </div>
+
+        <footer>
+            &copy; 2026 Preomed Salud SpA. Todos los derechos reservados.
+        </footer>
+
+    </div>
+
+</body>
+</html>
