@@ -1,1 +1,529 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estado de Resultados - Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --primary-light: #eff6ff;
+            --accent: #2563eb;
+            --text: #1f2937;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --border: #e2e8f0;
+            --success: #059669;
+            --error: #dc2626;
+            --highlight: #f1f5f9;
+        }
 
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
+        body { background-color: var(--bg); color: var(--text); padding: 40px 20px; line-height: 1.5; }
+        .container { max-width: 1000px; margin: 0 auto; background: var(--card); padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        
+        header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid var(--border); padding-bottom: 20px; }
+        header img { max-height: 80px; margin: 0 auto 20px auto; display: block; object-fit: contain; }
+        h1 { color: var(--primary); font-size: 24px; text-transform: uppercase; }
+        .subtitle { color: #64748b; font-size: 14px; margin-top: 5px; }
+
+        #loadingMessage { text-align: center; padding: 20px; font-weight: 600; color: var(--accent); background: var(--primary-light); border-radius: 8px; margin-bottom: 20px; }
+
+        .upload-section { display: none; background: #fff1f2; border: 2px dashed #f43f5e; padding: 30px; text-align: center; border-radius: 8px; margin-bottom: 30px; }
+        .upload-section label { font-weight: 600; color: #e11d48; cursor: pointer; display: block; margin-bottom: 10px; }
+        
+        .controls { display: none; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 30px; }
+        .control-group { display: flex; flex-direction: column; gap: 8px; }
+        .control-group label { font-size: 13px; font-weight: 600; color: #475569; text-transform: uppercase; }
+        select { padding: 10px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 14px; outline: none; }
+        select:focus { border-color: var(--accent); }
+
+        table { width: 100%; border-collapse: collapse; font-size: 14px; display: none; }
+        th { background: var(--primary); color: white; text-align: left; padding: 12px 15px; font-weight: 600; text-transform: uppercase; font-size: 12px; }
+        td { padding: 10px 15px; border-bottom: 1px solid var(--border); }
+        .text-right { text-align: right; }
+        
+        .row-total { font-weight: 700; background-color: var(--highlight); color: var(--primary); border-top: 1px solid #cbd5e1; transition: background-color 0.2s; }
+        .row-total:hover { background-color: #e2e8f0; }
+        .row-grand-total { font-weight: 800; background-color: var(--primary-light); color: var(--primary); border-top: 2px solid var(--primary); font-size: 15px; }
+        
+        .toggle-icon { display: inline-block; width: 16px; font-size: 10px; color: var(--accent); text-align: center; margin-right: 6px; }
+        
+        .row-subitem td:first-child { padding-left: 45px !important; color: #475569; font-size: 13px; border-left: 3px solid var(--highlight); }
+        
+        .val-positive { color: var(--success); }
+        .val-negative { color: var(--error); }
+        .val-percent { font-size: 13px; color: #64748b; font-weight: 600; }
+        
+        .empty-state { text-align: center; color: #64748b; padding: 20px; display: none; }
+    </style>
+</head>
+<body style="display: none;">
+
+<div class="container">
+    <header>
+        <img src="https://www.preomed.cl/wp-content/uploads/2025/05/350px-rgb-min.webp" alt="Logo Preomed">
+        <h1>Estado de Resultados</h1>
+        <div class="subtitle">Análisis por Sucursal y Periodo (Mes/Año)</div>
+    </header>
+
+    <div id="loadingMessage">
+        ⏳ Sincronizando datos automáticamente desde Google Sheets...
+    </div>
+
+    <div class="upload-section" id="upload-section">
+        <label for="csvFileInput">⚠️ No se pudo conectar automáticamente. Sube el archivo CSV manualmente:</label>
+        <input type="file" id="csvFileInput" accept=".csv" />
+    </div>
+
+    <div class="controls" id="controls">
+        <div class="control-group">
+            <label for="sucursalSelect">Sucursal</label>
+            <select id="sucursalSelect">
+                <option value="ALL">PREOMED SALUD</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label for="periodoSelect">Periodo (Mes / Año)</label>
+            <select id="periodoSelect"></select>
+        </div>
+    </div>
+
+    <table id="resultsTable">
+        <thead>
+            <tr>
+                <th>Categoría / Concepto</th>
+                <th class="text-right">Monto</th>
+                <th class="text-right">%</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    
+    <div id="emptyState" class="empty-state">No hay datos para mostrar con los filtros seleccionados.</div>
+</div>
+
+<script>
+    let globalData = [];
+    let periodosDisponibles = [];
+    let ordenCategoriasUnicas = []; 
+    
+    const URL_BASE_DATOS = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT6A2yPziLhHV1MTLYKTDYMFCqnor0GHX_2fsMHu_Y36C7I8cyt_oPtDIdDJpXhoA/pub?gid=1171120709&single=true&output=csv&_t=" + new Date().getTime();
+
+    window.onload = function() {
+        Papa.parse(URL_BASE_DATOS, {
+            download: true,
+            skipEmptyLines: true,
+            complete: function(results) {
+                document.getElementById('loadingMessage').style.display = 'none';
+                if (results.data && results.data.length > 0) {
+                    procesarDatos(results.data);
+                } else {
+                    document.getElementById('upload-section').style.display = 'block';
+                }
+            },
+            error: function(err) {
+                console.error("Error cargando Google Sheets:", err);
+                document.getElementById('loadingMessage').style.display = 'none';
+                document.getElementById('upload-section').style.display = 'block';
+            }
+        });
+    };
+
+    document.getElementById('csvFileInput').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        Papa.parse(file, {
+            skipEmptyLines: true,
+            complete: function(results) {
+                document.getElementById('upload-section').style.display = 'none';
+                procesarDatos(results.data);
+            }
+        });
+    });
+
+    // Función segura para leer números de cualquier formato
+    function cleanNumber(rawValue) {
+        if (typeof rawValue === 'number') return rawValue;
+        if (!rawValue) return 0;
+        
+        let s = String(rawValue).trim();
+        let isNeg = false;
+        
+        if (s.startsWith('(') && s.endsWith(')')) {
+            isNeg = true;
+            s = s.slice(1, -1).trim();
+        } else if (s.startsWith('-')) {
+            isNeg = true;
+            s = s.slice(1).trim();
+        }
+        
+        s = s.replace(/[^0-9.,]/g, '');
+        if (s === '') return 0;
+
+        if (s.includes('.') && s.includes(',')) {
+            s = s.replace(/\\./g, '').replace(',', '.');
+        } else if (s.includes(',')) {
+            s = s.replace(',', '.');
+        } else if (s.split('.').length > 2) {
+            s = s.replace(/\\./g, '');
+        } else if (s.includes('.') && s.split('.')[1].length === 3) {
+            s = s.replace(/\\./g, '');
+        }
+        
+        let val = parseFloat(s);
+        if (isNaN(val)) return 0;
+        return isNeg ? -val : val;
+    }
+
+    function procesarDatos(allRows) {
+        let headerIndex = -1;
+        
+        for(let i = 0; i < allRows.length; i++) {
+            const row = allRows[i].map(col => typeof col === 'string' ? col.trim() : col);
+            if(row.includes('SUCURSAL') && row.includes('CATEGORIA')) {
+                headerIndex = i;
+                break;
+            }
+        }
+        
+        if(headerIndex === -1) {
+            alert('No se detectaron los encabezados SUCURSAL y CATEGORIA. Verifica el archivo.');
+            document.getElementById('upload-section').style.display = 'block';
+            return;
+        }
+        
+        const fields = allRows[headerIndex].map(f => typeof f === 'string' ? f.trim() : f);
+        const dataRows = allRows.slice(headerIndex + 1);
+        
+        periodosDisponibles = fields.filter(f => f !== 'SUCURSAL' && f !== 'CATEGORIA' && f !== '');
+        
+        let processedRows = [];
+        dataRows.forEach(rowArray => {
+            let obj = {};
+            fields.forEach((field, index) => {
+                obj[field] = rowArray[index];
+            });
+            
+            if (!obj.CATEGORIA || String(obj.CATEGORIA).trim() === '') return;
+            
+            let catStr = String(obj.CATEGORIA).trim();
+            let catUpper = catStr.toUpperCase();
+            
+            // FASE 1: UNIFICACIÓN DE NOMBRES
+            // Transformamos cualquier variación de "Pérdida" en "Utilidad". 
+            // Así, Puerto Montt (que solo tiene Pérdida) pasará a tener Utilidad, 
+            // y Viña del Mar (que podría tener ambas) tendrá dos filas llamadas Utilidad.
+            if (catUpper.includes('PÉRDIDA DEL EJERCICIO') || catUpper.includes('PERDIDA DEL EJERCICIO') || catUpper.includes('UTILIDAD ANTES')) {
+                obj.CATEGORIA = 'UTILIDAD ANTES DE IMPUESTO';
+            } else if (catUpper.includes('PÉRDIDA DESPUÉS') || catUpper.includes('PERDIDA DESPUES') || catUpper.includes('UTILIDAD DESPUES') || catUpper.includes('UTILIDAD DESPUÉS')) {
+                obj.CATEGORIA = 'UTILIDAD DESPUES DE IMPUESTO';
+            }
+            
+            processedRows.push(obj);
+        });
+
+        // FASE 2: ELIMINAR DUPLICADOS EXACTOS
+        // Si una sucursal tiene 2 filas llamadas "UTILIDAD ANTES DE IMPUESTO" (porque venía una pérdida y una utilidad de Excel),
+        // las fusionamos tomando siempre el valor que no sea cero. Así JAMÁS se sumarán doble.
+        let rowMap = {};
+        processedRows.forEach(row => {
+            let key = row.SUCURSAL + '|' + row.CATEGORIA;
+            if (!rowMap[key]) {
+                rowMap[key] = { ...row };
+            } else {
+                // Si la fila ya existe, combinamos los datos para no duplicarlos matemáticamente
+                periodosDisponibles.forEach(p => {
+                    let currentVal = cleanNumber(rowMap[key][p]);
+                    let newVal = cleanNumber(row[p]);
+                    // Si el que teníamos guardado era 0, y el nuevo tiene valor, lo actualizamos.
+                    if (currentVal === 0 && newVal !== 0) {
+                        rowMap[key][p] = row[p];
+                    }
+                });
+            }
+        });
+
+        globalData = Object.values(rowMap);
+
+        ordenCategoriasUnicas = [];
+        globalData.forEach(row => {
+            const cat = String(row.CATEGORIA).trim();
+            if (!ordenCategoriasUnicas.includes(cat)) {
+                ordenCategoriasUnicas.push(cat);
+            }
+        });
+
+        let maxIdx = -1;
+        for (let i = ordenCategoriasUnicas.length - 1; i >= 0; i--) {
+            let cUpper = ordenCategoriasUnicas[i].toUpperCase();
+            if (cUpper.includes('PUNTO DE EQUILIBRIO') || 
+                cUpper.includes('UTILIDAD') || 
+                cUpper.includes('IMPUESTO')) {
+                maxIdx = i;
+                break;
+            }
+        }
+        
+        if (maxIdx !== -1) {
+            ordenCategoriasUnicas = ordenCategoriasUnicas.slice(0, maxIdx + 1);
+        }
+        
+        ordenCategoriasUnicas = ordenCategoriasUnicas.filter(c => c.toUpperCase().trim() !== 'RESULTADO');
+
+        inicializarFiltros();
+        
+        document.getElementById('controls').style.display = 'grid';
+        document.getElementById('resultsTable').style.display = 'table';
+    }
+
+    function inicializarFiltros() {
+        const sucursalSelect = document.getElementById('sucursalSelect');
+        sucursalSelect.innerHTML = '<option value="ALL">PREOMED SALUD</option>';
+        const sucursales = [...new Set(globalData.map(r => r.SUCURSAL).filter(s => s))].sort();
+        
+        sucursales.forEach(s => {
+            const opt = document.createElement('option');
+            opt.value = s;
+            opt.textContent = s;
+            sucursalSelect.appendChild(opt);
+        });
+
+        const periodoSelect = document.getElementById('periodoSelect');
+        periodoSelect.innerHTML = '';
+        periodosDisponibles.forEach(p => {
+            const opt = document.createElement('option');
+            opt.value = p;
+            opt.textContent = p;
+            periodoSelect.appendChild(opt);
+        });
+        
+        const meses = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
+        let fechaActual = new Date();
+        fechaActual.setMonth(fechaActual.getMonth() - 1);
+        let nombreMesAnterior = meses[fechaActual.getMonth()];
+
+        const mesEncontrado = periodosDisponibles.find(p => p.trim().toUpperCase() === nombreMesAnterior);
+
+        if (mesEncontrado) {
+            periodoSelect.value = mesEncontrado;
+        } else {
+            const anioTotal = periodosDisponibles.find(p => !isNaN(p));
+            if (anioTotal) periodoSelect.value = anioTotal;
+        }
+
+        sucursalSelect.addEventListener('change', renderizarTabla);
+        periodoSelect.addEventListener('change', renderizarTabla);
+
+        renderizarTabla();
+    }
+
+    function formatearMoneda(valor) {
+        return new Intl.NumberFormat('es-CL', {
+            style: 'currency',
+            currency: 'CLP',
+            minimumFractionDigits: 0
+        }).format(valor);
+    }
+
+    function toggleGrupo(parentId) {
+        const children = document.querySelectorAll('.child-of-' + parentId);
+        if (children.length === 0) return;
+        
+        const isHidden = children[0].style.display === 'none';
+        const icon = document.querySelector('#' + parentId + ' .toggle-icon');
+        
+        children.forEach(child => {
+            child.style.display = isHidden ? 'table-row' : 'none';
+        });
+        
+        if (icon) {
+            icon.textContent = isHidden ? '▼' : '▶';
+        }
+    }
+
+    function renderizarTabla() {
+        const sucursal = document.getElementById('sucursalSelect').value;
+        const periodo = document.getElementById('periodoSelect').value;
+        const tbody = document.querySelector('#resultsTable tbody');
+        const emptyState = document.getElementById('emptyState');
+        const table = document.getElementById('resultsTable');
+
+        tbody.innerHTML = '';
+
+        const agrupado = {};
+        
+        globalData.forEach(row => {
+            if (sucursal !== 'ALL' && row.SUCURSAL !== sucursal) return;
+            const cat = String(row.CATEGORIA).trim();
+            if (!ordenCategoriasUnicas.includes(cat)) return;
+            
+            const val = cleanNumber(row[periodo]);
+            if (!agrupado[cat]) agrupado[cat] = 0;
+            agrupado[cat] += val;
+        });
+        
+        if (Object.keys(agrupado).length === 0) {
+            table.style.display = 'none';
+            emptyState.style.display = 'block';
+            return;
+        }
+
+        table.style.display = 'table';
+        emptyState.style.display = 'none';
+
+        let valorBase = 0;
+        const nombreCategoriaBase = ordenCategoriasUnicas.find(c => c.toUpperCase().includes('INGRESOS POR VENTA')) || ordenCategoriasUnicas[0];
+        if (nombreCategoriaBase && agrupado[nombreCategoriaBase]) {
+            valorBase = agrupado[nombreCategoriaBase];
+        }
+
+        const categoriasPrincipales = [
+            'ingresos por venta', 'ingresos por ventas', 'costo de venta', 'costos de venta', 
+            'margen bruto',
+            'sueldos operacionales', 'materiales e insumo', 'materiales e insumos', 'servicios externos', 'gastos generales', 
+            'gto generales', 'mkt y publicidad', 'comisiones de venta', 'comisiones de ventas',
+            'gastos fijos', 'costos fijos', 'costo fijos', 'costos variables', 'costo variable', 'costo variables',
+            'gastos de rr. hh.', 'gastos de rr.hh.', 'costos financieros', 
+            'depreciación', 'depreciacion', 'impuesto a la renta'
+        ];
+
+        let grupos = [];
+        let currentGrupo = null;
+
+        ordenCategoriasUnicas.forEach(cat => {
+            const cLower = cat.toLowerCase();
+            const esPrincipal = categoriasPrincipales.some(p => cLower.includes(p));
+            const esTotal = cLower.includes('equilibrio') || cLower.includes('utilidad') || (cLower.includes('margen') && !cLower.includes('margen bruto'));
+
+            if (esPrincipal || esTotal) {
+                currentGrupo = { principal: cat, isTotal: esTotal, children: [] };
+                grupos.push(currentGrupo);
+            } else {
+                if (currentGrupo) {
+                    currentGrupo.children.push(cat);
+                } else {
+                    currentGrupo = { principal: cat, isTotal: false, children: [] };
+                    grupos.push(currentGrupo);
+                }
+            }
+        });
+
+        grupos.forEach((grupo, index) => {
+            const valPrincipal = agrupado[grupo.principal] || 0;
+            const visibleChildren = grupo.children.filter(c => (agrupado[c] || 0) !== 0);
+
+            if (valPrincipal === 0 && visibleChildren.length === 0) return;
+
+            const tr = document.createElement('tr');
+            if (grupo.isTotal) {
+                tr.className = 'row-grand-total';
+            } else {
+                tr.className = 'row-total';
+                if (visibleChildren.length > 0) {
+                    tr.id = 'grupo-' + index;
+                    tr.style.cursor = 'pointer';
+                    tr.onclick = function() { toggleGrupo(this.id); };
+                }
+            }
+
+            const colorClass = valPrincipal < 0 ? 'val-negative' : '';
+            let porcentajeTexto = '-';
+            if (valorBase !== 0) {
+                porcentajeTexto = ((valPrincipal / valorBase) * 100).toFixed(1) + '%';
+            }
+
+            // FASE 3: REEMPLAZO VISUAL DINÁMICO
+            // Si el monto es negativo, mostramos Pérdida. Si es positivo, mostramos Utilidad.
+            let nombreMostrarPrincipal = grupo.principal;
+            if (valPrincipal < 0) {
+                let upperName = nombreMostrarPrincipal.toUpperCase();
+                if (upperName.includes('UTILIDAD ANTES')) {
+                    nombreMostrarPrincipal = 'PÉRDIDA DEL EJERCICIO';
+                } else if (upperName.includes('UTILIDAD DESPUES') || upperName.includes('UTILIDAD DESPUÉS')) {
+                    nombreMostrarPrincipal = 'PÉRDIDA DESPUÉS DE IMPUESTO';
+                } else if (upperName.includes('UTILIDAD')) {
+                    nombreMostrarPrincipal = nombreMostrarPrincipal.replace(/UTILIDAD/ig, 'PÉRDIDA');
+                }
+            }
+
+            let catHtml = nombreMostrarPrincipal;
+            if (!grupo.isTotal && visibleChildren.length > 0) {
+                catHtml = `<span class="toggle-icon">▶</span> ${nombreMostrarPrincipal}`;
+            }
+
+            tr.innerHTML = `
+                <td>${catHtml}</td>
+                <td class="text-right ${colorClass}">${formatearMoneda(valPrincipal)}</td>
+                <td class="text-right val-percent">${porcentajeTexto}</td>
+            `;
+            tbody.appendChild(tr);
+
+            visibleChildren.forEach(child => {
+                const valChild = agrupado[child] || 0;
+                const trChild = document.createElement('tr');
+                trChild.className = 'row-subitem child-of-grupo-' + index;
+                trChild.style.display = 'none';
+
+                const colorChild = valChild < 0 ? 'val-negative' : '';
+                let pctChild = '-';
+                if (valorBase !== 0) {
+                    pctChild = ((valChild / valorBase) * 100).toFixed(1) + '%';
+                }
+
+                let nombreMostrarChild = child;
+                if (valChild < 0) {
+                    let upperNameChild = nombreMostrarChild.toUpperCase();
+                    if (upperNameChild.includes('UTILIDAD ANTES')) {
+                        nombreMostrarChild = 'PÉRDIDA DEL EJERCICIO';
+                    } else if (upperNameChild.includes('UTILIDAD DESPUES') || upperNameChild.includes('UTILIDAD DESPUÉS')) {
+                        nombreMostrarChild = 'PÉRDIDA DESPUÉS DE IMPUESTO';
+                    } else if (upperNameChild.includes('UTILIDAD')) {
+                        nombreMostrarChild = nombreMostrarChild.replace(/UTILIDAD/ig, 'PÉRDIDA');
+                    }
+                }
+
+                trChild.innerHTML = `
+                    <td>${nombreMostrarChild}</td>
+                    <td class="text-right ${colorChild}">${formatearMoneda(valChild)}</td>
+                    <td class="text-right val-percent">${pctChild}</td>
+                `;
+                tbody.appendChild(trChild);
+            });
+        });
+    }
+</script>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+    // Tus credenciales de Firebase
+    const firebaseConfig = {
+        apiKey: "AIzaSyAMimbWHOrplArchHjZrheLZlLSIxj1-Hk",
+        authDomain: "preomed-salud---portal-interno.firebaseapp.com",
+        projectId: "preomed-salud---portal-interno",
+        storageBucket: "preomed-salud---portal-interno.firebasestorage.app",
+        messagingSenderId: "292608840627",
+        appId: "1:292608840627:web:0ac4afdaa71ba8baa8b1c6"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Verificamos si la persona tiene la sesión iniciada
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            // Si el usuario es válido, revelamos la página
+            document.body.style.display = "block";
+        } else {
+            // Si no hay sesión, lo devolvemos a la carpeta anterior (el Login principal)
+            window.location.replace("../index.html");
+        }
+    });
+</script>
+
+</body>
+</html>
