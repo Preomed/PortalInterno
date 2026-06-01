@@ -1,1 +1,609 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contrato de Trabajo Dinámico - Preomed</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    
+    <style>
+        body { font-family: 'Aptos Display', Calibri, Arial, sans-serif; font-size: 9pt; line-height: 1.5; color: #000; max-width: 800px; margin: 20px auto; padding: 20px; background-color: #f9f9f9; }
+        .controles { background: #e9ecef; padding: 20px; margin-bottom: 20px; border-radius: 8px; text-align: center; font-family: 'Aptos Display', Arial, sans-serif; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px; font-size: 12pt; }
+        .controles label { font-size: 14px; margin-left: 10px; }
+        select, button { padding: 10px; font-size: 14px; font-family: inherit; border-radius: 5px; border: 1px solid #ccc; }
+        button { background-color: #007bff; color: white; border: none; cursor: pointer; margin-left: 15px; }
+        button:hover { background-color: #0056b3; }
+        .contenedor-carta { background-color: #fff; padding: 40px; box-shadow: 0 0 10px rgba(0,0,0,0.1); text-align: justify; }
+        .tabla-impresion { width: 100%; border-collapse: collapse; border: none; }
+        thead { display: table-header-group; }
+        tfoot { display: table-footer-group; }
+        .encabezado-repetido { text-align: left; padding-bottom: 10px; margin-bottom: 15px; border-bottom: 1px solid #ddd; }
+        .logo-empresa { max-height: 40px; width: auto; }
+        .pie-pagina-contenido { text-align: center; font-weight: bold; font-size: 10pt; color: #555; padding-top: 15px; height: 30px; }
+        h1 { font-size: 11pt; text-decoration: underline; text-align: center; margin-bottom: 30px; margin-top: 10px; }
+        p { margin-bottom: 15px; text-indent: 0; }
+        p.sin-sangria { text-indent: 0; }
+        .nueva-clausula { margin-top: 15px; }
+        ol { margin-top: 0; margin-bottom: 15px; padding-left: 60px; }
+        ol li { text-align: justify; } 
+        .firmas { display: flex; justify-content: space-between; margin-top: 80px; padding: 0 40px; }
+        .bloque-firma { text-align: center; width: 40%; position: relative; }
+        .linea-firma { border-top: 1px solid #000; margin-bottom: 5px; }
+        .contenedor-firma-digital { height: 78px; display: flex; justify-content: center; align-items: flex-end; margin-bottom: 5px; }
+        .img-firma-empleador { max-height: 78px; max-width: 234px; width: auto; display: block; margin: 0 auto; }
+        .variable { background-color: #fff3cd; font-weight: bold; transition: 0.3s; }
+        .formato-bloque { display: block; white-space: pre-line; padding-left: 60px; text-indent: 0; }
 
+        @media print {
+            @page { 
+                size: letter; 
+                margin: 1cm 1.5cm; 
+                @bottom-right { content: "Página " counter(page) " de " counter(pages); font-family: 'Aptos Display', Calibri, sans-serif; font-size: 8pt; color: #666; }
+            }
+            body { background-color: transparent; margin: 0; padding: 0; max-width: 100%; }
+            .contenedor-carta { box-shadow: none; padding: 0; }
+            .controles { display: none !important; }
+            .variable { background-color: transparent; font-weight: inherit; }
+            p, ol, li, .formato-bloque { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body style="display: none;">
+
+    <div class="controles">
+        <label for="selector-mes"><strong>Mes Ingreso:</strong></label>
+        <select id="selector-mes" onchange="actualizarListaTrabajadores()">
+            <option value="">Cargando...</option>
+        </select>
+
+        <label for="selector-trabajador"><strong>Trabajador:</strong></label>
+        <select id="selector-trabajador" onchange="actualizarContrato()">
+            <option value="">-- Seleccione --</option>
+        </select>
+
+        <button onclick="window.print()">Imprimir PDF</button>
+    </div>
+
+    <div class="contenedor-carta">
+        <table class="tabla-impresion">
+            <thead>
+                <tr>
+                    <td>
+                        <div class="encabezado-repetido">
+                            <img src="https://www.preomed.cl/wp-content/uploads/2025/05/350px-rgb-min.webp" alt="Logo Preomed Salud SpA" class="logo-empresa">
+                        </div>
+                    </td>
+                </tr>
+            </thead>
+            
+            <tbody>
+                <tr>
+                    <td>
+                        <h1>CONTRATO DE TRABAJO</h1>
+
+                        <p>En <span class="variable" id="dato-centro-costo-intro">[Centro de Costo]</span>, a <strong><span class="variable" id="dato-inicio-contrato-intro">[Inicio Contrato]</span></strong>, entre la sociedad <strong>Preomed Salud SpA</strong>, Rut. <strong>76.500.919-7</strong>, representada legalmente por Doña <strong>Yoselyn Valesca Álvarez Duarte</strong>, Rut. <strong>16.135.473-2</strong>, ambos con domicilio comercial en la ciudad de Antofagasta, calle Las Bandurrias n° 9078, en lo sucesivo el empleador, y Don/ña <strong><span class="variable" id="dato-nombres">[Nombres]</span> <span class="variable" id="dato-paterno">[Apellido Paterno]</span> <span class="variable" id="dato-materno">[Apellido Materno]</span></strong>, Rut. <strong><span class="variable" id="dato-rut">[RUT]</span></strong>, con fecha de nacimiento el <span class="variable" id="dato-fecha-nacimiento">[Fecha de Nacimiento]</span>, de nacionalidad <span class="variable" id="dato-nacionalidad">[Nacionalidad]</span>, estado civil <span class="variable" id="dato-estado-civil">[Estado Civil]</span>, con domicilio particular en <span class="variable" id="dato-domicilio">[Domicilio]</span>, correo electrónico <span class="variable" id="dato-correo">[Correo Electrónico]</span>, teléfono de contacto +56 9 <span class="variable" id="dato-telefono">[Teléfono]</span>, teniendo como sistema de salud <strong><span class="variable" id="dato-salud">[Salud]</span></strong> y como sistema de previsión <strong>AFP</strong> <strong><span class="variable" id="dato-afp">[AFP]</span></strong>, en adelante, el/la trabajador/a, se ha convenido suscribir un contrato de trabajo, estableciendo las siguientes cláusulas:</p>
+
+                        <p class="nueva-clausula"><u><strong>PRIMERO. - DE LAS FUNCIONES Y CARGO:</strong></u> El/La trabajador/a se obliga a desempeñar las funciones propias de “<strong><span class="variable" id="dato-cargo">[Cargo]</span></strong>” de acuerdo con las instrucciones que al efecto sean impartidas por el empleador, estableciendo de común acuerdo que las funciones y responsabilidades propias del cargo o función que desempeñará el/la trabajador/a se encuentran establecidas en el descriptor de cargo correspondiente, documento que recepcionado por el/la trabajador/a se entiende incorporado al presente contrato. El/La trabajador/a queda obligado a cumplir leal y correctamente con todos los deberes que le imponga este instrumento o aquéllos que se deriven de las funciones y cargo, debiendo ejecutar las instrucciones que le confieran sus superiores. Del mismo modo el/la trabajador/a se obliga a desempeñar en forma eficaz, las funciones y el cargo para el cual ha sido contratado, empleando para ello la mayor diligencia y dedicación.</p>
+
+                        <p class="nueva-clausula"><u><strong>SEGUNDO. - DEL LUGAR DE TRABAJO:</strong></u> Los servicios serán prestados en el centro médico ubicado en <span class="variable" id="dato-centro-costo">[Centro de Costo]</span>, <span class="variable" id="dato-direccion-centro-costo">[Dirección Centro de Costo]</span>, sin perjuicio de lo anterior, el empleador podrá alterar el sitio o recinto en que deban prestarse los servicios, siempre que quede dentro de la misma ciudad o lugar, de acuerdo con lo establecido en el artículo 12 del Código del Trabajo.</p>
+
+                        <p class="nueva-clausula" style="margin-bottom: 5px;"><u><strong>TERCERO. - DE LA JORNADA DE TRABAJO:</strong></u> La jornada de trabajo será de <span class="variable" id="dato-jornada">[Jornada]</span> horas semanales de acuerdo con el artículo 22 del Código del Trabajo<span id="bloque-descanso">, la cual tendrá un descanso de <span class="variable" id="dato-tiempo-colacion">[Tiempo Colación]</span> no imputable a dicha jornada</span>, la distribución de la jornada será de la siguiente manera de acuerdo con el artículo 28 del Código del Trabajo:</p>
+                        <span class="variable formato-bloque" id="dato-horario">[Horario]</span>
+
+                        <p class="nueva-clausula" style="margin-bottom: 5px;"><u><strong>CUARTO. - DE LAS REMUNERACIONES:</strong></u> El empleador se compromete a remunerar al trabajador mensualmente en la forma que se indica:</p>
+                        <ol type="a">
+                            <li style="margin-top: 0; margin-bottom: 0;">Sueldo Base Mensual <strong><span class="variable" id="dato-sueldo">[Sueldo Base]</span></strong> .- (proporcional a los días trabajados en el mes)</li>
+                            <li style="margin-top: 0; margin-bottom: 0;">La Gratificación legal mensual corresponderá al 25% de la Remuneración base con un tope según el Art. 50 del Código del Trabajo correspondiente a 4,75 ingresos mínimos mensuales.</li>
+                            <li id="li-colacion" style="margin-top: 0; margin-bottom: 0;">Asignación no Imponible de Colación <strong><span class="variable" id="dato-colacion">[Colación]</span></strong> .- (proporcional a los días trabajados en el mes)</li>
+                            <li id="li-movilizacion" style="margin-top: 0; margin-bottom: 0;">Asignación no Imponible de Movilización <strong><span class="variable" id="dato-movilizacion">[Movilización]</span></strong> .- (proporcional a los días trabajados en el mes)</li>
+                        </ol>
+
+                        <p class="nueva-clausula" style="margin-bottom: 0;"><u><strong>QUINTO. - DE LA FORMA DE PAGO Y DESCUENTOS LEGALES:</strong></u> Las remuneraciones se pagarán mensualmente por período vencido, a más tardar el segundo (2°) día hábil del mes siguiente, de acuerdo con los plazos establecidos en el artículo 55 del Código del Trabajo.</p>
+                        <p class="sin-sangria" style="margin-top: 0; margin-bottom: 0;">El pago se realizará en moneda nacional mediante transferencia electrónica o depósito en el Banco <strong><span class="variable" id="dato-banco">[Banco]</span></strong>, cuenta <span class="variable" id="dato-tipo-cuenta">[Tipo de Cuenta]</span> N° <strong><span class="variable" id="dato-cuenta">[cuenta]</span></strong>, indicada por el/la trabajador/a, en conformidad a lo dispuesto en el inciso segundo del artículo 54 del citado cuerpo legal. Para estos efectos, el/la trabajador/a en este acto otorga su expresa y amplia autorización a la empresa para efectuar el pago de sus remuneraciones a través de dicha vía.</p>
+                        <p class="sin-sangria" style="margin-top: 0; margin-bottom: 0;">De las sumas que correspondan, el Empleador deducirá los impuestos que las graven, las cotizaciones de seguridad social y demás descuentos legales y autorizados, en estricto cumplimiento a lo establecido en el artículo 58 del Código del Trabajo. Al respecto, se deja expresa constancia que la cotización legal obligatoria para salud corresponde al 7% de la remuneración imponible. En caso de que el/la trabajador/a se encuentre afiliado/a a una Institución de Salud Previsional (ISAPRE) y el costo del plan pactado supere dicho porcentaje legal, la cotización adicional o diferencia será de exclusivo cargo y costo del/la trabajador/a, autorizando desde ya al Empleador a descontar dicho excedente de sus remuneraciones conforme a lo notificado por la institución mediante el Formulario Único de Notificación (FUN).</p>
+                        <p class="sin-sangria" style="margin-top: 0;">Finalmente, el/la trabajador/a autoriza de manera expresa al Empleador para que descuente de sus remuneraciones el valor correspondiente al tiempo no trabajado, ya sea por atrasos, inasistencias injustificadas o permisos sin goce de sueldo, toda vez que el pago de la remuneración está directamente subordinado a la prestación efectiva de los servicios.</p>
+
+                        <p class="nueva-clausula"><u><strong>SEXTO. - DE LA VIGENCIA:</strong></u> El presente contrato tendrá una duración hasta el día <strong><span class="variable" id="dato-termino-contrato">[Término Contrato]</span></strong>.</p>
+
+                        <p class="nueva-clausula" style="margin-bottom: 5px;"><u><strong>SÉPTIMO. - DE LAS OBLIGACIONES:</strong></u> Las obligaciones del trabajador emanan de la naturaleza del presente contrato de trabajo y de la función que se obliga a realizar en la cláusula primera. Además, se obliga en forma particular, a lo siguiente:</p>
+                        <ol type="a">
+                            <li style="margin-top: 0; margin-bottom: 0;">desempeñar las labores e instrucciones que le sean impartidas, con la máxima dedicación, esmero y cuidado, cumpliendo todas las obligaciones pertinentes de prolijidad, claridad y cuidado propias de su función;</li>
+                            <li style="margin-top: 0; margin-bottom: 0;">efectuar su trabajo en forma educada, manteniendo un trato cortés y amable con los usuarios, proveedores, los otros trabajadores de la empresa y con sus jefes directos;</li>
+                            <li style="margin-top: 0; margin-bottom: 0;">emplear la máxima diligencia en el cuidado del equipo de trabajo, instalaciones del empleador y en general, de todos los bienes de la empresa;</li>
+                            <li style="margin-top: 0; margin-bottom: 0;">cuidar de la conservación, buen estado, aseo y uso adecuado de las instalaciones y materiales, evitando pérdidas y deterioros o gastos innecesarios;</li>
+                            <li style="margin-top: 0; margin-bottom: 0;">llegar puntualmente a su trabajo y registrar diariamente sus horas de entrada y salida;</li>
+                            <li style="margin-top: 0; margin-bottom: 0;">avisar oportunamente las ausencias y su motivo;</li>
+                            <li style="margin-top: 0; margin-bottom: 0;">comunicar dentro de las 48 horas siguientes de sucedido un cambio en los antecedentes personales, cambio de domicilio y que deben ser considerados en el contrato de trabajo;</li>
+                            <li style="margin-top: 0; margin-bottom: 0;">mantener una adecuada higiene personal.</li>
+                        </ol>
+
+                        <p class="nueva-clausula" style="margin-bottom: 5px;"><u><strong>OCTAVO. - DE LAS PROHIBICIONES:</strong></u> Las partes acuerdan establecer como prohibición expresa que el/la trabajador/a ejecute para terceros negociaciones o servicios que se encuentren dentro del giro del negocio del empleador, así como prestar su servicio a terceros que realicen un giro similar al del empleador. En caso de infracción a la prohibición señalada en el inciso anterior, el empleador queda habilitado para proceder conforme al N° 2 del artículo 160 del Código del Trabajo. Este contrato terminará en los casos señalados en los artículos 159, 160 y 161 del Código del Trabajo. Para los efectos del N° 1 del referido artículo 160, constituyen falta de probidad destinar para su uso personal o autorizar el uso por parte de terceros de bienes de la empresa, sin autorización expresa del empleador. Y para los efectos del N° 7 del mismo artículo 160, constituyen incumplimiento grave de las obligaciones que impone el contrato, el no cumplimiento de las obligaciones estipuladas en la cláusula Séptima del presente contrato, además de las siguientes prohibiciones:</p>
+                        <ol type="a">
+                            <li style="margin-top: 0; margin-bottom: 0;">presentarse a cumplir sus funciones en estado de intemperancia o bajo los efectos de drogas o sustancias psicotrópicas, consumir bebidas alcohólicas, drogas o sustancias psicotrópicas dentro de la jornada de trabajo o introducir dichas sustancias al lugar de trabajo;</li>
+                            <li style="margin-top: 0; margin-bottom: 0;">atrasos reiterados en el inicio de su jornada de trabajo;</li>
+                            <li style="margin-top: 0; margin-bottom: 0;">fumar durante la jornada de trabajo;</li>
+                            <li style="margin-top: 0; margin-bottom: 0;">ejecutar durante las horas de trabajo y en el desempeño de sus funciones actividades ajenas a su labor y al establecimiento, dedicarse a atender asuntos o negocios particulares;</li>
+                            <li style="margin-top: 0; margin-bottom: 0;">otorgar conocimiento a terceros o utilizar de cualquier manera y para provecho propio, la información propia del empleador;</li>
+                            <li style="margin-top: 0; margin-bottom: 0;">infringir las normas de seguridad establecidas en el Reglamento Interno de Orden Higiene y Seguridad;</li>
+                            <li style="margin-top: 0; margin-bottom: 0;">resistirse a acatar las órdenes e instrucciones de sus jefes;</li>
+                            <li style="margin-top: 0; margin-bottom: 0;">no registrar su asistencia y atrasos en forma debida en el registro de asistencia.</li>
+                        </ol>
+
+                        <p class="nueva-clausula"><u><strong>NOVENO. - DEL REGLAMENTO INTERNO:</strong></u> Las partes convienen en elevar la calidad de esencial de este contrato, la obligatoriedad para el/la trabajador/a de cumplir celosamente con el Reglamento Interno de Orden, Higiene y Seguridad de la empresa, y sus eventuales modificaciones cuyo texto recibe en este acto, según consta en el presente contrato y en documento anexo de recepción de este. Igualmente, el/la trabajador/a declara conocer el texto íntegro de dicho Reglamento y sus modificaciones, el cual se entiende como parte integrante de este contrato, de tal manera, que su desobediencia o transgresión se estimará como incumplimiento grave a las obligaciones que impone el contrato, pudiendo el empleador poner término a este de inmediato y sin indemnización alguna.</p>
+
+                        <p class="nueva-clausula"><u><strong>DÉCIMO. - DE LA LEY N° 20.393 Y PROBIDAD:</strong></u> El/La trabajador/a se obliga a mantener un comportamiento probo, íntegro y debe abstenerse de realizar conductas que pudieran vincular a la Empresa con los delitos considerados en la Ley N° 20.393, a saber, delitos de: lavado de activos (art. 27, ley 19.913); financiamiento del terrorismo, (art. 8, ley 18.314); negociación incompatible (Artículo 240, Código Penal); cohecho y (arts. 250 y 251 bis); corrupción entre particulares (Art. 287 bis y 287 ter, Código Penal); receptación (artículo 456 bis A, Código Penal); apropiación indebida (Artículo 470 N.º 1, Código Penal); y administración desleal (Artículo 470 N.º 11, Código Penal), sin perjuicio de aquellos que el legislador pueda incorporar en el futuro. El incumplimiento significará la terminación ipso facto del presente contrato de trabajo, sin indemnización alguna; de acuerdo con el artículo 160 N.° 7 del Código del Trabajo.</p>
+
+                        <p class="nueva-clausula"><u><strong>UNDÉCIMO. - DE LA CONFIDENCIALIDAD:</strong></u> El/La trabajador/a se obliga a guardar total reserva, dentro y fuera de la Empresa, de todos los hechos, antecedentes e informaciones de que tome conocimiento en el ejercicio de sus funciones o derivados de las actividades y negocios del Empleador y sus sociedades relacionadas, lo que considera en general pero no exclusivamente, estudios, desarrollos informáticos, tecnología aplicada y cualquier otro dato o antecedente de propiedad del Empleador y sus sociedades relacionadas, aún después de producida la terminación del presente Contrato. El/La trabajador/a consiente que está prohibida la divulgación, transferencia a cualquier título, comunicación, alteración, modificación o copia de dichos antecedentes e informaciones, así como la utilización indebida o para otros propósitos que no sean sus labores. Además, El/la trabajador/a se obliga a la protección de la información suministrada por el Empleador, debiendo tomar las medidas de seguridad apropiadas para la protección contra el acceso o difusión no autorizados.</p>
+
+                        <p class="nueva-clausula"><u><strong>DUODÉCIMO. - DE LA PROPIEDAD INTELECTUAL:</strong></u> Las partes dejan expresa constancia y El/la trabajador/a declara en forma explícita que todo y cualquier procedimiento, marca, modelo, sistema, programa computacional o software, desarrollo o aplicación informática, proyecto u otro, y en general, cualquier invención o creación y cualquier otro elemento de éstos o derivado de ellos, de que conozca o en el que intervenga el/la trabajador/a, sea en forma directa o indirecta en el desempeño de sus labores, pertenece y pertenecerá única y exclusivamente al Empleador, o a quien éste designe, sin pago adicional de ninguna especie para el/la trabajador/a, aun cuando sea efectivamente su autor o creador.</p>
+
+                        <p class="nueva-clausula"><u><strong>DECIMOTERCERO. - DE LA RESPONSABILIDAD POR DAÑOS:</strong></u> Las partes convienen que cualquier acción dolosa que realice el/la trabajador/a contra los ejecutivos de la empresa, los bienes del empleador, como asimismo contra alguno de sus compañeros de trabajo o cualquier otra persona natural, además de significar la terminación ipso facto del presente contrato de trabajo, sin indemnización alguna; Y de las responsabilidades penales, será motivo de responsabilidad civil ante la empresa, sus ejecutivos, sus dependientes o terceros.</p>
+
+                        <p class="nueva-clausula"><u><strong>DECIMOCUARTO. - DEL FERIADO ANUAL:</strong></u> El/La trabajador/a hará uso del feriado anual que le corresponda en conformidad a la ley, en la época que señale el empleador, preferentemente en la época estival de acuerdo con las necesidades de la empresa, pudiendo el empleador fraccionar el feriado.</p>
+
+                        <p class="nueva-clausula"><u><strong>DECIMOQUINTO. - DE LA FECHA DE INGRESO:</strong></u> Se deja constancia que el/la trabajador/a ingresará a prestar servicios para el empleador el día <strong><span class="variable" id="dato-inicio-contrato-clausula">[Inicio Contrato]</span></strong>.</p>
+
+                        <p class="nueva-clausula"><u><strong>DECIMOSEXTO. - DEL DOMICILIO LEGAL:</strong></u> Para todos los efectos legales y contractuales que deriven del presente instrumento, las partes fijan su domicilio especial en la ciudad de <span class="variable" id="dato-centro-costo-16">[Centro de Costo]</span> y se someten expresamente a la jurisdicción y competencia de sus Tribunales de Justicia.</p>
+
+                        <p class="nueva-clausula" style="margin-bottom: 0;"><u><strong>DECIMOSÉPTIMO. - DE LA DOCUMENTACIÓN ELECTRÓNICA:</strong></u> Por intermedio de este acto, <strong><span class="variable" id="dato-nombres-2">[Nombres]</span> <span class="variable" id="dato-paterno-2">[Apellido Paterno]</span> <span class="variable" id="dato-materno-2">[Apellido Materno]</span></strong> Rut. <strong><span class="variable" id="dato-rut-2">[RUT]</span></strong> acepta, que la documentación derivada de la relación laboral con <strong>Preomed Salud SpA</strong>, Rut. <strong>76.500.919-7</strong> pueda ser confeccionada, procesada, firmada y remitida de manera electrónica. Asimismo, acepta que la documentación laboral pueda ser firmada electrónicamente mediante la Plataforma de Gestor Documental de BUK.</p>
+        
+                        <p class="sin-sangria" style="margin-top: 0;">La documentación laboral será remitida de acuerdo con los antecedentes proporcionados por el/la trabajador/a en el presente contrato, a la cuenta de correo electrónico personal <span class="variable" id="dato-correo-2">[Correo Electrónico]</span>. En el caso de no acordar esta modalidad, su documentación laboral será firmada y entregada en soporte papel.</p>
+
+                        <p style="text-align: left; margin-top: 40px; text-indent: 0;">En señal de aceptación las partes firman electrónicamente a través de la plataforma BUK.</p>
+
+                        <div class="firmas">
+                            <div class="bloque-firma">
+                                <div class="contenedor-firma-digital"></div>
+                                <div class="linea-firma"></div>
+                                <strong>Firma Trabajador</strong><br>
+                                Rut. <strong><span class="variable" id="dato-rut-firma">[RUT]</span></strong>
+                            </div>
+                            
+                            <div class="bloque-firma">
+                                <div class="contenedor-firma-digital">
+                                    <img src="https://drive.google.com/thumbnail?id=1cO78xncHSE_AB9J0HhxTqT-3T-GtkVaF&sz=w500" alt="Firma Empleador" class="img-firma-empleador">
+                                </div>
+                                <div class="linea-firma"></div>
+                                <strong>Firma Empleador</strong><br>
+                                Rut. <strong>76.500.919-7</strong>
+                            </div>
+                        </div>
+
+                    </td>
+                </tr>
+            </tbody>
+
+            <tfoot>
+                <tr>
+                    <td>
+                        <div class="pie-pagina-contenido">
+                            CONTRATO DE TRABAJO
+                        </div>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <script>
+        const urlGoogleSheet = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRlUQ9n7nlGqM9XXn6_170lIIlXso1THXFaN375Y_LXzGPIMHe0dBdgVrKE7AnNTuoBmNAL5kvJOaL5/pub?gid=1260108930&single=true&output=csv"; 
+        
+        let listaTrabajadores = [];
+        let mesesDisponibles = []; 
+
+        Papa.parse(urlGoogleSheet, {
+            download: true,
+            header: true,
+            skipEmptyLines: true,
+            complete: function(resultados) {
+                listaTrabajadores = resultados.data;
+                if (listaTrabajadores.length === 0) {
+                    alert("La base de datos se leyó correctamente, pero está vacía.");
+                    return;
+                }
+                procesarMeses(); 
+            },
+            error: function() {
+                alert("Error al conectar con Google Drive. Asegúrate de que el Google Sheet tenga permisos de 'Cualquier persona con el enlace'.");
+            }
+        });
+
+        function buscarPropiedad(objeto, nombreColumna) {
+            const target = nombreColumna.toLowerCase().replace(/\s+/g, '').trim();
+            for (let clave in objeto) {
+                if (clave.toLowerCase().replace(/\s+/g, '').trim() === target) {
+                    return objeto[clave];
+                }
+            }
+            return null;
+        }
+
+        function asignarTextoSeguro(id, texto) {
+            const elemento = document.getElementById(id);
+            if (elemento) {
+                elemento.innerText = texto;
+            }
+        }
+
+        function obtenerFechaObjeto(fechaStr) {
+            if (!fechaStr || String(fechaStr).includes("[")) return null;
+            let textoLimpio = String(fechaStr).trim().split(" ")[0]; 
+            let partes = textoLimpio.split(/[-/]/);
+            if (partes.length === 3) {
+                let dia, mes, anio;
+                if (partes[0].length <= 2) {
+                    dia = parseInt(partes[0], 10);
+                    mes = parseInt(partes[1], 10) - 1;
+                    anio = parseInt(partes[2], 10);
+                } else {
+                    anio = parseInt(partes[0], 10);
+                    mes = parseInt(partes[1], 10) - 1;
+                    dia = parseInt(partes[2], 10);
+                }
+                if (anio < 100) anio += 2000;
+                let d = new Date(anio, mes, dia);
+                if (!isNaN(d.getTime())) return d;
+            }
+            return null;
+        }
+
+        function procesarMeses() {
+            let mapaMeses = {};
+            
+            listaTrabajadores.forEach((trabajador) => {
+                let inicioRaw = buscarPropiedad(trabajador, "iniciocontrato") || buscarPropiedad(trabajador, "inicio_contrato");
+                let fechaObj = obtenerFechaObjeto(inicioRaw);
+                
+                if (fechaObj) {
+                    let anio = fechaObj.getFullYear();
+                    let mes = fechaObj.getMonth();
+                    let clave = `${anio}-${mes.toString().padStart(2, '0')}`;
+                    
+                    if (!mapaMeses[clave]) {
+                        let nombreMes = fechaObj.toLocaleDateString('es-ES', { month: 'long' });
+                        nombreMes = nombreMes.charAt(0).toUpperCase() + nombreMes.slice(1);
+                        mapaMeses[clave] = {
+                            key: clave,
+                            label: `${nombreMes} ${anio}`,
+                            sortVal: fechaObj.getTime()
+                        };
+                    }
+                    trabajador._mesKey = clave; 
+                } else {
+                    trabajador._mesKey = "Desconocido";
+                }
+            });
+
+            mesesDisponibles = Object.values(mapaMeses);
+            mesesDisponibles.sort((a, b) => b.sortVal - a.sortVal);
+
+            const selectorMes = document.getElementById("selector-mes");
+            selectorMes.innerHTML = '<option value="Todos">Todos los meses</option>';
+            
+            mesesDisponibles.forEach(m => {
+                let op = document.createElement("option");
+                op.value = m.key;
+                op.text = m.label;
+                selectorMes.appendChild(op);
+            });
+
+            if (mesesDisponibles.length > 0) {
+                selectorMes.value = mesesDisponibles[0].key;
+            }
+            
+            actualizarListaTrabajadores();
+        }
+
+        function actualizarListaTrabajadores() {
+            const mesSeleccionado = document.getElementById("selector-mes").value;
+            const selectorTrabajador = document.getElementById("selector-trabajador");
+            
+            selectorTrabajador.innerHTML = '<option value="">-- Seleccione un trabajador --</option>';
+            const primeraColumna = Object.keys(listaTrabajadores[0])[0];
+
+            listaTrabajadores.forEach((trabajador, index) => {
+                if (mesSeleccionado === "Todos" || trabajador._mesKey === mesSeleccionado) {
+                    let nom = buscarPropiedad(trabajador, "nombres") || buscarPropiedad(trabajador, "nombre") || "";
+                    let pat = buscarPropiedad(trabajador, "apellidopaterno") || "";
+                    let mat = buscarPropiedad(trabajador, "apellidomaterno") || "";
+                    
+                    let nombreCompleto = `${nom} ${pat} ${mat}`.trim();
+                    let nombreMostrado = nombreCompleto !== "" ? nombreCompleto : trabajador[primeraColumna];
+                    
+                    if(nombreMostrado) {
+                        let opcion = document.createElement("option");
+                        opcion.value = index;
+                        opcion.text = nombreMostrado;
+                        selectorTrabajador.appendChild(opcion);
+                    }
+                }
+            });
+            
+            actualizarContrato();
+        }
+
+        function formatearRut(valor) {
+            if (!valor || String(valor).includes("[")) return valor;
+            let cuerpo = String(valor).replace(/[\s\.\,-]/g, '').trim();
+            if (cuerpo.length < 2) return valor;
+            let dv = cuerpo.slice(-1).toUpperCase();
+            let num = cuerpo.slice(0, -1);
+            let numFormateado = new Intl.NumberFormat('es-CL').format(parseInt(num, 10));
+            return `${numFormateado}-${dv}`;
+        }
+
+        function formatearDineroConSigno(valor) {
+            if (!valor || String(valor).includes("[")) return valor;
+            let soloNumeros = String(valor).replace(/[^\d]/g, '');
+            if (soloNumeros === "") return valor;
+            let numeroConPuntos = new Intl.NumberFormat('es-CL').format(soloNumeros);
+            return `$${numeroConPuntos}`;
+        }
+
+        function formatearFecha(fechaStr, incluirDiaSemana) {
+            if (!fechaStr || String(fechaStr).includes("[")) return fechaStr;
+            let textoLimpio = String(fechaStr).trim().split(" ")[0]; 
+            let partes = textoLimpio.split(/[-/]/);
+            if (partes.length === 3) {
+                let dia, mes, anio;
+                if (partes[0].length <= 2) {
+                    dia = parseInt(partes[0], 10);
+                    mes = parseInt(partes[1], 10) - 1;
+                    anio = parseInt(partes[2], 10);
+                } else {
+                    anio = parseInt(partes[0], 10);
+                    mes = parseInt(partes[1], 10) - 1;
+                    dia = parseInt(partes[2], 10);
+                }
+                if (anio < 100) anio += 2000;
+                let fechaGenerada = new Date(anio, mes, dia);
+                
+                if (!isNaN(fechaGenerada.getTime())) {
+                    let opciones = { day: 'numeric', month: 'long', year: 'numeric' };
+                    if (incluirDiaSemana) opciones.weekday = 'long';
+                    return fechaGenerada.toLocaleDateString('es-ES', opciones).replace(',', '');
+                }
+            }
+            return fechaStr; 
+        }
+
+        function actualizarContrato() {
+            const index = document.getElementById("selector-trabajador").value;
+            
+            if (index !== "") {
+                const datos = listaTrabajadores[index];
+                
+                const nombres = buscarPropiedad(datos, "nombres") || buscarPropiedad(datos, "nombre") || "";
+                const paterno = buscarPropiedad(datos, "apellidopaterno") || "";
+                const materno = buscarPropiedad(datos, "apellidomaterno") || "";
+                
+                const rutRaw = buscarPropiedad(datos, "rut") || "";
+                const nacionalidad = buscarPropiedad(datos, "nacionalidad") || "[Nacionalidad]";
+                const estadoCivil = buscarPropiedad(datos, "estadocivil") || "[Estado Civil]";
+                const domicilio = buscarPropiedad(datos, "domicilio") || "[Domicilio]";
+                const correo = buscarPropiedad(datos, "correo") || buscarPropiedad(datos, "email") || "";
+                
+                const telephone = buscarPropiedad(datos, "telefono") || buscarPropiedad(datos, "teléfono") || buscarPropiedad(datos, "celular") || buscarPropiedad(datos, "fono") || "[Teléfono]";
+                
+                const salud = buscarPropiedad(datos, "salud") || "[Salud]";
+                const afp = buscarPropiedad(datos, "afp") || "[AFP]";
+                const cargo = buscarPropiedad(datos, "cargo") || "[Cargo]";
+                
+                const centroCosto = buscarPropiedad(datos, "centrocosto") || "[Centro de Costo]";
+                const direccionCentroCosto = buscarPropiedad(datos, "direccioncentrocosto") || "[Dirección Centro de Costo]";
+                const jornada = buscarPropiedad(datos, "jornada") || "[Jornada]";
+                const horario = buscarPropiedad(datos, "horario") || "[Horario]";
+                
+                const tiempoColacion = buscarPropiedad(datos, "tiempocolacion") || buscarPropiedad(datos, "tiempo_colacion") || "";
+                
+                const fechaNacRaw = buscarPropiedad(datos, "fechanacimiento") || "[Fecha Nacimiento]";
+                const inicioContratoRaw = buscarPropiedad(datos, "iniciocontrato") || buscarPropiedad(datos, "inicio_contrato") || "[Inicio Contrato]";
+                const terminoContratoRaw = buscarPropiedad(datos, "terminocontrato") || buscarPropiedad(datos, "termino_contrato") || "[Término Contrato]";
+                
+                const sueldoRaw = buscarPropiedad(datos, "sueldo") || "[Sueldo]";
+                const colacionRaw = buscarPropiedad(datos, "colacion") || buscarPropiedad(datos, "colación") || "";
+                const movilizacionRaw = buscarPropiedad(datos, "movilizacion") || buscarPropiedad(datos, "movilización") || "";
+
+                const banco = buscarPropiedad(datos, "banco") || buscarPropiedad(datos, "institucionbancaria") || "[Banco]";
+                const cuenta = buscarPropiedad(datos, "cuenta") || buscarPropiedad(datos, "numerocuenta") || buscarPropiedad(datos, "numero_cuenta") || "[cuenta]";
+                let tipoCuenta = buscarPropiedad(datos, "tipocuenta") || buscarPropiedad(datos, "tipo_cuenta") || "[Tipo de Cuenta]";
+
+                if (tipoCuenta !== "[Tipo de Cuenta]") {
+                    let tcLower = tipoCuenta.toLowerCase();
+                    if (tcLower.includes("corriente")) {
+                        tipoCuenta = "corriente";
+                    } else if (tcLower.includes("vista")) {
+                        tipoCuenta = "vista";
+                    } else if (tcLower.includes("rut")) {
+                        tipoCuenta = "RUT";
+                    }
+                }
+
+                let centroCostoCiudad = centroCosto;
+                if (centroCosto !== "[Centro de Costo]") {
+                    let ccLower = centroCosto.trim().toLowerCase();
+                    if (ccLower === "antofagasta centro" || ccLower === "antofagasta norte") {
+                        centroCostoCiudad = "Antofagasta";
+                    }
+                }
+
+                const rutFormateado = formatearRut(rutRaw);
+                const fechaNacTexto = formatearFecha(fechaNacRaw, false);
+                const inicioContratoLargo = formatearFecha(inicioContratoRaw, true);
+                const inicioContratoCorto = formatearFecha(inicioContratoRaw, false);
+                const terminoContratoCorto = formatearFecha(terminoContratoRaw, false);
+                const sueldoFormat = formatearDineroConSigno(sueldoRaw);
+                const colacionFormat = formatearDineroConSigno(colacionRaw);
+                const movilizacionFormat = formatearDineroConSigno(movilizacionRaw);
+
+                asignarTextoSeguro("dato-nombres", nombres);
+                asignarTextoSeguro("dato-nombres-2", nombres);
+                asignarTextoSeguro("dato-paterno", paterno);
+                asignarTextoSeguro("dato-paterno-2", paterno);
+                asignarTextoSeguro("dato-materno", materno);
+                asignarTextoSeguro("dato-materno-2", materno);
+                
+                asignarTextoSeguro("dato-rut", rutFormateado);
+                asignarTextoSeguro("dato-rut-2", rutFormateado);
+                asignarTextoSeguro("dato-rut-firma", rutFormateado);
+                
+                asignarTextoSeguro("dato-fecha-nacimiento", fechaNacTexto); 
+                asignarTextoSeguro("dato-nacionalidad", nacionalidad);
+                asignarTextoSeguro("dato-estado-civil", estadoCivil);
+                asignarTextoSeguro("dato-domicilio", domicilio);
+                asignarTextoSeguro("dato-correo", correo);
+                asignarTextoSeguro("dato-correo-2", correo);
+                asignarTextoSeguro("dato-telefono", telephone);
+                asignarTextoSeguro("dato-salud", salud);
+                asignarTextoSeguro("dato-afp", afp);
+                asignarTextoSeguro("dato-cargo", cargo);
+                
+                asignarTextoSeguro("dato-sueldo", sueldoFormat);
+                asignarTextoSeguro("dato-banco", banco);
+                asignarTextoSeguro("dato-cuenta", cuenta);
+                asignarTextoSeguro("dato-tipo-cuenta", tipoCuenta);
+
+                asignarTextoSeguro("dato-centro-costo-intro", centroCostoCiudad);
+                asignarTextoSeguro("dato-centro-costo-16", centroCostoCiudad);
+                asignarTextoSeguro("dato-inicio-contrato-intro", inicioContratoLargo);
+                asignarTextoSeguro("dato-centro-costo", centroCosto);
+                asignarTextoSeguro("dato-direccion-centro-costo", direccionCentroCosto);
+                asignarTextoSeguro("dato-jornada", jornada);
+                asignarTextoSeguro("dato-horario", horario);
+                
+                const bloqueDescanso = document.getElementById("bloque-descanso");
+                if (bloqueDescanso) {
+                    if (String(tiempoColacion).replace(/[^\d]/g, '') === "0" || String(tiempoColacion).trim() === "") {
+                        bloqueDescanso.style.display = "none";
+                    } else {
+                        bloqueDescanso.style.display = "inline";
+                        asignarTextoSeguro("dato-tiempo-colacion", tiempoColacion);
+                    }
+                }
+
+                const liColacion = document.getElementById("li-colacion");
+                if (liColacion) {
+                    const numColacion = String(colacionRaw).replace(/[^\d]/g, ''); 
+                    if (numColacion === "0" || numColacion === "") {
+                        liColacion.style.display = "none";
+                    } else {
+                        liColacion.style.display = "list-item";
+                        asignarTextoSeguro("dato-colacion", colacionFormat);
+                    }
+                }
+
+                const liMovilizacion = document.getElementById("li-movilizacion");
+                if (liMovilizacion) {
+                    const numMovilizacion = String(movilizacionRaw).replace(/[^\d]/g, '');
+                    if (numMovilizacion === "0" || numMovilizacion === "") {
+                        liMovilizacion.style.display = "none";
+                    } else {
+                        liMovilizacion.style.display = "list-item";
+                        asignarTextoSeguro("dato-movilizacion", movilizacionFormat);
+                    }
+                }
+                
+                asignarTextoSeguro("dato-termino-contrato", terminoContratoCorto);
+                asignarTextoSeguro("dato-inicio-contrato-clausula", inicioContratoCorto);
+                
+                // 🌟 NUEVA LÓGICA PARA EL NOMBRE DEL ARCHIVO EN FORMATO dd.mm.aaaa
+                let primerNombre = nombres.trim().split(" ")[0];
+                let fechaPuntos = "";
+                const fechaObj = obtenerFechaObjeto(inicioContratoRaw);
+                if (fechaObj) {
+                    let dia = String(fechaObj.getDate()).padStart(2, '0');
+                    let mes = String(fechaObj.getMonth() + 1).padStart(2, '0');
+                    let anio = fechaObj.getFullYear();
+                    fechaPuntos = `${dia}.${mes}.${anio}`;
+                }
+                
+                if (primerNombre && paterno && fechaPuntos) {
+                    document.title = "Contrato de Trabajo - " + primerNombre + " " + paterno + " - " + fechaPuntos;
+                } else {
+                    document.title = "Contrato de Trabajo Dinámico - Preomed";
+                }
+                
+            } else {
+                asignarTextoSeguro("dato-nombres", "[Nombres]");
+                asignarTextoSeguro("dato-nombres-2", "[Nombres]");
+                asignarTextoSeguro("dato-paterno", "[Apellido Paterno]");
+                asignarTextoSeguro("dato-paterno-2", "[Apellido Paterno]");
+                asignarTextoSeguro("dato-materno", "[Apellido Materno]");
+                asignarTextoSeguro("dato-materno-2", "[Apellido Materno]");
+                asignarTextoSeguro("dato-rut", "[RUT]");
+                asignarTextoSeguro("dato-rut-2", "[RUT]");
+                asignarTextoSeguro("dato-rut-firma", "[RUT]");
+                asignarTextoSeguro("dato-fecha-nacimiento", "[Fecha de Nacimiento]");
+                asignarTextoSeguro("dato-nacionalidad", "[Nacionalidad]");
+                asignarTextoSeguro("dato-estado-civil", "[Estado Civil]");
+                asignarTextoSeguro("dato-domicilio", "[Domicilio]");
+                asignarTextoSeguro("dato-correo", "[Correo Electrónico]");
+                asignarTextoSeguro("dato-correo-2", "[Correo Electrónico]");
+                asignarTextoSeguro("dato-telefono", "[Teléfono]");
+                asignarTextoSeguro("dato-salud", "[Salud]");
+                asignarTextoSeguro("dato-afp", "[AFP]");
+                asignarTextoSeguro("dato-cargo", "[Cargo]");
+                asignarTextoSeguro("dato-sueldo", "[Sueldo Base]");
+                
+                asignarTextoSeguro("dato-banco", "[Banco]");
+                asignarTextoSeguro("dato-cuenta", "[cuenta]");
+                asignarTextoSeguro("dato-tipo-cuenta", "[Tipo de Cuenta]");
+
+                asignarTextoSeguro("dato-centro-costo-intro", "[Centro de Costo]");
+                asignarTextoSeguro("dato-centro-costo-16", "[Centro de Costo]");
+                asignarTextoSeguro("dato-inicio-contrato-intro", "[Inicio Contrato]");
+                asignarTextoSeguro("dato-centro-costo", "[Centro de Costo]");
+                asignarTextoSeguro("dato-direccion-centro-costo", "[Dirección Centro de Costo]");
+                asignarTextoSeguro("dato-jornada", "[Jornada]");
+                asignarTextoSeguro("dato-horario", "[Horario]");
+                
+                const bloqueDescanso = document.getElementById("bloque-descanso");
+                if (bloqueDescanso) bloqueDescanso.style.display = "inline";
+                asignarTextoSeguro("dato-tiempo-colacion", "[Tiempo Colación]");
+                
+                const liCol = document.getElementById("li-colacion");
+                if (liCol) liCol.style.display = "list-item";
+                asignarTextoSeguro("dato-colacion", "[Colación]");
+                
+                const liMov = document.getElementById("li-movilizacion");
+                if (liMov) liMov.style.display = "list-item";
+                asignarTextoSeguro("dato-movilizacion", "[Movilización]");
+                
+                asignarTextoSeguro("dato-termino-contrato", "[Término Contrato]");
+                asignarTextoSeguro("dato-inicio-contrato-clausula", "[Inicio Contrato]");
+                
+                document.title = "Contrato de Trabajo Dinámico - Preomed";
+            }
+        }
+    </script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        // Tus credenciales de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAMimbWHOrplArchHjZrheLZlLSIxj1-Hk",
+            authDomain: "preomed-salud---portal-interno.firebaseapp.com",
+            projectId: "preomed-salud---portal-interno",
+            storageBucket: "preomed-salud---portal-interno.firebasestorage.app",
+            messagingSenderId: "292608840627",
+            appId: "1:292608840627:web:0ac4afdaa71ba8baa8b1c6"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Verificamos si la persona tiene la sesión iniciada
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // Si el usuario es válido, revelamos la página
+                document.body.style.display = "block";
+            } else {
+                // Si no hay sesión, lo devolvemos a la carpeta anterior (el Login)
+                window.location.replace("../index.html");
+            }
+        });
+    </script>
+</body>
+</html>
