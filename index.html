@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal RRHH & Finanzas - Preomed Salud</title>
     
-    <link rel="icon" type="image/webp" href="https://www.preomed.cl/wp-content/uploads/2025/05/350px-rgb-min.webp">
+    <link rel="icon" type="image/png" href="https://www.preomed.cl/wp-content/uploads/2025/05/iso-66x66.png">
     
     <style>
         :root {
@@ -147,7 +147,7 @@
             measurementId: "G-2NEF67FGV0"
         };
 
-        // Initialize Firebase
+        // Inicializar Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const analytics = getAnalytics(app);
@@ -183,12 +183,10 @@
 
             signInWithEmailAndPassword(auth, email, password)
                 .then((userCredential) => {
-                    // Éxito: onAuthStateChanged se encargará de mostrar el portal
                     btnLogin.disabled = false;
                     btnLogin.innerText = 'Ingresar al Portal';
                 })
                 .catch((error) => {
-                    // Error: mostrar mensaje
                     btnLogin.disabled = false;
                     btnLogin.innerText = 'Ingresar al Portal';
                     errorMsg.style.display = 'block';
@@ -206,7 +204,6 @@
         // Función para cerrar sesión
         btnLogout.addEventListener('click', () => {
             signOut(auth).then(() => {
-                // Éxito: onAuthStateChanged mostrará la pantalla de login
                 document.getElementById('email-input').value = '';
                 document.getElementById('password-input').value = '';
             }).catch((error) => {
