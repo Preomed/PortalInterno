@@ -1,1 +1,512 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anexo Contrato de Trabajo Dinámico - Preomed</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    
+    <style>
+        body { font-family: 'Aptos Display', Calibri, Arial, sans-serif; font-size: 9pt; line-height: 1.5; color: #000; max-width: 800px; margin: 20px auto; padding: 20px; background-color: #f9f9f9; }
+        .controles { background: #e9ecef; padding: 20px; margin-bottom: 20px; border-radius: 8px; text-align: center; font-family: 'Aptos Display', Arial, sans-serif; display: flex; flex-wrap: justify-content: center; align-items: center; gap: 10px; font-size: 12pt; }
+        .controles label { font-size: 14px; margin-left: 10px; }
+        select, button { padding: 10px; font-size: 14px; font-family: inherit; border-radius: 5px; border: 1px solid #ccc; }
+        button { background-color: #007bff; color: white; border: none; cursor: pointer; margin-left: 15px; }
+        button:hover { background-color: #0056b3; }
+        .contenedor-carta { background-color: #fff; padding: 40px; box-shadow: 0 0 10px rgba(0,0,0,0.1); text-align: justify; }
+        .tabla-impresion { width: 100%; border-collapse: collapse; border: none; }
+        thead { display: table-header-group; }
+        tfoot { display: table-footer-group; }
+        .encabezado-repetido { text-align: left; padding-bottom: 10px; margin-bottom: 15px; border-bottom: 1px solid #ddd; }
+        .logo-empresa { max-height: 40px; width: auto; }
+        .pie-pagina-contenido { text-align: center; font-weight: bold; font-size: 10pt; color: #555; padding-top: 15px; height: 30px; }
+        h1 { font-size: 11pt; text-decoration: underline; text-align: center; margin-bottom: 30px; margin-top: 10px; }
+        p { margin-bottom: 15px; text-indent: 40px; }
+        p.sin-sangria { text-indent: 0; }
+        .nueva-clausula { margin-top: 15px; }
+        ol { margin-top: 0; margin-bottom: 15px; padding-left: 60px; }
+        ol li { text-align: justify; } 
+        .firmas { display: flex; justify-content: space-between; margin-top: 80px; padding: 0 40px; }
+        .bloque-firma { text-align: center; width: 40%; position: relative; }
+        .linea-firma { border-top: 1px solid #000; margin-bottom: 5px; }
+        .contenedor-firma-digital { height: 78px; display: flex; justify-content: center; align-items: flex-end; margin-bottom: 5px; }
+        .img-firma-empleador { max-height: 78px; max-width: 234px; width: auto; display: block; margin: 0 auto; }
+        .variable { background-color: #fff3cd; font-weight: bold; transition: 0.3s; }
+        .formato-bloque { display: block; white-space: pre-line; padding-left: 60px; text-indent: 0; }
 
+        @media print {
+            @page { 
+                size: letter; 
+                margin: 1cm 1.5cm; 
+                @bottom-right { content: "Página " counter(page) " de " counter(pages); font-family: 'Aptos Display', Calibri, sans-serif; font-size: 8pt; color: #666; }
+            }
+            body { background-color: transparent; margin: 0; padding: 0; max-width: 100%; }
+            .contenedor-carta { box-shadow: none; padding: 0; }
+            .controles { display: none !important; }
+            .variable { background-color: transparent; font-weight: inherit; }
+            p, ol, li, .formato-bloque { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body style="display: none;">
+
+    <div class="controles">
+        <label for="selector-mes"><strong>Mes Ingreso:</strong></label>
+        <select id="selector-mes" onchange="actualizarListaTrabajadores()">
+            <option value="">Cargando...</option>
+        </select>
+
+        <label for="selector-trabajador"><strong>Trabajador:</strong></label>
+        <select id="selector-trabajador" onchange="actualizarContrato()">
+            <option value="">-- Seleccione --</option>
+        </select>
+
+        <button onclick="window.print()">Imprimir PDF</button>
+    </div>
+
+    <div class="contenedor-carta">
+        <table class="tabla-impresion">
+            <thead>
+                <tr>
+                    <td>
+                        <div class="encabezado-repetido">
+                            <img src="https://www.preomed.cl/wp-content/uploads/2025/05/350px-rgb-min.webp" alt="Logo Preomed Salud SpA" class="logo-empresa">
+                        </div>
+                    </td>
+                </tr>
+            </thead>
+            
+            <tbody>
+                <tr>
+                    <td>
+                        <h1>ANEXO CONTRATO DE TRABAJO</h1>
+
+                        <p>En <span class="variable" id="dato-centro-costo-intro">[Centro de Costo]</span>, a <strong><span class="variable" id="dato-inicio-anexo-intro">[Fecha Anexo]</span></strong>, entre la sociedad <strong>Preomed Salud SpA</strong>, Rut. <strong>76.500.919-7</strong>, representada legalmente por Doña <strong>Yoselyn Valesca Álvarez Duarte</strong>, Rut. <strong>16.135.473-2</strong>, ambos con domicilio comercial en la ciudad de Antofagasta, calle Las Bandurrias n° 9078, en lo sucesivo el empleador, y Don/ña <strong><span class="variable" id="dato-nombres">[Nombres]</span> <span class="variable" id="dato-paterno">[Apellido Paterno]</span> <span class="variable" id="dato-materno">[Apellido Materno]</span></strong>, Rut. <strong><span class="variable" id="dato-rut">[RUT]</span></strong>, en adelante, el/la trabajador/a, se ha convenido actualizar el contrato de trabajo suscrito entre las partes, estableciendo las siguientes cláusulas:</p>
+
+                        <p class="nueva-clausula sin-sangria"><u><strong>PRIMERO. -</strong></u> Las partes vienen en sustituir las siguientes cláusulas del contrato de trabajo, las que a continuación se detallan:</p>
+
+                        <div id="contenedor-clausula-cuarta" style="margin-left: 40px;">
+                            <p class="nueva-clausula sin-sangria" style="margin-bottom: 5px;"><u><strong>CUARTO. - DE LAS REMUNERACIONES:</strong></u> El empleador se compromete a remunerar al trabajador mensualmente en la forma que se indica:</p>
+                            <ol type="a">
+                                <li style="margin-top: 0; margin-bottom: 0;">Sueldo Base Mensual <strong><span class="variable" id="dato-sb-indefinido">[SBIndefinido]</span></strong> .- (proporcional a los días trabajados en el mes)</li>
+                                <li style="margin-top: 0; margin-bottom: 0;">La Gratificación legal mensual corresponderá al 25% de la Remuneración base con un tope según el Art. 50 del Código del Trabajo correspondiente a 4,75 ingresos mínimos mensuales.</li>
+                                <li id="li-colacion" style="margin-top: 0; margin-bottom: 0;">Asignación no Imponible de Colación <strong><span class="variable" id="dato-colacion">[Colación]</span></strong> .- (proporcional a los días trabajados en el mes)</li>
+                                <li id="li-movilizacion" style="margin-top: 0; margin-bottom: 0;">Asignación no Imponible de Movilización <strong><span class="variable" id="dato-movilizacion">[Movilización]</span></strong> .- (proporcional a los días trabajados en el mes)</li>
+                            </ol>
+                        </div>
+
+                        <p class="nueva-clausula sin-sangria" id="contenedor-clausula-sexta" style="margin-left: 40px;"><u><strong>SEXTO. - DE LA VIGENCIA:</strong></u> El presente contrato tendrá una duración hasta el día <strong><span class="variable" id="dato-termino-anexo1">[TerminoAnexo1]</span></strong>.</p>
+
+                        <p class="nueva-clausula sin-sangria"><u><strong>SEGUNDO. -</strong></u> Se deja constancia que lo estipulado en el presente anexo de contrato, sustituye y deja sin efecto todo anexo de contrato anterior.</p>
+
+                        <p class="nueva-clausula sin-sangria"><u><strong>TERCERO. -</strong></u> El presente anexo de contrato regirá a partir del <strong><span class="variable" id="dato-inicio-anexo">[Fecha Anexo]</span></strong>.-</p>
+
+                        <p class="nueva-clausula sin-sangria"><u><strong>CUARTO. -</strong></u> El presente anexo se suscribe electrónicamente a través de la plataforma de Gestor Documental de BUK, quedando disponible una copia de respaldo para su descarga en la misma plataforma.</p>
+
+                        <p style="text-align: left; margin-top: 40px; text-indent: 0;">En señal de aceptación las partes firman electrónicamente a través de la plataforma BUK.</p>
+
+                        <div class="firmas">
+                            <div class="bloque-firma">
+                                <div class="contenedor-firma-digital"></div>
+                                <div class="linea-firma"></div>
+                                <strong>Firma Trabajador</strong><br>
+                                Rut. <strong><span class="variable" id="dato-rut-firma">[RUT]</span></strong>
+                            </div>
+                            
+                            <div class="bloque-firma">
+                                <div class="contenedor-firma-digital">
+                                    <img src="https://drive.google.com/thumbnail?id=1cO78xncHSE_AB9J0HhxTqT-3T-GtkVaF&sz=w500" alt="Firma Empleador" class="img-firma-empleador">
+                                </div>
+                                <div class="linea-firma"></div>
+                                <strong>Firma Empleador</strong><br>
+                                Rut. <strong>76.500.919-7</strong>
+                            </div>
+                        </div>
+
+                    </td>
+                </tr>
+            </tbody>
+
+            <tfoot>
+                <tr>
+                    <td>
+                        <div class="pie-pagina-contenido">
+                            ANEXO CONTRATO DE TRABAJO
+                        </div>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <script>
+        const urlGoogleSheet = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRlUQ9n7nlGqM9XXn6_170lIIlXso1THXFaN375Y_LXzGPIMHe0dBdgVrKE7AnNTuoBmNAL5kvJOaL5/pub?gid=1260108930&single=true&output=csv"; 
+        
+        let listaTrabajadores = [];
+        let mesesDisponibles = []; 
+
+        Papa.parse(urlGoogleSheet, {
+            download: true,
+            header: true,
+            skipEmptyLines: true,
+            complete: function(resultados) {
+                listaTrabajadores = resultados.data;
+                if (listaTrabajadores.length === 0) {
+                    alert("La base de datos se leyó correctamente, pero está vacía.");
+                    return;
+                }
+                procesarMeses(); 
+            },
+            error: function() {
+                alert("Error al conectar con Google Drive. Asegúrate de que el Google Sheet tenga permisos de 'Cualquier persona con el enlace'.");
+            }
+        });
+
+        function buscarPropiedad(objeto, nombreColumna) {
+            const target = nombreColumna.toLowerCase().replace(/\s+/g, '').trim();
+            for (let clave in objeto) {
+                if (clave.toLowerCase().replace(/\s+/g, '').trim() === target) {
+                    return objeto[clave];
+                }
+            }
+            return null;
+        }
+
+        function asignarTextoSeguro(id, texto) {
+            const elemento = document.getElementById(id);
+            if (elemento) {
+                elemento.innerText = texto;
+            }
+        }
+
+        function obtenerFechaObjeto(fechaStr) {
+            if (!fechaStr || String(fechaStr).includes("[")) return null;
+            let textoLimpio = String(fechaStr).trim().split(" ")[0]; 
+            let partes = textoLimpio.split(/[-/]/);
+            if (partes.length === 3) {
+                let dia, mes, anio;
+                if (partes[0].length <= 2) {
+                    dia = parseInt(partes[0], 10);
+                    mes = parseInt(partes[1], 10) - 1;
+                    anio = parseInt(partes[2], 10);
+                } else {
+                    anio = parseInt(partes[0], 10);
+                    mes = parseInt(partes[1], 10) - 1;
+                    dia = parseInt(partes[2], 10);
+                }
+                if (anio < 100) anio += 2000;
+                let d = new Date(anio, mes, dia);
+                if (!isNaN(d.getTime())) return d;
+            }
+            return null;
+        }
+
+        function procesarMeses() {
+            let mapaMeses = {};
+            
+            listaTrabajadores.forEach((trabajador) => {
+                let inicioRaw = buscarPropiedad(trabajador, "iniciocontrato") || buscarPropiedad(trabajador, "inicio_contrato");
+                let fechaObj = obtenerFechaObjeto(inicioRaw);
+                
+                if (fechaObj) {
+                    let anio = fechaObj.getFullYear();
+                    let mes = fechaObj.getMonth();
+                    let clave = `${anio}-${mes.toString().padStart(2, '0')}`;
+                    
+                    if (!mapaMeses[clave]) {
+                        let nombreMes = fechaObj.toLocaleDateString('es-ES', { month: 'long' });
+                        nombreMes = nombreMes.charAt(0).toUpperCase() + nombreMes.slice(1);
+                        mapaMeses[clave] = {
+                            key: clave,
+                            label: `${nombreMes} ${anio}`,
+                            sortVal: fechaObj.getTime()
+                        };
+                    }
+                    trabajador._mesKey = clave; 
+                } else {
+                    trabajador._mesKey = "Desconocido";
+                }
+            });
+
+            mesesDisponibles = Object.values(mapaMeses);
+            mesesDisponibles.sort((a, b) => b.sortVal - a.sortVal);
+
+            const selectorMes = document.getElementById("selector-mes");
+            selectorMes.innerHTML = '<option value="Todos">Todos los meses</option>';
+            
+            mesesDisponibles.forEach(m => {
+                let op = document.createElement("option");
+                op.value = m.key;
+                op.text = m.label;
+                selectorMes.appendChild(op);
+            });
+
+            if (mesesDisponibles.length > 0) {
+                selectorMes.value = mesesDisponibles[0].key;
+            }
+            
+            actualizarListaTrabajadores();
+        }
+
+        function actualizarListaTrabajadores() {
+            const mesSeleccionado = document.getElementById("selector-mes").value;
+            const selectorTrabajador = document.getElementById("selector-trabajador");
+            
+            selectorTrabajador.innerHTML = '<option value="">-- Seleccione un trabajador --</option>';
+            const primeraColumna = Object.keys(listaTrabajadores[0])[0];
+
+            listaTrabajadores.forEach((trabajador, index) => {
+                if (mesSeleccionado === "Todos" || trabajador._mesKey === mesSeleccionado) {
+                    let nom = buscarPropiedad(trabajador, "nombres") || buscarPropiedad(trabajador, "nombre") || "";
+                    let pat = buscarPropiedad(trabajador, "apellidopaterno") || "";
+                    let mat = buscarPropiedad(trabajador, "apellidomaterno") || "";
+                    
+                    let nombreCompleto = `${nom} ${pat} ${mat}`.trim();
+                    let nombreMostrado = nombreCompleto !== "" ? nombreCompleto : trabajador[primeraColumna];
+                    
+                    if(nombreMostrado) {
+                        let opcion = document.createElement("option");
+                        opcion.value = index;
+                        opcion.text = nombreMostrado;
+                        selectorTrabajador.appendChild(opcion);
+                    }
+                }
+            });
+            
+            actualizarContrato();
+        }
+
+        function formatearRut(valor) {
+            if (!valor || String(valor).includes("[")) return valor;
+            let cuerpo = String(valor).replace(/[\s\.\,-]/g, '').trim();
+            if (cuerpo.length < 2) return valor;
+            let dv = cuerpo.slice(-1).toUpperCase();
+            let num = cuerpo.slice(0, -1);
+            let numFormateado = new Intl.NumberFormat('es-CL').format(parseInt(num, 10));
+            return `${numFormateado}-${dv}`;
+        }
+
+        function formatearDineroConSigno(valor) {
+            if (!valor || String(valor).includes("[")) return valor;
+            let soloNumeros = String(valor).replace(/[^\d]/g, '');
+            if (soloNumeros === "") return valor;
+            let numeroConPuntos = new Intl.NumberFormat('es-CL').format(soloNumeros);
+            return `$${numeroConPuntos}`;
+        }
+
+        function formatearFecha(fechaStr, incluirDiaSemana) {
+            if (!fechaStr || String(fechaStr).includes("[")) return fechaStr;
+            let textoLimpio = String(fechaStr).trim().split(" ")[0]; 
+            let partes = textoLimpio.split(/[-/]/);
+            if (partes.length === 3) {
+                let dia, mes, anio;
+                if (partes[0].length <= 2) {
+                    dia = parseInt(partes[0], 10);
+                    mes = parseInt(partes[1], 10) - 1;
+                    anio = parseInt(partes[2], 10);
+                } else {
+                    anio = parseInt(partes[0], 10);
+                    mes = parseInt(partes[1], 10) - 1;
+                    dia = parseInt(partes[2], 10);
+                }
+                if (anio < 100) anio += 2000;
+                let fechaGenerada = new Date(anio, mes, dia);
+                
+                if (!isNaN(fechaGenerada.getTime())) {
+                    let opciones = { day: 'numeric', month: 'long', year: 'numeric' };
+                    if (incluirDiaSemana) opciones.weekday = 'long';
+                    return fechaGenerada.toLocaleDateString('es-ES', opciones).replace(',', '');
+                }
+            }
+            return fechaStr; 
+        }
+
+        function actualizarContrato() {
+            const index = document.getElementById("selector-trabajador").value;
+            const contCuarta = document.getElementById("contenedor-clausula-cuarta");
+            const contSexta = document.getElementById("contenedor-clausula-sexta");
+            
+            if (index !== "") {
+                const datos = listaTrabajadores[index];
+                
+                const nombres = buscarPropiedad(datos, "nombres") || buscarPropiedad(datos, "nombre") || "";
+                const paterno = buscarPropiedad(datos, "apellidopaterno") || "";
+                const materno = buscarPropiedad(datos, "apellidomaterno") || "";
+                const rutRaw = buscarPropiedad(datos, "rut") || "";
+                
+                const centroCosto = buscarPropiedad(datos, "centrocosto") || "[Centro de Costo]";
+                const terminoContratoRaw = buscarPropiedad(datos, "terminocontrato") || buscarPropiedad(datos, "termino_contrato") || "[Término Contrato]";
+                const terminoAnexo1Raw = buscarPropiedad(datos, "terminoanexo1") || buscarPropiedad(datos, "termino_anexo1") || "[TerminoAnexo1]";
+                
+                const sbIndefinidoRaw = buscarPropiedad(datos, "sbindefinido") || "[SBIndefinido]";
+                const colacionRaw = buscarPropiedad(datos, "colacion") || buscarPropiedad(datos, "colación") || "";
+                const movilizacionRaw = buscarPropiedad(datos, "movilizacion") || buscarPropiedad(datos, "movilización") || "";
+
+                // NUEVA LÓGICA ANEXO 2 INDEFINIDO
+                const anexo2Raw = buscarPropiedad(datos, "anexo2") || "";
+                const esIndefinido = anexo2Raw.toLowerCase().trim() === "indefinido";
+
+                let centroCostoCiudad = centroCosto;
+                if (centroCosto !== "[Centro de Costo]") {
+                    let ccLower = centroCosto.trim().toLowerCase();
+                    if (ccLower === "antofagasta centro" || ccLower === "antofagasta norte") {
+                        centroCostoCiudad = "Antofagasta";
+                    }
+                }
+
+                // Lógica de formateo
+                const rutFormateado = formatearRut(rutRaw);
+                const terminoAnexo1Format = formatearFecha(terminoAnexo1Raw, false);
+                const sbIndefinidoFormat = formatearDineroConSigno(sbIndefinidoRaw);
+                const colacionFormat = formatearDineroConSigno(colacionRaw);
+                const movilizacionFormat = formatearDineroConSigno(movilizacionRaw);
+
+                // Cálculo de la fecha de Introducción y Tercero según si es Indefinido o no
+                let inicioAnexoFormat = "";
+                let fechaParaTitulo = null;
+                
+                if (esIndefinido) {
+                    inicioAnexoFormat = "[TerminoAnexo1 + 1 DÍA]";
+                    if (terminoAnexo1Raw && !String(terminoAnexo1Raw).includes("[")) {
+                        let fechaTerminoAnexoObj = obtenerFechaObjeto(terminoAnexo1Raw);
+                        if (fechaTerminoAnexoObj) {
+                            fechaTerminoAnexoObj.setDate(fechaTerminoAnexoObj.getDate() + 1); // Se suma 1 día a TerminoAnexo1
+                            let opciones = { day: 'numeric', month: 'long', year: 'numeric' };
+                            inicioAnexoFormat = fechaTerminoAnexoObj.toLocaleDateString('es-ES', opciones).replace(',', '');
+                            fechaParaTitulo = fechaTerminoAnexoObj; // Guardar para el titulo del PDF
+                        }
+                    }
+                } else {
+                    inicioAnexoFormat = "[TerminoContrato + 1 DÍA]";
+                    if (terminoContratoRaw && !String(terminoContratoRaw).includes("[")) {
+                        let fechaTerminoObj = obtenerFechaObjeto(terminoContratoRaw);
+                        if (fechaTerminoObj) {
+                            fechaTerminoObj.setDate(fechaTerminoObj.getDate() + 1); // Se suma 1 día a TerminoContrato
+                            let opciones = { day: 'numeric', month: 'long', year: 'numeric' };
+                            inicioAnexoFormat = fechaTerminoObj.toLocaleDateString('es-ES', opciones).replace(',', '');
+                            fechaParaTitulo = fechaTerminoObj; // Guardar para el titulo del PDF
+                        }
+                    }
+                }
+
+                // Mostrar u ocultar y ajustar cláusulas según el estado "indefinido"
+                if (esIndefinido) {
+                    if (contCuarta) contCuarta.style.display = "block";
+                    if (contSexta) contSexta.innerHTML = '<u><strong>SEXTO. - DE LA VIGENCIA:</strong></u> El presente contrato tendrá una duración "<strong>indefinida</strong>".';
+                } else {
+                    if (contCuarta) contCuarta.style.display = "none";
+                    if (contSexta) contSexta.innerHTML = '<u><strong>SEXTO. - DE LA VIGENCIA:</strong></u> El presente contrato tendrá una duración hasta el día <strong><span class="variable" id="dato-termino-anexo1"></span></strong>.';
+                    asignarTextoSeguro("dato-termino-anexo1", terminoAnexo1Format); 
+                }
+
+                asignarTextoSeguro("dato-nombres", nombres);
+                asignarTextoSeguro("dato-paterno", paterno);
+                asignarTextoSeguro("dato-materno", materno);
+                asignarTextoSeguro("dato-rut", rutFormateado);
+                asignarTextoSeguro("dato-rut-firma", rutFormateado);
+                
+                asignarTextoSeguro("dato-sb-indefinido", sbIndefinidoFormat);
+                asignarTextoSeguro("dato-inicio-anexo", inicioAnexoFormat);
+                asignarTextoSeguro("dato-inicio-anexo-intro", inicioAnexoFormat);
+                
+                asignarTextoSeguro("dato-centro-costo-intro", centroCostoCiudad);
+
+                const liColacion = document.getElementById("li-colacion");
+                if (liColacion) {
+                    const numColacion = String(colacionRaw).replace(/[^\d]/g, ''); 
+                    if (numColacion === "0" || numColacion === "") {
+                        liColacion.style.display = "none";
+                    } else {
+                        liColacion.style.display = "list-item";
+                        asignarTextoSeguro("dato-colacion", colacionFormat);
+                    }
+                }
+
+                const liMovilizacion = document.getElementById("li-movilizacion");
+                if (liMovilizacion) {
+                    const numMovilizacion = String(movilizacionRaw).replace(/[^\d]/g, '');
+                    if (numMovilizacion === "0" || numMovilizacion === "") {
+                        liMovilizacion.style.display = "none";
+                    } else {
+                        liMovilizacion.style.display = "list-item";
+                        asignarTextoSeguro("dato-movilizacion", movilizacionFormat);
+                    }
+                }
+                
+                // Nombre del archivo de impresión basado en la fecha de Introducción
+                let primerNombre = nombres.trim().split(" ")[0];
+                let fechaPuntos = "";
+                
+                if (fechaParaTitulo) {
+                    let dia = String(fechaParaTitulo.getDate()).padStart(2, '0');
+                    let mes = String(fechaParaTitulo.getMonth() + 1).padStart(2, '0');
+                    let anio = fechaParaTitulo.getFullYear();
+                    fechaPuntos = `${dia}.${mes}.${anio}`;
+                }
+                
+                if (primerNombre && paterno && fechaPuntos) {
+                    document.title = "Anexo Contrato de Trabajo - " + primerNombre + " " + paterno + " - " + fechaPuntos;
+                } else {
+                    document.title = "Anexo Contrato de Trabajo Dinámico - Preomed";
+                }
+                
+            } else {
+                // Estado por defecto (vacío)
+                if (contCuarta) contCuarta.style.display = "block";
+                if (contSexta) contSexta.innerHTML = '<u><strong>SEXTO. - DE LA VIGENCIA:</strong></u> El presente contrato tendrá una duración hasta el día <strong><span class="variable" id="dato-termino-anexo1">[TerminoAnexo1]</span></strong>.';
+                
+                asignarTextoSeguro("dato-nombres", "[Nombres]");
+                asignarTextoSeguro("dato-paterno", "[Apellido Paterno]");
+                asignarTextoSeguro("dato-materno", "[Apellido Materno]");
+                asignarTextoSeguro("dato-rut", "[RUT]");
+                asignarTextoSeguro("dato-rut-firma", "[RUT]");
+                
+                asignarTextoSeguro("dato-sb-indefinido", "[SBIndefinido]");
+                asignarTextoSeguro("dato-inicio-anexo", "[Fecha Anexo]");
+                asignarTextoSeguro("dato-inicio-anexo-intro", "[Fecha Anexo]");
+
+                asignarTextoSeguro("dato-centro-costo-intro", "[Centro de Costo]");
+                
+                const liCol = document.getElementById("li-colacion");
+                if (liCol) liCol.style.display = "list-item";
+                asignarTextoSeguro("dato-colacion", "[Colación]");
+                
+                const liMov = document.getElementById("li-movilizacion");
+                if (liMov) liMov.style.display = "list-item";
+                asignarTextoSeguro("dato-movilizacion", "[Movilización]");
+                
+                document.title = "Anexo Contrato de Trabajo Dinámico - Preomed";
+            }
+        }
+    </script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        // Tus credenciales de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAMimbWHOrplArchHjZrheLZlLSIxj1-Hk",
+            authDomain: "preomed-salud---portal-interno.firebaseapp.com",
+            projectId: "preomed-salud---portal-interno",
+            storageBucket: "preomed-salud---portal-interno.firebasestorage.app",
+            messagingSenderId: "292608840627",
+            appId: "1:292608840627:web:0ac4afdaa71ba8baa8b1c6"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Verificamos si la persona tiene la sesión iniciada
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // Si el usuario es válido, revelamos la página
+                document.body.style.display = "block";
+            } else {
+                // Si no hay sesión, lo devolvemos a la carpeta anterior (el Login principal)
+                window.location.replace("../index.html");
+            }
+        });
+    </script>
+</body>
+</html>
