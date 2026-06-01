@@ -15,236 +15,209 @@
             --border-color: #e2e8f0;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Aptos Display', Calibri, Arial, sans-serif; background-color: var(--bg-color); color: var(--text-color); line-height: 1.6; }
+
+        /* --- ESTILOS PANTALLA DE LOGIN --- */
+        #login-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--bg-color); z-index: 9999;
+            display: flex; align-items: center; justify-content: center; flex-direction: column;
         }
 
-        body {
-            font-family: 'Aptos Display', Calibri, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            line-height: 1.6;
-            padding: 40px 20px;
+        .login-box {
+            background: var(--card-bg); padding: 40px; border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center;
+            max-width: 400px; width: 90%;
         }
 
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
+        .login-box input {
+            width: 100%; padding: 12px; margin-bottom: 15px;
+            border: 1px solid var(--border-color); border-radius: 6px;
+            font-size: 11pt; font-family: inherit;
         }
 
-        /* Encabezado */
-        header {
-            text-align: center;
-            margin-bottom: 50px;
-            background: var(--card-bg);
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        .login-box button {
+            width: 100%; padding: 12px; background-color: var(--primary-color);
+            color: white; border: none; border-radius: 6px;
+            font-size: 11pt; cursor: pointer; transition: background 0.3s;
         }
 
-        .logo-empresa {
-            max-height: 60px;
-            width: auto;
-            margin-bottom: 15px;
-        }
+        .login-box button:hover { background-color: var(--primary-hover); }
+        .login-box button:disabled { background-color: #ccc; cursor: not-allowed; }
 
-        header h1 {
-            font-size: 22pt;
-            color: var(--text-color);
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
+        #login-error { color: #d9534f; margin-top: 15px; font-size: 10pt; display: none; }
 
-        header p {
-            font-size: 11pt;
-            color: var(--text-muted);
-            letter-spacing: 0.5px;
-        }
-
-        /* Secciones del Portal */
-        .portal-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 40px;
-        }
-
-        @media (min-width: 768px) {
-            .portal-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-
-        .categoria-modulo {
-            background: transparent;
-        }
-
-        .categoria-titulo {
-            font-size: 14pt;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-muted);
-            margin-bottom: 15px;
-            padding-bottom: 8px;
-            border-bottom: 2px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        /* Rejilla de tarjetas dentro de cada módulo */
-        .cards-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 15px;
-        }
-
-        /* Tarjetas / Links */
-        .card-link {
-            display: flex;
-            align-items: center;
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 10px;
-            text-decoration: none;
-            color: var(--text-color);
-            border: 1px solid var(--border-color);
-            transition: all 0.25s ease;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
-        }
-
-        .card-link:hover {
-            transform: translateY(-3px);
-            border-color: var(--primary-color);
-            box-shadow: 0 6px 12px rgba(0, 123, 255, 0.1);
-        }
-
-        .card-icon {
-            background: #e6f2ff;
-            color: var(--primary-color);
-            width: 45px;
-            height: 45px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16pt;
-            margin-right: 20px;
-            flex-shrink: 0;
-            transition: background 0.25s ease;
-        }
-
-        .card-link:hover .card-icon {
-            background: var(--primary-color);
-            color: #ffffff;
-        }
-
-        .card-body h2 {
-            font-size: 12pt;
-            font-weight: 600;
-            margin-bottom: 2px;
-        }
-
-        .card-body p {
-            font-size: 9.5pt;
-            color: var(--text-muted);
-        }
-
-        /* Pie de página */
-        footer {
-            text-align: center;
-            margin-top: 60px;
-            font-size: 9pt;
-            color: var(--text-muted);
-        }
+        /* --- ESTILOS DEL PORTAL (Oculto por defecto) --- */
+        .container { max-width: 1100px; margin: 0 auto; padding: 40px 20px; display: none; }
+        header { text-align: center; margin-bottom: 50px; background: var(--card-bg); padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); }
+        .logo-empresa { max-height: 60px; width: auto; margin-bottom: 15px; }
+        header h1 { font-size: 22pt; font-weight: 700; margin-bottom: 5px; }
+        header p { font-size: 11pt; color: var(--text-muted); }
+        .portal-grid { display: grid; grid-template-columns: 1fr; gap: 40px; }
+        @media (min-width: 768px) { .portal-grid { grid-template-columns: 1fr 1fr; } }
+        .categoria-titulo { font-size: 14pt; text-transform: uppercase; color: var(--text-muted); margin-bottom: 15px; padding-bottom: 8px; border-bottom: 2px solid var(--border-color); display: flex; align-items: center; gap: 10px; }
+        .cards-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
+        .card-link { display: flex; align-items: center; background: var(--card-bg); padding: 20px; border-radius: 10px; text-decoration: none; color: var(--text-color); border: 1px solid var(--border-color); transition: all 0.25s ease; }
+        .card-link:hover { transform: translateY(-3px); border-color: var(--primary-color); box-shadow: 0 6px 12px rgba(0, 123, 255, 0.1); }
+        .card-icon { background: #e6f2ff; color: var(--primary-color); width: 45px; height: 45px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16pt; margin-right: 20px; flex-shrink: 0; transition: background 0.25s ease; }
+        .card-link:hover .card-icon { background: var(--primary-color); color: #ffffff; }
+        .card-body h2 { font-size: 12pt; font-weight: 600; margin-bottom: 2px; }
+        .card-body p { font-size: 9.5pt; color: var(--text-muted); }
+        footer { text-align: center; margin-top: 60px; font-size: 9pt; color: var(--text-muted); padding-bottom: 20px;}
+        
+        /* Botón de cerrar sesión */
+        .logout-btn { background: #dc3545; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; float: right; margin-top: -20px; margin-right: -10px;}
+        .logout-btn:hover { background: #c82333; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        
+    <div id="login-screen">
+        <div class="login-box">
+            <img src="https://www.preomed.cl/wp-content/uploads/2025/05/350px-rgb-min.webp" alt="Logo Preomed" class="logo-empresa">
+            <h2 style="margin-bottom: 10px;">Acceso Restringido</h2>
+            <p style="margin-bottom: 25px; color: #666; font-size: 10pt;">Ingrese sus credenciales para acceder</p>
+            
+            <input type="email" id="email-input" placeholder="Correo electrónico">
+            <input type="password" id="password-input" placeholder="Contraseña">
+            
+            <button id="btn-login">Ingresar al Portal</button>
+            <p id="login-error">⚠️ Credenciales incorrectas o usuario no encontrado.</p>
+        </div>
+    </div>
+
+    <div class="container" id="main-content">
         <header>
+            <button class="logout-btn" id="btn-logout">Cerrar Sesión</button>
             <img src="https://www.preomed.cl/wp-content/uploads/2025/05/350px-rgb-min.webp" alt="Logo Preomed Salud SpA" class="logo-empresa">
             <h1>Portal Interno</h1>
             <p>Plataforma de Gestión Operativa · RRHH & Finanzas</p>
         </header>
 
         <div class="portal-grid">
-            
             <div class="categoria-modulo">
-                <div class="categoria-titulo">
-                    <span>👥</span> Recursos Humanos (RRHH)
-                </div>
+                <div class="categoria-titulo"><span>👥</span> Recursos Humanos (RRHH)</div>
                 <div class="cards-grid">
-                    
                     <a href="https://preomed.github.io/Contrato/" class="card-link" target="_blank">
                         <div class="card-icon">📄</div>
-                        <div class="card-body">
-                            <h2>Contratos de Trabajo</h2>
-                            <p>Generación y gestión dinámica de contratos de personal.</p>
-                        </div>
+                        <div class="card-body"><h2>Contratos de Trabajo</h2><p>Generación y gestión dinámica de contratos.</p></div>
                     </a>
-
                     <a href="https://preomed.github.io/AnexoContrato/" class="card-link" target="_blank">
                         <div class="card-icon">📎</div>
-                        <div class="card-body">
-                            <h2>Anexos de Contrato</h2>
-                            <p>Actualizaciones, extensiones y modificaciones contractuales.</p>
-                        </div>
+                        <div class="card-body"><h2>Anexos de Contrato</h2><p>Actualizaciones y modificaciones contractuales.</p></div>
                     </a>
-
                     <a href="https://preomed.github.io/FormularioIngreso/" class="card-link" target="_blank">
                         <div class="card-icon">📝</div>
-                        <div class="card-body">
-                            <h2>Formulario de Ingreso</h2>
-                            <p>Registro de nuevos colaboradores e inducción.</p>
-                        </div>
+                        <div class="card-body"><h2>Formulario de Ingreso</h2><p>Registro de nuevos colaboradores.</p></div>
                     </a>
-
                     <a href="https://preomed.github.io/CalculoFiniquito/" class="card-link" target="_blank">
                         <div class="card-icon">🧮</div>
-                        <div class="card-body">
-                            <h2>Cálculo de Finiquito</h2>
-                            <p>Simulación y cálculo de cierres de relación laboral.</p>
-                        </div>
+                        <div class="card-body"><h2>Cálculo de Finiquito</h2><p>Simulación y cálculo de cierres laborales.</p></div>
                     </a>
-
                 </div>
             </div>
 
             <div class="categoria-modulo">
-                <div class="categoria-titulo">
-                    <span>💼</span> Finanzas & Contabilidad
-                </div>
+                <div class="categoria-titulo"><span>💼</span> Finanzas & Contabilidad</div>
                 <div class="cards-grid">
-                    
                     <a href="https://preomed.github.io/Proveedores" class="card-link" target="_blank">
                         <div class="card-icon">🤝</div>
-                        <div class="card-body">
-                            <h2>Portal de Proveedores</h2>
-                            <p>Gestión de pagos, cuentas y relaciones comerciales.</p>
-                        </div>
+                        <div class="card-body"><h2>Portal de Proveedores</h2><p>Gestión de pagos y relaciones comerciales.</p></div>
                     </a>
-
                     <a href="https://preomed.github.io/EERR" class="card-link" target="_blank">
                         <div class="card-icon">📈</div>
-                        <div class="card-body">
-                            <h2>Estado de Resultados (EERR)</h2>
-                            <p>Monitoreo financiero, balances y reportes de rendimiento.</p>
-                        </div>
+                        <div class="card-body"><h2>Estado de Resultados</h2><p>Monitoreo financiero y balances.</p></div>
                     </a>
-
                 </div>
             </div>
-
         </div>
 
-        <footer>
-            &copy; 2026 Preomed Salud SpA. Todos los derechos reservados.
-        </footer>
-
+        <footer>&copy; 2026 Preomed Salud SpA. Todos los derechos reservados.</footer>
     </div>
 
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+
+        // Tu configuración de Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAMimbWHOrplArchHjZrheLZlLSIxj1-Hk",
+            authDomain: "preomed-salud---portal-interno.firebaseapp.com",
+            projectId: "preomed-salud---portal-interno",
+            storageBucket: "preomed-salud---portal-interno.firebasestorage.app",
+            messagingSenderId: "292608840627",
+            appId: "1:292608840627:web:0ac4afdaa71ba8baa8b1c6",
+            measurementId: "G-2NEF67FGV0"
+        };
+
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const analytics = getAnalytics(app);
+
+        // Elementos de la interfaz
+        const loginScreen = document.getElementById('login-screen');
+        const mainContent = document.getElementById('main-content');
+        const btnLogin = document.getElementById('btn-login');
+        const btnLogout = document.getElementById('btn-logout');
+        const errorMsg = document.getElementById('login-error');
+
+        // Escuchar si hay un usuario ya logueado
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // Usuario logueado: mostrar portal
+                loginScreen.style.display = 'none';
+                mainContent.style.display = 'block';
+            } else {
+                // No hay usuario: mostrar login
+                loginScreen.style.display = 'flex';
+                mainContent.style.display = 'none';
+            }
+        });
+
+        // Función para iniciar sesión
+        btnLogin.addEventListener('click', () => {
+            const email = document.getElementById('email-input').value;
+            const password = document.getElementById('password-input').value;
+            
+            btnLogin.disabled = true;
+            btnLogin.innerText = 'Verificando...';
+            errorMsg.style.display = 'none';
+
+            signInWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    // Éxito: onAuthStateChanged se encargará de mostrar el portal
+                    btnLogin.disabled = false;
+                    btnLogin.innerText = 'Ingresar al Portal';
+                })
+                .catch((error) => {
+                    // Error: mostrar mensaje
+                    btnLogin.disabled = false;
+                    btnLogin.innerText = 'Ingresar al Portal';
+                    errorMsg.style.display = 'block';
+                    console.error("Error de login:", error.message);
+                });
+        });
+
+        // Permitir enter para loguearse
+        document.getElementById('password-input').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                btnLogin.click();
+            }
+        });
+
+        // Función para cerrar sesión
+        btnLogout.addEventListener('click', () => {
+            signOut(auth).then(() => {
+                // Éxito: onAuthStateChanged mostrará la pantalla de login
+                document.getElementById('email-input').value = '';
+                document.getElementById('password-input').value = '';
+            }).catch((error) => {
+                console.error("Error cerrando sesión:", error);
+            });
+        });
+    </script>
 </body>
 </html>
