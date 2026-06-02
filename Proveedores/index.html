@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Proveedores Preomed</title>
+    
+    <link rel="icon" type="image/png" href="https://www.preomed.cl/wp-content/uploads/2025/05/iso-66x66.png">
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
@@ -781,7 +784,6 @@
             let vencer_anual_proveedores = {};
             let vencer_anual_categorias = {};
 
-            // Primera pasada rápida de totales por proveedor
             for(let i = headerRowIndex + 1; i < rows.length; i++) {
                 const row = rows[i];
                 if(row.length === 0 || !row.join('').trim()) continue;
@@ -801,7 +803,6 @@
                 else if (prov3.trim() !== '') proveedor = prov3.trim();
                 else proveedor = 'Empresa no identificada';
 
-                // ANTI-ERROR "EMPRESA" (Rescate de Razón Social real en caso de desfase del CSV)
                 if (proveedor.toUpperCase() === 'EMPRESA' || proveedor.toUpperCase() === 'PERSONA' || proveedor.toUpperCase() === 'PERSONA JURIDICA' || proveedor.toUpperCase() === 'PERSONA JURÍDICA') {
                     for (let j = 0; j < row.length; j++) {
                         let celda = (row[j] || '').trim().toUpperCase();
@@ -833,7 +834,6 @@
                 }
             }
 
-            // Segunda pasada estándar de construcción
             for(let i = headerRowIndex + 1; i < rows.length; i++) {
                 const row = rows[i];
                 if(row.length === 0 || !row.join('').trim()) continue; 
@@ -854,7 +854,6 @@
                 else if (prov3.trim() !== '') proveedor = prov3.trim();
                 else proveedor = 'Empresa no identificada';
 
-                // ANTI-ERROR "EMPRESA" (Rescate de Razón Social real en caso de desfase del CSV)
                 if (proveedor.toUpperCase() === 'EMPRESA' || proveedor.toUpperCase() === 'PERSONA' || proveedor.toUpperCase() === 'PERSONA JURIDICA' || proveedor.toUpperCase() === 'PERSONA JURÍDICA') {
                     for (let j = 0; j < row.length; j++) {
                         let celda = (row[j] || '').trim().toUpperCase();
@@ -947,7 +946,6 @@
                     acumulado_anual_categorias[categoria] += monto;
                 }
 
-                // Push to accordion details if they match the Yearly math logic OR the Monthly Vencida logic
                 if ((estado === 'VENCIDA' && matchesYear && matchesMonth) || 
                     ((estado === 'PAGADO' || estado === 'POR VENCER' || estado === 'POR PAGAR') && matchesEmissionYear)) {
                     facturasPorProveedorMap[proveedor].push(record);
@@ -964,7 +962,6 @@
                     arr_vencidas.push(record);
                     arr_activa.push(record);
                     
-                    // AÑADIR A ALERTAS
                     alertas.push(record);
                 } else if (estado === 'POR VENCER' || estado === 'POR PAGAR') {
                     d_vencer += monto;
@@ -983,9 +980,6 @@
                 }
             }
 
-            // ==========================================
-            // RENDER: RESUMEN CONSOLIDADO POR PROVEEDOR
-            // ==========================================
             let resumenArray = Object.keys(resumen_proveedores).map(p => {
                 let d = resumen_proveedores[p];
                 let pagado_anio = pagado_anual_proveedores[p] || 0;
@@ -1051,9 +1045,6 @@
             }
             document.getElementById('list-resumen').innerHTML = resumenHtml;
 
-            // ==========================================
-            // RENDER: RESUMEN POR CATEGORÍA
-            // ==========================================
             let catArray = Object.keys(resumen_categorias).map(c => {
                 let d = resumen_categorias[c];
                 let pagado_anio = pagado_anual_categorias[c] || 0;
@@ -1096,7 +1087,6 @@
             } else { catHtml = `<tr><td colspan="5" style="text-align:center;">No hay datos para mostrar</td></tr>`; }
             document.getElementById('categoria-body').innerHTML = catHtml;
 
-            // Alertas: Ordenadas con vencidas (negativas) arriba
             alertas.sort((a,b) => a.diffDays - b.diffDays);
             document.getElementById('alertas-body').innerHTML = alertas.length > 0 ? alertas.map(a => {
                 let badge = '';
@@ -1122,7 +1112,6 @@
                 </tr>`;
             }).join('') : `<tr><td colspan="6" style="text-align:center; color:#7f8c8d;">No hay alertas pendientes.</td></tr>`;
 
-            // Actualizar tarjetas de KPI grandes y pequeños
             document.getElementById('kpi-vencida').innerText = formatCurrency(d_vencida);
             document.getElementById('kpi-vencida-acum').innerHTML = `Acumulado: <strong>${formatCurrency(accum_vencida)}</strong>`;
             document.getElementById('kpi-por-vencer').innerText = formatCurrency(d_vencer);
@@ -1132,7 +1121,6 @@
             document.getElementById('kpi-pagado').innerText = formatCurrency(d_pagado);
             document.getElementById('kpi-pagado-acum').innerHTML = `Acumulado: <strong>${formatCurrency(accum_pagado)}</strong>`;
 
-            // Gráficos Estructura 1
             const ctx1 = document.getElementById('estadoChart').getContext('2d');
             if(myChart) myChart.destroy();
             myChart = new Chart(ctx1, {
@@ -1144,7 +1132,6 @@
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } } }, cutout: '70%' }
             });
 
-            // Gráficos Estructura 2
             const ctx2 = document.getElementById('categoriaChart').getContext('2d');
             if(myCategoryChart) myCategoryChart.destroy();
             const colorPalette = ['#3498db', '#9b59b6', '#1abc9c', '#f1c40f', '#e67e22', '#34495e', '#7f8c8d', '#e74c3c', '#2ecc71', '#f39c12', '#d35400', '#c0392b', '#16a085', '#8e44ad'];
@@ -1169,22 +1156,17 @@
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 }, padding: 8 } }, tooltip: { callbacks: { label: function(context) { if (chartLabels[0] === 'Sin Movimientos') return ' Sin Movimientos'; return (context.label || '') + ': ' + formatCurrency(context.raw); } } } }, cutout: '70%' }
             });
 
-            // Top 5
             let top5 = Object.keys(proveedores_map).map(k => ({p: k, m: proveedores_map[k]})).sort((a,b) => b.m - a.m).slice(0,5);
             document.getElementById('top-vencidos-body').innerHTML = top5.length > 0 ? top5.map((t, i) => {
                 let pName = t.p.length > 30 ? t.p.substring(0, 27) + '...' : t.p;
                 return `<tr><td class="top5-rank">#${i+1}</td><td title="${t.p}" style="max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${pName}</td><td class="col-vencida top5-val">${formatCurrency(t.m)}</td></tr>`;
             }).join('') : `<tr><td colspan="3" style="text-align:center; color:#7f8c8d;">Sin deudas pendientes</td></tr>`;
 
-            // Actualizar textos de los botones con contadores correctos
             document.getElementById('tab-btn-vencidas').innerText = `Vencidas (${arr_vencidas.length})`;
             document.getElementById('tab-btn-por-vencer').innerText = `Por Vencer (${arr_vencer.length})`;
             document.getElementById('tab-btn-activa-det').innerText = `Deuda Activa (${arr_activa.length})`;
             document.getElementById('tab-btn-pagadas').innerText = `Pagadas (${arr_pagadas.length})`;
 
-            // ==========================================
-            // RENDER: LISTADO DETALLADO GENERAL POR PESTAÑA
-            // ==========================================
             const renderGroupedTable = (arr, tabId) => {
                 if (arr.length === 0) return `<tr><td colspan="5" style="text-align:center; color: #7f8c8d;">No hay documentos registrados para esta sección en este período</td></tr>`;
                 let grouped = {};
@@ -1240,7 +1222,6 @@
             document.getElementById('list-activa-det').innerHTML = renderGroupedTable(arr_activa, 'activa-det');
             document.getElementById('list-pagadas').innerHTML = renderGroupedTable(arr_pagadas, 'pagadas');
 
-            // Quitar animación de carga y mostrar contenido
             document.getElementById('loader').style.display = 'none';
             document.getElementById('dashboard-content').style.display = 'block';
         }
@@ -1270,7 +1251,6 @@
             }
         }
 
-        // Sistema universal de filtrado para tablas tipo acordeón sin errores
         function filterAccordion(tableBodyId, searchInputId) {
             const filter = document.getElementById(searchInputId).value.toLowerCase().trim();
             const rows = document.querySelectorAll(`#${tableBodyId} tr`);
@@ -1351,7 +1331,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-        // Tus credenciales de Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyAMimbWHOrplArchHjZrheLZlLSIxj1-Hk",
             authDomain: "preomed-salud---portal-interno.firebaseapp.com",
@@ -1364,13 +1343,10 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // Verificamos si la persona tiene la sesión iniciada
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // Si el usuario es válido, revelamos la página
                 document.body.style.display = "block";
             } else {
-                // Si no hay sesión, lo devolvemos a la carpeta anterior (el Login principal)
                 window.location.replace("../index.html");
             }
         });
