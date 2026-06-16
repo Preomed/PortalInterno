@@ -378,7 +378,7 @@
         function actualizarContrato() {
             const index = document.getElementById("selector-trabajador").value;
             
-            // Referencias al DOM
+            // Referencias DOM
             const contCuarta = document.getElementById("contenedor-clausula-cuarta");
             const contSexta = document.getElementById("contenedor-clausula-sexta");
             const textoPrimero = document.getElementById("texto-primero");
@@ -406,18 +406,17 @@
                 const colacionRaw = buscarPropiedad(datos, "colacion") || buscarPropiedad(datos, "colación") || "";
                 const movilizacionRaw = buscarPropiedad(datos, "movilizacion") || buscarPropiedad(datos, "movilización") || "";
 
-                // 🌟 LÓGICAS Y CONDICIONES GLOBALES
+                // Lógicas de validación
                 const anexo2Raw = buscarPropiedad(datos, "anexo2") || "";
                 const esIndefinido = String(anexo2Raw).toLowerCase().trim() === "indefinido";
                 const esEjecutivoComercial = cargoRaw.toLowerCase().includes("ejecutivo") && cargoRaw.toLowerCase().includes("comercial");
 
-                // Verificar si hay datos en TerminoAnexo1 o Anexo2 (Ignorando campos vacíos y placeholders)
                 const tAnexo1Limpio = String(terminoAnexo1Raw).trim();
                 const anexo2Limpio = String(anexo2Raw).trim();
                 const tieneDatosTerminoAnexo1 = tAnexo1Limpio !== "" && !tAnexo1Limpio.includes("[") && tAnexo1Limpio.toLowerCase() !== "null";
                 const tieneDatosAnexo2 = anexo2Limpio !== "" && !anexo2Limpio.includes("[") && anexo2Limpio.toLowerCase() !== "null";
                 
-                // REGLA: Si es ejecutivo, pero tiene datos en Anexo1 o Anexo2, la regla se ANULA.
+                // CONDICIÓN PRINCIPAL PARA EJECUTIVO COMERCIAL
                 const aplicarReglasEjecutivo = esEjecutivoComercial && !tieneDatosTerminoAnexo1 && !tieneDatosAnexo2;
 
                 let centroCostoCiudad = centroCosto;
@@ -428,41 +427,58 @@
                     }
                 }
 
-                // Formateos
                 const rutFormateado = formatearRut(rutRaw);
                 const terminoAnexo1Format = formatearFecha(terminoAnexo1Raw, false);
                 const sbIndefinidoFormat = formatearDineroConSigno(sbIndefinidoRaw);
                 const colacionFormat = formatearDineroConSigno(colacionRaw);
                 const movilizacionFormat = formatearDineroConSigno(movilizacionRaw);
 
-                // 🌟 LÓGICA DE APLICACIÓN DE TEXTOS Y OCULTAMIENTO (EJECUTIVO COMERCIAL)
+                let inicioAnexoFormat = "";
+                let fechaParaTitulo = null;
+
+                // =========================================================
+                // BLOQUE PRINCIPAL DE MODIFICACIONES SEGÚN REGLA
+                // =========================================================
                 if (aplicarReglasEjecutivo) {
-                    // Cambiar texto de "sustituir" a "complementar"
+                    
+                    // 1. Cambiar texto de sustituir a complementar
                     if (textoPrimero) textoPrimero.innerHTML = '<u><strong>PRIMERO. -</strong></u> Las partes vienen a complementar las siguientes cláusulas del contrato de trabajo, las que a continuación se detallan:';
                     
-                    // Ocultar a, b, c, d
+                    // 2. Ocultar letras a, b, c, d
                     if (liSueldo) liSueldo.style.display = "none";
                     if (liGratificacion) liGratificacion.style.display = "none";
                     if (liColacion) liColacion.style.display = "none";
                     if (liMovilizacion) liMovilizacion.style.display = "none";
                     
-                    // Mostrar comisiones iniciando en la letra e
+                    // 3. Mostrar comisiones iniciando en letra e
                     if (liComisiones) {
                         liComisiones.style.display = "list-item";
-                        liComisiones.setAttribute("value", "5"); // Fuerza HTML a interpretarlo como "e"
+                        liComisiones.setAttribute("value", "5"); // Fuerza a que empiece en la letra E
                     }
                     
-                    // Ocultar cláusula SEXTA
+                    // 4. Ocultar cláusula SEXTA
                     if (contSexta) contSexta.style.display = "none";
 
+                    // 5. Las fechas son de inicio de contrato
+                    inicioAnexoFormat = "[Inicio Contrato]";
+                    if (inicioContratoRaw && !String(inicioContratoRaw).includes("[")) {
+                        let fechaInicioObj = obtenerFechaObjeto(inicioContratoRaw);
+                        if (fechaInicioObj) {
+                            let opciones = { day: 'numeric', month: 'long', year: 'numeric' };
+                            inicioAnexoFormat = fechaInicioObj.toLocaleDateString('es-ES', opciones).replace(',', '');
+                            fechaParaTitulo = fechaInicioObj; 
+                        }
+                    }
+
                 } else {
-                    // RESTAURAR ESTADO NORMAL
+                    // SI NO SE CUMPLE, RESTAURAMOS A LA FORMA NORMAL
+                    
                     if (textoPrimero) textoPrimero.innerHTML = '<u><strong>PRIMERO. -</strong></u> Las partes vienen en sustituir las siguientes cláusulas del contrato de trabajo, las que a continuación se detallan:';
+                    
                     if (liSueldo) liSueldo.style.display = "list-item";
                     if (liGratificacion) liGratificacion.style.display = "list-item";
                     if (liComisiones) liComisiones.style.display = "none";
                     
-                    // Manejo dinámico de colación (Si es 0 se oculta)
                     if (liColacion) {
                         const numColacion = String(colacionRaw).replace(/[^\d]/g, ''); 
                         if (numColacion === "0" || numColacion === "") {
@@ -473,7 +489,6 @@
                         }
                     }
 
-                    // Manejo dinámico de movilización (Si es 0 se oculta)
                     if (liMovilizacion) {
                         const numMovilizacion = String(movilizacionRaw).replace(/[^\d]/g, '');
                         if (numMovilizacion === "0" || numMovilizacion === "") {
@@ -484,38 +499,17 @@
                         }
                     }
 
-                    // Lógica normal de la cláusula SEXTA
-                    if (esIndefinido) {
-                        if (contSexta) {
-                            contSexta.style.display = "block";
+                    if (contSexta) {
+                        contSexta.style.display = "block";
+                        if (esIndefinido) {
                             contSexta.innerHTML = '<u><strong>SEXTO. - DE LA VIGENCIA:</strong></u> El presente contrato tendrá una duración "<strong>indefinida</strong>".';
-                        }
-                    } else {
-                        if (contSexta) {
-                            contSexta.style.display = "block";
+                        } else {
                             contSexta.innerHTML = '<u><strong>SEXTO. - DE LA VIGENCIA:</strong></u> El presente contrato tendrá una duración hasta el día <strong><span class="variable" id="dato-termino-anexo1"></span></strong>.';
                             asignarTextoSeguro("dato-termino-anexo1", terminoAnexo1Format); 
                         }
                     }
-                }
 
-                // 🌟 LÓGICA DE FECHAS DE INTRODUCCIÓN Y TERCERO
-                let inicioAnexoFormat = "";
-                let fechaParaTitulo = null;
-                
-                if (aplicarReglasEjecutivo) {
-                    // Para el ejecutivo comercial sin anexos previos: [Inicio Contrato]
-                    inicioAnexoFormat = "[Inicio Contrato]";
-                    if (inicioContratoRaw && !String(inicioContratoRaw).includes("[")) {
-                        let fechaInicioObj = obtenerFechaObjeto(inicioContratoRaw);
-                        if (fechaInicioObj) {
-                            let opciones = { day: 'numeric', month: 'long', year: 'numeric' };
-                            inicioAnexoFormat = fechaInicioObj.toLocaleDateString('es-ES', opciones).replace(',', '');
-                            fechaParaTitulo = fechaInicioObj; 
-                        }
-                    }
-                } else {
-                    // Lógica Normal
+                    // Fechas normales (sumando 1 día)
                     if (esIndefinido) {
                         inicioAnexoFormat = "[TerminoAnexo1 + 1 DÍA]";
                         if (terminoAnexo1Raw && !String(terminoAnexo1Raw).includes("[")) {
@@ -540,8 +534,9 @@
                         }
                     }
                 }
+                // =========================================================
 
-                // Inyectar datos en el HTML
+                // Insertar variables comunes en el DOM
                 asignarTextoSeguro("dato-nombres", nombres);
                 asignarTextoSeguro("dato-paterno", paterno);
                 asignarTextoSeguro("dato-materno", materno);
@@ -551,8 +546,8 @@
                 asignarTextoSeguro("dato-inicio-anexo", inicioAnexoFormat);
                 asignarTextoSeguro("dato-inicio-anexo-intro", inicioAnexoFormat);
                 asignarTextoSeguro("dato-centro-costo-intro", centroCostoCiudad);
-
-                // Construir título del archivo al imprimir
+                
+                // Nombre del archivo de impresión
                 let primerNombre = nombres.trim().split(" ")[0];
                 let fechaPuntos = "";
                 
@@ -570,7 +565,7 @@
                 }
                 
             } else {
-                // Estado por defecto (ningún trabajador seleccionado)
+                // Estado por defecto (vacío)
                 if (textoPrimero) textoPrimero.innerHTML = '<u><strong>PRIMERO. -</strong></u> Las partes vienen en sustituir las siguientes cláusulas del contrato de trabajo, las que a continuación se detallan:';
                 
                 if (liSueldo) liSueldo.style.display = "list-item";
