@@ -86,15 +86,66 @@
 
                         <p>En <span class="variable" id="dato-centro-costo-intro">[Centro de Costo]</span>, a <strong><span class="variable" id="dato-inicio-anexo-intro">[Fecha Anexo]</span></strong>, entre la sociedad <strong>Preomed Salud SpA</strong>, Rut. <strong>76.500.919-7</strong>, representada legalmente por Doña <strong>Yoselyn Valesca Álvarez Duarte</strong>, Rut. <strong>16.135.473-2</strong>, ambos con domicilio comercial en la ciudad de Antofagasta, calle Las Bandurrias n° 9078, en lo sucesivo el empleador, y Don/ña <strong><span class="variable" id="dato-nombres">[Nombres]</span> <span class="variable" id="dato-paterno">[Apellido Paterno]</span> <span class="variable" id="dato-materno">[Apellido Materno]</span></strong>, Rut. <strong><span class="variable" id="dato-rut">[RUT]</span></strong>, en adelante, el/la trabajador/a, se ha convenido actualizar el contrato de trabajo suscrito entre las partes, estableciendo las siguientes cláusulas:</p>
 
-                        <p class="nueva-clausula sin-sangria"><u><strong>PRIMERO. -</strong></u> Las partes vienen en sustituir las siguientes cláusulas del contrato de trabajo, las que a continuación se detallan:</p>
+                        <p class="nueva-clausula sin-sangria" id="texto-primero"><u><strong>PRIMERO. -</strong></u> Las partes vienen en sustituir las siguientes cláusulas del contrato de trabajo, las que a continuación se detallan:</p>
 
                         <div id="contenedor-clausula-cuarta" style="margin-left: 40px;">
                             <p class="nueva-clausula sin-sangria" style="margin-bottom: 5px;"><u><strong>CUARTO. - DE LAS REMUNERACIONES:</strong></u> El empleador se compromete a remunerar al trabajador mensualmente en la forma que se indica:</p>
                             <ol type="a">
-                                <li style="margin-top: 0; margin-bottom: 0;">Sueldo Base Mensual <strong><span class="variable" id="dato-sb-indefinido">[SBIndefinido]</span></strong> .- (proporcional a los días trabajados en el mes)</li>
-                                <li style="margin-top: 0; margin-bottom: 0;">La Gratificación legal mensual corresponderá al 25% de la Remuneración base con un tope según el Art. 50 del Código del Trabajo correspondiente a 4,75 ingresos mínimos mensuales.</li>
+                                <li id="li-sueldo" style="margin-top: 0; margin-bottom: 0;">Sueldo Base Mensual <strong><span class="variable" id="dato-sb-indefinido">[SBIndefinido]</span></strong> .- (proporcional a los días trabajados en el mes)</li>
+                                <li id="li-gratificacion" style="margin-top: 0; margin-bottom: 0;">La Gratificación legal mensual corresponderá al 25% de la Remuneración base con un tope según el Art. 50 del Código del Trabajo correspondiente a 4,75 ingresos mínimos mensuales.</li>
                                 <li id="li-colacion" style="margin-top: 0; margin-bottom: 0;">Asignación no Imponible de Colación <strong><span class="variable" id="dato-colacion">[Colación]</span></strong> .- (proporcional a los días trabajados en el mes)</li>
                                 <li id="li-movilizacion" style="margin-top: 0; margin-bottom: 0;">Asignación no Imponible de Movilización <strong><span class="variable" id="dato-movilizacion">[Movilización]</span></strong> .- (proporcional a los días trabajados en el mes)</li>
+                                
+                                <li id="li-comisiones" style="margin-top: 10px; margin-bottom: 0; display: none;"><strong>Comisiones por Ventas:</strong> Para la determinación de las comisiones, estas se calcularán siempre y para todo efecto sobre el valor de venta neta (Sin IVA); por lo tanto se entiende que el término “venta”, hace referencia a la venta neta, la cual no contiene IVA. El pago de comisiones se concreta una vez se reciba el pago de la venta realizada.<br><br>
+                                
+                                <strong>Condiciones para el pago de comisiones mensual:</strong><br><br>
+                                
+                                <strong>1. Meta Base de venta neta mensual (Cumplimiento 50% de meta global)</strong><br>
+                                <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px; text-align: left;" border="1" cellpadding="4">
+                                    <tr style="background-color: #f2f2f2;"><th>Cumplimiento de Meta</th><th>Monto de Ventas</th><th>% Base</th></tr>
+                                    <tr><td>≥ 120%</td><td>≥ $24.000.000</td><td>4%</td></tr>
+                                    <tr><td>100% - 119%</td><td>$20.000.000 - $23.999.999</td><td>3%</td></tr>
+                                    <tr><td>90% - 99%</td><td>$18.000.000 - $19.999.999</td><td>2%</td></tr>
+                                    <tr><td>50% - 89%</td><td>$10.000.000 - $17.999.999</td><td>1%</td></tr>
+                                    <tr><td>&lt; 50%</td><td>&lt; $10.000.000</td><td>0%</td></tr>
+                                </table>
+
+                                <strong>2. Cumplimiento Actividades</strong><br>
+                                <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px; text-align: left;" border="1" cellpadding="4">
+                                    <tr style="background-color: #f2f2f2;"><th>Cumplimiento Actividades</th><th>Porcentaje</th><th>FCA</th></tr>
+                                    <tr><td>Cumple ≥ 90%</td><td>90% o superior</td><td>1.0 (100%)</td></tr>
+                                    <tr><td>Cumple 75% - 89%</td><td>75% - 89%</td><td>0.5 (50%)</td></tr>
+                                    <tr><td>Cumple 50% - 74%</td><td>50% - 74%</td><td>0.25 (25%)</td></tr>
+                                    <tr><td>Cumple &lt; 50%</td><td>&lt; 50%</td><td>0 (0%)</td></tr>
+                                </table>
+
+                                <strong>3. Clientes Nuevos</strong><br>
+                                <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px; text-align: left;" border="1" cellpadding="4">
+                                    <tr style="background-color: #f2f2f2;"><th>Clientes Nuevos Obtenidos</th><th>Descripción</th><th>FCN</th></tr>
+                                    <tr><td>2 o más clientes</td><td>Cumple requisito obligatorio</td><td>1.0 (100%)</td></tr>
+                                    <tr><td>1 cliente</td><td>Mitad del requisito</td><td>0.5 (50%)</td></tr>
+                                    <tr><td>Ningún cliente nuevo</td><td>No cumple</td><td>0 (0%)</td></tr>
+                                </table>
+
+                                <strong>4. Fórmula de cálculo</strong><br>
+                                La comisión se calcula sobre el 100% de las ventas totales, multiplicando por los tres factores definidos: (%Base por meta, % por actividades y % por clientes nuevos).<br><br>
+
+                                <strong>5. Política de Pago</strong><br>
+                                Las comisiones se pagan con 1 mes de desfase (ejemplo: ventas de enero &rarr; pago en febrero).<br><br>
+
+                                <strong>6. Bonificaciones Adicionales</strong><br>
+                                <ul style="margin-top: 5px;">
+                                    <li><strong>Bono por Nuevo Convenio:</strong> (cuando genera ≥$5M de ventas en compra, dentro de 1 mes): $125.000 imponible.</li>
+                                    <li><strong>Bono por Distribución de Ventas:</strong> (≥70% en zona asignada): $200.000 imponible. <em>Zona asignada: Santiago, Chillán, Temuco, Puerto Montt.</em></li>
+                                    <li><strong>Bono por Licitación Adjudicada:</strong> Escalonado según monto.</li>
+                                </ul>
+                                <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px; text-align: left;" border="1" cellpadding="4">
+                                    <tr style="background-color: #f2f2f2;"><th>Monto de Licitación</th><th>Bono Imponible</th></tr>
+                                    <tr><td>≥ $1.000.000</td><td>$50.000</td></tr>
+                                    <tr><td>$1.000.000 - $5.000.000</td><td>$100.000</td></tr>
+                                    <tr><td>≥ $5.000.000</td><td>$200.000</td></tr>
+                                </table>
+                                </li>
                             </ol>
                         </div>
 
@@ -143,7 +194,6 @@
     </div>
 
     <script>
-        // 👇 AQUÍ SE HA INTEGRADO LA NUEVA URL EN FORMATO CSV 👇
         const urlGoogleSheet = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQum2Tte6bHU0v9Bs_TvVYmzJ6hjRcuYxLf7QVYTpMXq04rxZg3HLlNuOQ28Zl2h3e0GkrgULj9ePVj/pub?gid=1329533563&single=true&output=csv"; 
         
         let listaTrabajadores = [];
@@ -330,6 +380,13 @@
             const contCuarta = document.getElementById("contenedor-clausula-cuarta");
             const contSexta = document.getElementById("contenedor-clausula-sexta");
             
+            const textoPrimero = document.getElementById("texto-primero");
+            const liSueldo = document.getElementById("li-sueldo");
+            const liGratificacion = document.getElementById("li-gratificacion");
+            const liColacion = document.getElementById("li-colacion");
+            const liMovilizacion = document.getElementById("li-movilizacion");
+            const liComisiones = document.getElementById("li-comisiones");
+            
             if (index !== "") {
                 const datos = listaTrabajadores[index];
                 
@@ -340,15 +397,35 @@
                 
                 const centroCosto = buscarPropiedad(datos, "centrocosto") || "[Centro de Costo]";
                 const terminoContratoRaw = buscarPropiedad(datos, "terminocontrato") || buscarPropiedad(datos, "termino_contrato") || "[Término Contrato]";
-                const terminoAnexo1Raw = buscarPropiedad(datos, "terminoanexo1") || buscarPropiedad(datos, "termino_anexo1") || "[TerminoAnexo1]";
+                
+                // Variables de validación extraídas de la base de datos
+                const terminoAnexo1Raw = buscarPropiedad(datos, "terminoanexo1") || buscarPropiedad(datos, "termino_anexo1") || "";
+                const anexo2Raw = buscarPropiedad(datos, "anexo2") || "";
                 
                 const sbIndefinidoRaw = buscarPropiedad(datos, "sbindefinido") || "[SBIndefinido]";
                 const colacionRaw = buscarPropiedad(datos, "colacion") || buscarPropiedad(datos, "colación") || "";
                 const movilizacionRaw = buscarPropiedad(datos, "movilizacion") || buscarPropiedad(datos, "movilización") || "";
 
-                // NUEVA LÓGICA ANEXO 2 INDEFINIDO
-                const anexo2Raw = buscarPropiedad(datos, "anexo2") || "";
+                // LÓGICA ANEXO 2 INDEFINIDO
                 const esIndefinido = anexo2Raw.toLowerCase().trim() === "indefinido";
+
+                // REGLA: Verificar si TerminoAnexo1 o Anexo2 tienen datos útiles
+                const tieneDatoTerminoAnexo1 = terminoAnexo1Raw.trim() !== "" && terminoAnexo1Raw.trim() !== "[TerminoAnexo1]";
+                const tieneDatoAnexo2 = anexo2Raw.trim() !== "" && anexo2Raw.trim() !== "[Anexo2]";
+
+                // LÓGICA: EJECUTIVO COMERCIAL / VENDEDOR
+                const vendedorRaw = buscarPropiedad(datos, "vendedor") || "";
+                const cargoRaw = buscarPropiedad(datos, "cargo") || "";
+                
+                // Es vendedor en principio si la columna 'vendedor' dice 'SI' o si su cargo es 'Ejecutivo Comercial'
+                let esVendedor = (vendedorRaw.toUpperCase().trim() === "SI") || 
+                                   (cargoRaw.toLowerCase().includes("ejecutivo") && cargoRaw.toLowerCase().includes("comercial"));
+
+                // NUEVA CONDICIÓN INTEGRADORA: 
+                // Si la persona tiene un dato guardado en TerminoAnexo1 o Anexo2, NO se aplica el formato de vendedor.
+                if (tieneDatoTerminoAnexo1 || tieneDatoAnexo2) {
+                    esVendedor = false;
+                }
 
                 let centroCostoCiudad = centroCosto;
                 if (centroCosto !== "[Centro de Costo]") {
@@ -360,7 +437,7 @@
 
                 // Lógica de formateo
                 const rutFormateado = formatearRut(rutRaw);
-                const terminoAnexo1Format = formatearFecha(terminoAnexo1Raw, false);
+                const terminoAnexo1Format = formatearFecha(terminoAnexo1Raw || "[TerminoAnexo1]", false);
                 const sbIndefinidoFormat = formatearDineroConSigno(sbIndefinidoRaw);
                 const colacionFormat = formatearDineroConSigno(colacionRaw);
                 const movilizacionFormat = formatearDineroConSigno(movilizacionRaw);
@@ -371,7 +448,7 @@
                 
                 if (esIndefinido) {
                     inicioAnexoFormat = "[TerminoAnexo1 + 1 DÍA]";
-                    if (terminoAnexo1Raw && !String(terminoAnexo1Raw).includes("[")) {
+                    if (tieneDatoTerminoAnexo1) {
                         let fechaTerminoAnexoObj = obtenerFechaObjeto(terminoAnexo1Raw);
                         if (fechaTerminoAnexoObj) {
                             fechaTerminoAnexoObj.setDate(fechaTerminoAnexoObj.getDate() + 1); // Se suma 1 día a TerminoAnexo1
@@ -393,11 +470,49 @@
                     }
                 }
 
-                // Mostrar u ocultar y ajustar cláusulas según el estado "indefinido"
-                if (esIndefinido) {
+                // Aplicar lógica de Visibilidad según la validación de vendedor
+                if (esVendedor) {
+                    if(textoPrimero) textoPrimero.innerHTML = '<u><strong>PRIMERO. -</strong></u> Las partes vienen a complementar las siguientes cláusulas del contrato de trabajo, las que a continuación se detallan:';
+                    if(liSueldo) liSueldo.style.display = "none";
+                    if(liGratificacion) liGratificacion.style.display = "none";
+                    if(liColacion) liColacion.style.display = "none";
+                    if(liMovilizacion) liMovilizacion.style.display = "none";
+                    if(liComisiones) liComisiones.style.display = "list-item"; // Mostrar comisiones
+                    if(contSexta) contSexta.style.display = "none"; // Ocultar cláusula SEXTA (Vigencia)
+                } else {
+                    if(textoPrimero) textoPrimero.innerHTML = '<u><strong>PRIMERO. -</strong></u> Las partes vienen en sustituir las siguientes cláusulas del contrato de trabajo, las que a continuación se detallan:';
+                    if(liSueldo) liSueldo.style.display = "list-item";
+                    if(liGratificacion) liGratificacion.style.display = "list-item";
+                    if(liComisiones) liComisiones.style.display = "none"; // Ocultar comisiones
+                    if(contSexta) contSexta.style.display = "block"; // Asegurar que SEXTA se vea
+                    
+                    // Lógica normal para colación y movilización
+                    if (liColacion) {
+                        const numColacion = String(colacionRaw).replace(/[^\d]/g, ''); 
+                        if (numColacion === "0" || numColacion === "") {
+                            liColacion.style.display = "none";
+                        } else {
+                            liColacion.style.display = "list-item";
+                            asignarTextoSeguro("dato-colacion", colacionFormat);
+                        }
+                    }
+
+                    if (liMovilizacion) {
+                        const numMovilizacion = String(movilizacionRaw).replace(/[^\d]/g, '');
+                        if (numMovilizacion === "0" || numMovilizacion === "") {
+                            liMovilizacion.style.display = "none";
+                        } else {
+                            liMovilizacion.style.display = "list-item";
+                            asignarTextoSeguro("dato-movilizacion", movilizacionFormat);
+                        }
+                    }
+                }
+
+                // Mostrar u ocultar y ajustar cláusulas de VIGENCIA si el anexo dice "Indefinido" y se está mostrando la Cláusula Sexta
+                if (esIndefinido && !esVendedor) {
                     if (contCuarta) contCuarta.style.display = "block";
                     if (contSexta) contSexta.innerHTML = '<u><strong>SEXTO. - DE LA VIGENCIA:</strong></u> El presente contrato tendrá una duración "<strong>indefinida</strong>".';
-                } else {
+                } else if (!esVendedor) {
                     if (contCuarta) contCuarta.style.display = "none";
                     if (contSexta) contSexta.innerHTML = '<u><strong>SEXTO. - DE LA VIGENCIA:</strong></u> El presente contrato tendrá una duración hasta el día <strong><span class="variable" id="dato-termino-anexo1"></span></strong>.';
                     asignarTextoSeguro("dato-termino-anexo1", terminoAnexo1Format); 
@@ -414,28 +529,6 @@
                 asignarTextoSeguro("dato-inicio-anexo-intro", inicioAnexoFormat);
                 
                 asignarTextoSeguro("dato-centro-costo-intro", centroCostoCiudad);
-
-                const liColacion = document.getElementById("li-colacion");
-                if (liColacion) {
-                    const numColacion = String(colacionRaw).replace(/[^\d]/g, ''); 
-                    if (numColacion === "0" || numColacion === "") {
-                        liColacion.style.display = "none";
-                    } else {
-                        liColacion.style.display = "list-item";
-                        asignarTextoSeguro("dato-colacion", colacionFormat);
-                    }
-                }
-
-                const liMovilizacion = document.getElementById("li-movilizacion");
-                if (liMovilizacion) {
-                    const numMovilizacion = String(movilizacionRaw).replace(/[^\d]/g, '');
-                    if (numMovilizacion === "0" || numMovilizacion === "") {
-                        liMovilizacion.style.display = "none";
-                    } else {
-                        liMovilizacion.style.display = "list-item";
-                        asignarTextoSeguro("dato-movilizacion", movilizacionFormat);
-                    }
-                }
                 
                 // Nombre del archivo de impresión basado en la fecha de Introducción
                 let primerNombre = nombres.trim().split(" ")[0];
@@ -458,7 +551,15 @@
                 // Estado por defecto (vacío)
                 if (contCuarta) contCuarta.style.display = "block";
                 if (contSexta) contSexta.innerHTML = '<u><strong>SEXTO. - DE LA VIGENCIA:</strong></u> El presente contrato tendrá una duración hasta el día <strong><span class="variable" id="dato-termino-anexo1">[TerminoAnexo1]</span></strong>.';
+                if (contSexta) contSexta.style.display = "block";
                 
+                if(textoPrimero) textoPrimero.innerHTML = '<u><strong>PRIMERO. -</strong></u> Las partes vienen en sustituir las siguientes cláusulas del contrato de trabajo, las que a continuación se detallan:';
+                if(liSueldo) liSueldo.style.display = "list-item";
+                if(liGratificacion) liGratificacion.style.display = "list-item";
+                if(liColacion) liColacion.style.display = "list-item";
+                if(liMovilizacion) liMovilizacion.style.display = "list-item";
+                if(liComisiones) liComisiones.style.display = "none";
+
                 asignarTextoSeguro("dato-nombres", "[Nombres]");
                 asignarTextoSeguro("dato-paterno", "[Apellido Paterno]");
                 asignarTextoSeguro("dato-materno", "[Apellido Materno]");
@@ -470,13 +571,7 @@
                 asignarTextoSeguro("dato-inicio-anexo-intro", "[Fecha Anexo]");
 
                 asignarTextoSeguro("dato-centro-costo-intro", "[Centro de Costo]");
-                
-                const liCol = document.getElementById("li-colacion");
-                if (liCol) liCol.style.display = "list-item";
                 asignarTextoSeguro("dato-colacion", "[Colación]");
-                
-                const liMov = document.getElementById("li-movilizacion");
-                if (liMov) liMov.style.display = "list-item";
                 asignarTextoSeguro("dato-movilizacion", "[Movilización]");
                 
                 document.title = "Anexo Contrato de Trabajo Dinámico - Preomed";
