@@ -223,6 +223,19 @@
             }
         });
 
+        // NUEVA FUNCIÓN: Identifica si un valor está realmente vacío o tiene "basura"
+        function esDatoVacio(valor) {
+            if (valor === null || valor === undefined) return true;
+            let valLimpio = String(valor).replace(/[\r\n]+/g, '').trim().toLowerCase();
+            return valLimpio === "" || 
+                   valLimpio === "-" || 
+                   valLimpio === "n/a" || 
+                   valLimpio === "na" || 
+                   valLimpio === "no aplica" || 
+                   valLimpio === "null" || 
+                   valLimpio.includes("["); // Excluye los placeholders como [Anexo2]
+        }
+
         function buscarPropiedad(objeto, nombreColumna) {
             const target = nombreColumna.toLowerCase().replace(/\s+/g, '').trim();
             for (let clave in objeto) {
@@ -241,7 +254,7 @@
         }
 
         function obtenerFechaObjeto(fechaStr) {
-            if (!fechaStr || String(fechaStr).includes("[")) return null;
+            if (esDatoVacio(fechaStr)) return null;
             let textoLimpio = String(fechaStr).trim().split(" ")[0]; 
             let partes = textoLimpio.split(/[-/]/);
             if (partes.length === 3) {
@@ -338,7 +351,7 @@
         }
 
         function formatearRut(valor) {
-            if (!valor || String(valor).includes("[")) return valor;
+            if (esDatoVacio(valor)) return valor;
             let cuerpo = String(valor).replace(/[\s\.\,-]/g, '').trim();
             if (cuerpo.length < 2) return valor;
             let dv = cuerpo.slice(-1).toUpperCase();
@@ -348,7 +361,7 @@
         }
 
         function formatearDineroConSigno(valor) {
-            if (!valor || String(valor).includes("[")) return valor;
+            if (esDatoVacio(valor)) return valor;
             let soloNumeros = String(valor).replace(/[^\d]/g, '');
             if (soloNumeros === "") return valor;
             let numeroConPuntos = new Intl.NumberFormat('es-CL').format(soloNumeros);
@@ -356,7 +369,7 @@
         }
 
         function formatearFecha(fechaStr, incluirDiaSemana) {
-            if (!fechaStr || String(fechaStr).includes("[")) return fechaStr;
+            if (esDatoVacio(fechaStr)) return fechaStr;
             let textoLimpio = String(fechaStr).trim().split(" ")[0]; 
             let partes = textoLimpio.split(/[-/]/);
             if (partes.length === 3) {
@@ -405,23 +418,22 @@
                 const cargoRaw = buscarPropiedad(datos, "cargo") || "";
                 
                 const centroCosto = buscarPropiedad(datos, "centrocosto") || "[Centro de Costo]";
-                const terminoContratoRaw = buscarPropiedad(datos, "terminocontrato") || buscarPropiedad(datos, "termino_contrato") || "[Término Contrato]";
-                const terminoAnexo1Raw = buscarPropiedad(datos, "terminoanexo1") || buscarPropiedad(datos, "termino_anexo1") || "[TerminoAnexo1]";
+                const terminoContratoRaw = buscarPropiedad(datos, "terminocontrato") || buscarPropiedad(datos, "termino_contrato") || "";
+                const terminoAnexo1Raw = buscarPropiedad(datos, "terminoanexo1") || buscarPropiedad(datos, "termino_anexo1") || "";
                 const inicioContratoRaw = buscarPropiedad(datos, "iniciocontrato") || buscarPropiedad(datos, "inicio_contrato") || "";
                 
                 const sbIndefinidoRaw = buscarPropiedad(datos, "sbindefinido") || "[SBIndefinido]";
                 const colacionRaw = buscarPropiedad(datos, "colacion") || buscarPropiedad(datos, "colación") || "";
                 const movilizacionRaw = buscarPropiedad(datos, "movilizacion") || buscarPropiedad(datos, "movilización") || "";
 
-                // Lógicas de validación
-                const anexo2Raw = buscarPropiedad(datos, "anexo2") || "";
+                // Validación estricta usando la nueva función
+                const anexo2Raw = buscarPropiedad(datos, "anexo2") || buscarPropiedad(datos, "anexo") || ""; // Busca ambas
+                
                 const esIndefinido = String(anexo2Raw).toLowerCase().trim() === "indefinido";
                 const esEjecutivoComercial = cargoRaw.toLowerCase().includes("ejecutivo") && cargoRaw.toLowerCase().includes("comercial");
 
-                const tAnexo1Limpio = String(terminoAnexo1Raw).trim();
-                const anexo2Limpio = String(anexo2Raw).trim();
-                const tieneDatosTerminoAnexo1 = tAnexo1Limpio !== "" && !tAnexo1Limpio.includes("[") && tAnexo1Limpio.toLowerCase() !== "null";
-                const tieneDatosAnexo2 = anexo2Limpio !== "" && !anexo2Limpio.includes("[") && anexo2Limpio.toLowerCase() !== "null";
+                const tieneDatosTerminoAnexo1 = !esDatoVacio(terminoAnexo1Raw);
+                const tieneDatosAnexo2 = !esDatoVacio(anexo2Raw);
                 
                 // CONDICIÓN PRINCIPAL PARA EJECUTIVO COMERCIAL
                 const aplicarReglasEjecutivo = esEjecutivoComercial && !tieneDatosTerminoAnexo1 && !tieneDatosAnexo2;
@@ -434,8 +446,8 @@
                     }
                 }
 
-                const rutFormateado = formatearRut(rutRaw);
-                const terminoAnexo1Format = formatearFecha(terminoAnexo1Raw, false);
+                const rutFormateado = formatearRut(rutRaw) || "[RUT]";
+                const terminoAnexo1Format = formatearFecha(terminoAnexo1Raw, false) || "[TerminoAnexo1]";
                 const sbIndefinidoFormat = formatearDineroConSigno(sbIndefinidoRaw);
                 const colacionFormat = formatearDineroConSigno(colacionRaw);
                 const movilizacionFormat = formatearDineroConSigno(movilizacionRaw);
@@ -451,6 +463,8 @@
                     // 1. Cambiar texto de sustituir a complementar
                     if (textoPrimero) textoPrimero.innerHTML = '<u><strong>PRIMERO. -</strong></u> Las partes vienen a complementar las siguientes cláusulas del contrato de trabajo, las que a continuación se detallan:';
                     
+                    if (contCuarta) contCuarta.style.display = "block"; 
+                    
                     // 2. Ocultar letras a, b, c, d
                     if (liSueldo) liSueldo.style.display = "none";
                     if (liGratificacion) liGratificacion.style.display = "none";
@@ -460,7 +474,7 @@
                     // 3. Mostrar comisiones iniciando en letra e
                     if (liComisiones) {
                         liComisiones.style.display = "list-item";
-                        liComisiones.setAttribute("value", "5"); // Fuerza a que empiece en la letra E
+                        liComisiones.setAttribute("value", "5");
                     }
                     
                     // 4. Ocultar cláusula SEXTA
@@ -468,7 +482,7 @@
 
                     // 5. Las fechas son de inicio de contrato
                     inicioAnexoFormat = "[Inicio Contrato]";
-                    if (inicioContratoRaw && !String(inicioContratoRaw).includes("[")) {
+                    if (inicioContratoRaw && !esDatoVacio(inicioContratoRaw)) {
                         let fechaInicioObj = obtenerFechaObjeto(inicioContratoRaw);
                         if (fechaInicioObj) {
                             let opciones = { day: 'numeric', month: 'long', year: 'numeric' };
@@ -478,59 +492,25 @@
                     }
 
                 } else {
-                    // SI NO SE CUMPLE, RESTAURAMOS A LA FORMA NORMAL
+                    // =========================================================
+                    // FLUJO SI NO ES EJECUTIVO O SI TIENE DATOS EN ANEXOS
+                    // =========================================================
                     
                     if (textoPrimero) textoPrimero.innerHTML = '<u><strong>PRIMERO. -</strong></u> Las partes vienen en sustituir las siguientes cláusulas del contrato de trabajo, las que a continuación se detallan:';
                     
-                    if (liSueldo) liSueldo.style.display = "list-item";
-                    if (liGratificacion) liGratificacion.style.display = "list-item";
-                    if (liComisiones) liComisiones.style.display = "none";
-                    
-                    if (liColacion) {
-                        const numColacion = String(colacionRaw).replace(/[^\d]/g, ''); 
-                        if (numColacion === "0" || numColacion === "") {
-                            liColacion.style.display = "none";
-                        } else {
-                            liColacion.style.display = "list-item";
-                            asignarTextoSeguro("dato-colacion", colacionFormat);
-                        }
-                    }
-
-                    if (liMovilizacion) {
-                        const numMovilizacion = String(movilizacionRaw).replace(/[^\d]/g, '');
-                        if (numMovilizacion === "0" || numMovilizacion === "") {
-                            liMovilizacion.style.display = "none";
-                        } else {
-                            liMovilizacion.style.display = "list-item";
-                            asignarTextoSeguro("dato-movilizacion", movilizacionFormat);
-                        }
-                    }
-
-                    if (contSexta) {
-                        contSexta.style.display = "block";
-                        if (esIndefinido) {
-                            contSexta.innerHTML = '<u><strong>SEXTO. - DE LA VIGENCIA:</strong></u> El presente contrato tendrá una duración "<strong>indefinida</strong>".';
-                        } else {
+                    if (!tieneDatosAnexo2) {
+                        // SI ANEXO2 ESTÁ VACÍO Y NO ES EJECUTIVO (Solo actualiza vigencia)
+                        if (contCuarta) contCuarta.style.display = "none"; 
+                        
+                        if (contSexta) {
+                            contSexta.style.display = "block";
                             contSexta.innerHTML = '<u><strong>SEXTO. - DE LA VIGENCIA:</strong></u> El presente contrato tendrá una duración hasta el día <strong><span class="variable" id="dato-termino-anexo1"></span></strong>.';
                             asignarTextoSeguro("dato-termino-anexo1", terminoAnexo1Format); 
                         }
-                    }
 
-                    // Fechas normales (sumando 1 día)
-                    if (esIndefinido) {
-                        inicioAnexoFormat = "[TerminoAnexo1 + 1 DÍA]";
-                        if (terminoAnexo1Raw && !String(terminoAnexo1Raw).includes("[")) {
-                            let fechaTerminoAnexoObj = obtenerFechaObjeto(terminoAnexo1Raw);
-                            if (fechaTerminoAnexoObj) {
-                                fechaTerminoAnexoObj.setDate(fechaTerminoAnexoObj.getDate() + 1);
-                                let opciones = { day: 'numeric', month: 'long', year: 'numeric' };
-                                inicioAnexoFormat = fechaTerminoAnexoObj.toLocaleDateString('es-ES', opciones).replace(',', '');
-                                fechaParaTitulo = fechaTerminoAnexoObj; 
-                            }
-                        }
-                    } else {
+                        // Fechas (Arranca post Contrato)
                         inicioAnexoFormat = "[TerminoContrato + 1 DÍA]";
-                        if (terminoContratoRaw && !String(terminoContratoRaw).includes("[")) {
+                        if (terminoContratoRaw && !esDatoVacio(terminoContratoRaw)) {
                             let fechaTerminoObj = obtenerFechaObjeto(terminoContratoRaw);
                             if (fechaTerminoObj) {
                                 fechaTerminoObj.setDate(fechaTerminoObj.getDate() + 1); 
@@ -539,17 +519,66 @@
                                 fechaParaTitulo = fechaTerminoObj; 
                             }
                         }
+
+                    } else {
+                        // SI ANEXO2 TIENE DATOS 
+                        if (contCuarta) contCuarta.style.display = "block"; 
+                        if (liSueldo) liSueldo.style.display = "list-item";
+                        if (liGratificacion) liGratificacion.style.display = "list-item";
+                        if (liComisiones) liComisiones.style.display = "none";
+                        
+                        if (liColacion) {
+                            const numColacion = String(colacionRaw).replace(/[^\d]/g, ''); 
+                            if (numColacion === "0" || numColacion === "") {
+                                liColacion.style.display = "none";
+                            } else {
+                                liColacion.style.display = "list-item";
+                                asignarTextoSeguro("dato-colacion", colacionFormat);
+                            }
+                        }
+
+                        if (liMovilizacion) {
+                            const numMovilizacion = String(movilizacionRaw).replace(/[^\d]/g, '');
+                            if (numMovilizacion === "0" || numMovilizacion === "") {
+                                liMovilizacion.style.display = "none";
+                            } else {
+                                liMovilizacion.style.display = "list-item";
+                                asignarTextoSeguro("dato-movilizacion", movilizacionFormat);
+                            }
+                        }
+
+                        if (contSexta) {
+                            contSexta.style.display = "block";
+                            if (esIndefinido) {
+                                contSexta.innerHTML = '<u><strong>SEXTO. - DE LA VIGENCIA:</strong></u> El presente contrato tendrá una duración <strong>indefinida</strong>.';
+                            } else {
+                                let valLimpioAnexo2 = String(anexo2Raw).trim();
+                                contSexta.innerHTML = `<u><strong>SEXTO. - DE LA VIGENCIA:</strong></u> El presente contrato tendrá una duración <strong>${valLimpioAnexo2}</strong>.`;
+                            }
+                        }
+
+                        // Fechas (Arranca post Anexo 1)
+                        inicioAnexoFormat = "[TerminoAnexo1 + 1 DÍA]";
+                        if (terminoAnexo1Raw && !esDatoVacio(terminoAnexo1Raw)) {
+                            let fechaTerminoAnexoObj = obtenerFechaObjeto(terminoAnexo1Raw);
+                            if (fechaTerminoAnexoObj) {
+                                fechaTerminoAnexoObj.setDate(fechaTerminoAnexoObj.getDate() + 1);
+                                let opciones = { day: 'numeric', month: 'long', year: 'numeric' };
+                                inicioAnexoFormat = fechaTerminoAnexoObj.toLocaleDateString('es-ES', opciones).replace(',', '');
+                                fechaParaTitulo = fechaTerminoAnexoObj; 
+                            }
+                        }
                     }
                 }
                 // =========================================================
 
                 // Insertar variables comunes en el DOM
-                asignarTextoSeguro("dato-nombres", nombres);
-                asignarTextoSeguro("dato-paterno", paterno);
-                asignarTextoSeguro("dato-materno", materno);
+                asignarTextoSeguro("dato-nombres", nombres || "[Nombres]");
+                asignarTextoSeguro("dato-paterno", paterno || "[Apellido Paterno]");
+                asignarTextoSeguro("dato-materno", materno || "[Apellido Materno]");
                 asignarTextoSeguro("dato-rut", rutFormateado);
                 asignarTextoSeguro("dato-rut-firma", rutFormateado);
-                asignarTextoSeguro("dato-sb-indefinido", sbIndefinidoFormat);
+                asignarTextoSeguro("dato-sb-indefinido", sbIndefinidoFormat || "[SBIndefinido]");
                 asignarTextoSeguro("dato-inicio-anexo", inicioAnexoFormat);
                 asignarTextoSeguro("dato-inicio-anexo-intro", inicioAnexoFormat);
                 asignarTextoSeguro("dato-centro-costo-intro", centroCostoCiudad);
@@ -575,6 +604,7 @@
                 // Estado por defecto (vacío)
                 if (textoPrimero) textoPrimero.innerHTML = '<u><strong>PRIMERO. -</strong></u> Las partes vienen en sustituir las siguientes cláusulas del contrato de trabajo, las que a continuación se detallan:';
                 
+                if (contCuarta) contCuarta.style.display = "block";
                 if (liSueldo) liSueldo.style.display = "list-item";
                 if (liGratificacion) liGratificacion.style.display = "list-item";
                 if (liColacion) liColacion.style.display = "list-item";
