@@ -22,7 +22,10 @@
         tfoot { display: table-footer-group; }
         .encabezado-repetido { text-align: left; padding-bottom: 10px; margin-bottom: 15px; border-bottom: 1px solid #ddd; }
         .logo-empresa { max-height: 40px; width: auto; }
-        .pie-pagina-contenido { text-align: center; font-weight: bold; font-size: 10pt; color: #555; padding-top: 15px; height: 30px; }
+        
+        /* Ajuste base del pie de página */
+        .pie-pagina-contenido { text-align: center; font-weight: bold; font-size: 10pt; color: #555; padding-top: 15px; width: 100%; }
+        
         h1 { font-size: 11pt; text-decoration: underline; text-align: center; margin-bottom: 30px; margin-top: 10px; }
         p { margin-bottom: 15px; text-indent: 40px; }
         p.sin-sangria { text-indent: 0; }
@@ -40,13 +43,32 @@
         @media print {
             @page { 
                 size: letter; 
-                margin: 1cm 1.5cm; 
-                @bottom-right { content: "Página " counter(page) " de " counter(pages); font-family: 'Aptos Display', Calibri, sans-serif; font-size: 8pt; color: #666; }
+                margin: 1.5cm 1.5cm 2cm 1.5cm; 
+                @bottom-right { 
+                    content: "Página " counter(page) " de " counter(pages); 
+                    font-family: 'Aptos Display', Calibri, sans-serif; 
+                    font-size: 8pt; 
+                    color: #666; 
+                }
             }
             body { background-color: transparent; margin: 0; padding: 0; max-width: 100%; }
             .contenedor-carta { box-shadow: none; padding: 0; }
             .controles { display: none !important; }
             .variable { background-color: transparent; font-weight: inherit; }
+
+            /* Fijamos el pie de página justo al borde del margen inferior */
+            .pie-pagina-contenido {
+                position: fixed;
+                bottom: 0; 
+                left: 0;
+                width: 100%;
+                padding-top: 0;
+                margin: 0;
+            }
+            /* Dejamos un espacio fantasma al final de la tabla para que el texto de la firma no choque con el pie de página */
+            tfoot td {
+                height: 1.2cm;
+            }
         }
     </style>
 </head>
@@ -217,7 +239,7 @@
 
             <tfoot>
                 <tr>
-                    <td>
+                    <td style="text-align: center; vertical-align: bottom;">
                         <div class="pie-pagina-contenido">
                             ANEXO CONTRATO DE TRABAJO
                         </div>
