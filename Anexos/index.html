@@ -63,6 +63,23 @@
             <option value="">-- Seleccione --</option>
         </select>
 
+        <label for="selector-motivo"><strong>Tipo Anexo:</strong></label>
+        <select id="selector-motivo" onchange="actualizarContrato()">
+            <option value="">-- Seleccione Tipo --</option>
+            <option value="plazo_fijo">Plazo Fijo</option>
+            <option value="plazo_fijo_sueldo">Plazo Fijo + Sueldo</option>
+            <option value="plazo_fijo_cargo">Plazo Fijo + Cargo</option>
+            <option value="plazo_fijo_sueldo_cargo">Plazo Fijo + Sueldo + Cargo</option>
+            <option value="indefinido">Indefinido</option>
+            <option value="indefinido_sueldo">Indefinido + Sueldo</option>
+            <option value="indefinido_cargo">Indefinido + Cargo</option>
+            <option value="indefinido_sueldo_cargo">Indefinido + Sueldo + Cargo</option>
+            <option value="cargo">Cargo</option>
+            <option value="sueldo">Sueldo</option>
+            <option value="cargo_sueldo">Cargo + Sueldo</option>
+            <option value="comisiones">Comisiones</option>
+        </select>
+
         <button onclick="window.print()">Imprimir PDF</button>
     </div>
 
@@ -86,6 +103,10 @@
                         <p>En <span class="variable" id="dato-centro-costo-intro">[Centro de Costo]</span>, a <strong><span class="variable" id="dato-inicio-anexo-intro">[Fecha Anexo]</span></strong>, entre la sociedad <strong>Preomed Salud SpA</strong>, Rut. <strong>76.500.919-7</strong>, representada legalmente por Doña <strong>Yoselyn Valesca Álvarez Duarte</strong>, Rut. <strong>16.135.473-2</strong>, ambos con domicilio comercial en la ciudad de Antofagasta, calle Las Bandurrias n° 9078, en lo sucesivo el empleador, y Don/ña <strong><span class="variable" id="dato-nombres">[Nombres]</span> <span class="variable" id="dato-paterno">[Apellido Paterno]</span> <span class="variable" id="dato-materno">[Apellido Materno]</span></strong>, Rut. <strong><span class="variable" id="dato-rut">[RUT]</span></strong>, en adelante, el/la trabajador/a, se ha convenido actualizar el contrato de trabajo suscrito entre las partes, estableciendo las siguientes cláusulas:</p>
 
                         <p class="nueva-clausula sin-sangria" id="texto-primero"><u><strong>PRIMERO. -</strong></u> Las partes vienen en sustituir las siguientes cláusulas del contrato de trabajo, las que a continuación se detallan:</p>
+
+                        <div id="contenedor-clausula-cargo" style="margin-left: 40px; display: none; margin-bottom: 15px;">
+                            <p class="nueva-clausula sin-sangria" style="margin-bottom: 5px;"><u><strong>PRIMERO. - DE LAS FUNCIONES Y CARGO:</strong></u> El/La trabajador/a se obliga a desempeñar las funciones propias de “<strong><span class="variable" id="dato-cargo-anexo">[Cargo]</span></strong>” de acuerdo con las instrucciones que al efecto sean impartidas por el empleador, estableciendo de común acuerdo que las funciones y responsabilidades propias del cargo o función que desempeñará el/la trabajador/a se encuentran establecidas en el descriptor de cargo correspondiente, documento que recepcionado por el/la trabajador/a se entiende incorporado al presente contrato. El/La trabajador/a queda obligado a cumplir leal y correctamente con todos los deberes que le imponga este instrumento o aquéllos que se deriven de las funciones y cargo, debiendo ejecutar las instrucciones que le confieran sus superiores. Del mismo modo el/la trabajador/a se obliga a desempeñar en forma eficaz, las funciones y el cargo para el cual ha sido contratado, empleando para ello la mayor diligencia y dedicación.</p>
+                        </div>
 
                         <div id="contenedor-clausula-cuarta" style="margin-left: 40px;">
                             <p class="nueva-clausula sin-sangria" style="margin-bottom: 5px;"><u><strong>CUARTO. - DE LAS REMUNERACIONES:</strong></u> El empleador se compromete a remunerar al trabajador mensualmente en la forma que se indica:</p>
@@ -223,7 +244,6 @@
             }
         });
 
-        // NUEVA FUNCIÓN: Identifica si un valor está realmente vacío o tiene "basura"
         function esDatoVacio(valor) {
             if (valor === null || valor === undefined) return true;
             let valLimpio = String(valor).replace(/[\r\n]+/g, '').trim().toLowerCase();
@@ -233,7 +253,7 @@
                    valLimpio === "na" || 
                    valLimpio === "no aplica" || 
                    valLimpio === "null" || 
-                   valLimpio.includes("["); // Excluye los placeholders como [Anexo2]
+                   valLimpio.includes("[");
         }
 
         function buscarPropiedad(objeto, nombreColumna) {
@@ -399,6 +419,7 @@
             const index = document.getElementById("selector-trabajador").value;
             
             // Referencias DOM
+            const contCargo = document.getElementById("contenedor-clausula-cargo");
             const contCuarta = document.getElementById("contenedor-clausula-cuarta");
             const contSexta = document.getElementById("contenedor-clausula-sexta");
             const textoPrimero = document.getElementById("texto-primero");
@@ -407,37 +428,113 @@
             const liColacion = document.getElementById("li-colacion");
             const liMovilizacion = document.getElementById("li-movilizacion");
             const liComisiones = document.getElementById("li-comisiones");
+            const tipoAnexo = document.getElementById("selector-motivo").value;
             
             if (index !== "") {
                 const datos = listaTrabajadores[index];
                 
+                // 1. EVALUAMOS LAS BANDERAS DE VISIBILIDAD PRIMERO
+                let showCargo = false;
+                let showSueldo = false;
+                let showVigencia = false;
+                let isIndefinido = false;
+                let isComisiones = false;
+
+                switch(tipoAnexo) {
+                    case "plazo_fijo":
+                        showVigencia = true;
+                        break;
+                    case "plazo_fijo_sueldo":
+                        showVigencia = true; showSueldo = true;
+                        break;
+                    case "plazo_fijo_cargo":
+                        showVigencia = true; showCargo = true;
+                        break;
+                    case "plazo_fijo_sueldo_cargo":
+                        showVigencia = true; showSueldo = true; showCargo = true;
+                        break;
+                    case "indefinido":
+                        showVigencia = true; isIndefinido = true; showSueldo = true;
+                        break;
+                    case "indefinido_sueldo":
+                        showVigencia = true; isIndefinido = true; showSueldo = true;
+                        break;
+                    case "indefinido_cargo":
+                        showVigencia = true; isIndefinido = true; showCargo = true; showSueldo = true;
+                        break;
+                    case "indefinido_sueldo_cargo":
+                        showVigencia = true; isIndefinido = true; showSueldo = true; showCargo = true;
+                        break;
+                    case "comisiones":
+                        isComisiones = true; showSueldo = true;
+                        break;
+                    case "cargo":
+                        showCargo = true;
+                        break;
+                    case "sueldo":
+                        showSueldo = true;
+                        break;
+                    case "cargo_sueldo":
+                        showCargo = true; showSueldo = true;
+                        break;
+                }
+
+                // 2. EXTRACCIÓN DE DATOS BASE
                 const nombres = buscarPropiedad(datos, "nombres") || buscarPropiedad(datos, "nombre") || "";
                 const paterno = buscarPropiedad(datos, "apellidopaterno") || "";
                 const materno = buscarPropiedad(datos, "apellidomaterno") || "";
                 const rutRaw = buscarPropiedad(datos, "rut") || "";
-                const cargoRaw = buscarPropiedad(datos, "cargo") || "";
                 
                 const centroCosto = buscarPropiedad(datos, "centrocosto") || "[Centro de Costo]";
                 const terminoContratoRaw = buscarPropiedad(datos, "terminocontrato") || buscarPropiedad(datos, "termino_contrato") || "";
                 const terminoAnexo1Raw = buscarPropiedad(datos, "terminoanexo1") || buscarPropiedad(datos, "termino_anexo1") || "";
                 const inicioContratoRaw = buscarPropiedad(datos, "iniciocontrato") || buscarPropiedad(datos, "inicio_contrato") || "";
-                
-                const sbIndefinidoRaw = buscarPropiedad(datos, "sbindefinido") || "[SBIndefinido]";
-                const colacionRaw = buscarPropiedad(datos, "colacion") || buscarPropiedad(datos, "colación") || "";
-                const movilizacionRaw = buscarPropiedad(datos, "movilizacion") || buscarPropiedad(datos, "movilización") || "";
 
-                // Validación estricta usando la nueva función
-                const anexo2Raw = buscarPropiedad(datos, "anexo2") || buscarPropiedad(datos, "anexo") || ""; // Busca ambas
+                // 3. EXTRACCIÓN DE DATOS SEGÚN NUEVA LÓGICA ESPECÍFICA
                 
-                const esIndefinido = String(anexo2Raw).toLowerCase().trim() === "indefinido";
-                const esEjecutivoComercial = cargoRaw.toLowerCase().includes("ejecutivo") && cargoRaw.toLowerCase().includes("comercial");
-
-                const tieneDatosTerminoAnexo1 = !esDatoVacio(terminoAnexo1Raw);
-                const tieneDatosAnexo2 = !esDatoVacio(anexo2Raw);
+                // Cargo
+                const cargoRaw = showCargo ? 
+                    (buscarPropiedad(datos, "nuevocargo") || "[Nuevo Cargo]") : 
+                    (buscarPropiedad(datos, "cargo") || "[Cargo]");
                 
-                // CONDICIÓN PRINCIPAL PARA EJECUTIVO COMERCIAL
-                const aplicarReglasEjecutivo = esEjecutivoComercial && !tieneDatosTerminoAnexo1 && !tieneDatosAnexo2;
+                // Inicialización de contenedores de dinero
+                let sbIndefinidoRaw = "[SBIndefinido]";
+                let colacionRaw = "0";
+                let movilizacionRaw = "0";
 
+                if (showSueldo) {
+                    if (tipoAnexo === "sueldo" || 
+                        tipoAnexo === "cargo_sueldo" || 
+                        tipoAnexo === "plazo_fijo_sueldo" || 
+                        tipoAnexo === "plazo_fijo_sueldo_cargo" || 
+                        tipoAnexo === "indefinido_sueldo" || 
+                        tipoAnexo === "indefinido_sueldo_cargo") {
+                        
+                        // CAMBIO EXPLÍCITO DE SUELDO (SISTEMA DE ALERTA ESTRICTA DIFERENCIADO)
+                        if (tipoAnexo.includes("plazo_fijo")) {
+                            sbIndefinidoRaw = buscarPropiedad(datos, "nuevosbfijo") || "[Nuevo SB Fijo]";
+                        } else if (tipoAnexo.includes("indefinido")) {
+                            sbIndefinidoRaw = buscarPropiedad(datos, "nuevosbindefinido") || "[Nuevo SB Indefinido]";
+                        } else {
+                            // Si solo elige 'sueldo' o 'cargo_sueldo', busca indefinido primero, luego fijo, luego alerta.
+                            sbIndefinidoRaw = buscarPropiedad(datos, "nuevosbindefinido") || buscarPropiedad(datos, "nuevosbfijo") || "[Nuevo SB]";
+                        }
+
+                        colacionRaw = buscarPropiedad(datos, "nuevocolacion") || buscarPropiedad(datos, "nuevocolación") || "0";
+                        movilizacionRaw = buscarPropiedad(datos, "nuevomovilizacion") || buscarPropiedad(datos, "nuevomovilización") || "0";
+                    } else {
+                        // MANTIENE REMUNERACIÓN ACTUAL (Indefinido Solo, Indefinido y Cargo, Comisiones)
+                        sbIndefinidoRaw = buscarPropiedad(datos, "sbindefinido") || "[SBIndefinido]";
+                        colacionRaw = buscarPropiedad(datos, "colacion") || buscarPropiedad(datos, "colación") || "0";
+                        movilizacionRaw = buscarPropiedad(datos, "movilizacion") || buscarPropiedad(datos, "movilización") || "0";
+                    }
+                } else {
+                    sbIndefinidoRaw = buscarPropiedad(datos, "sbindefinido") || "[SBIndefinido]";
+                    colacionRaw = buscarPropiedad(datos, "colacion") || buscarPropiedad(datos, "colación") || "0";
+                    movilizacionRaw = buscarPropiedad(datos, "movilizacion") || buscarPropiedad(datos, "movilización") || "0";
+                }
+
+                // Procesamiento del centro de costo
                 let centroCostoCiudad = centroCosto;
                 if (centroCosto !== "[Centro de Costo]") {
                     let ccLower = centroCosto.trim().toLowerCase();
@@ -446,6 +543,7 @@
                     }
                 }
 
+                // Formateo de datos
                 const rutFormateado = formatearRut(rutRaw) || "[RUT]";
                 const terminoAnexo1Format = formatearFecha(terminoAnexo1Raw, false) || "[TerminoAnexo1]";
                 const sbIndefinidoFormat = formatearDineroConSigno(sbIndefinidoRaw);
@@ -455,124 +553,84 @@
                 let inicioAnexoFormat = "";
                 let fechaParaTitulo = null;
 
-                // =========================================================
-                // BLOQUE PRINCIPAL DE MODIFICACIONES SEGÚN REGLA
-                // =========================================================
-                if (aplicarReglasEjecutivo) {
-                    
-                    // 1. Cambiar texto de sustituir a complementar
-                    if (textoPrimero) textoPrimero.innerHTML = '<u><strong>PRIMERO. -</strong></u> Las partes vienen a complementar las siguientes cláusulas del contrato de trabajo, las que a continuación se detallan:';
-                    
-                    if (contCuarta) contCuarta.style.display = "block"; 
-                    
-                    // 2. Ocultar letras a, b, c, d
-                    if (liSueldo) liSueldo.style.display = "none";
-                    if (liGratificacion) liGratificacion.style.display = "none";
-                    if (liColacion) liColacion.style.display = "none";
-                    if (liMovilizacion) liMovilizacion.style.display = "none";
-                    
-                    // 3. Mostrar comisiones iniciando en letra e
-                    if (liComisiones) {
-                        liComisiones.style.display = "list-item";
-                        liComisiones.setAttribute("value", "5");
-                    }
-                    
-                    // 4. Ocultar cláusula SEXTA
-                    if (contSexta) contSexta.style.display = "none";
+                // 4. RENDERIZADO DE BLOQUES PRINCIPALES
+                if (contCargo) contCargo.style.display = showCargo ? "block" : "none";
+                if (contCuarta) contCuarta.style.display = showSueldo ? "block" : "none";
+                if (contSexta) contSexta.style.display = showVigencia ? "block" : "none";
 
-                    // 5. Las fechas son de inicio de contrato
-                    inicioAnexoFormat = "[Inicio Contrato]";
-                    if (inicioContratoRaw && !esDatoVacio(inicioContratoRaw)) {
-                        let fechaInicioObj = obtenerFechaObjeto(inicioContratoRaw);
-                        if (fechaInicioObj) {
-                            let opciones = { day: 'numeric', month: 'long', year: 'numeric' };
-                            inicioAnexoFormat = fechaInicioObj.toLocaleDateString('es-ES', opciones).replace(',', '');
-                            fechaParaTitulo = fechaInicioObj; 
+                // Procesamiento interno de Remuneraciones
+                if (showSueldo) {
+                    if (isComisiones) {
+                        if (textoPrimero) textoPrimero.innerHTML = '<u><strong>PRIMERO. -</strong></u> Las partes vienen a complementar las siguientes cláusulas del contrato de trabajo, las que a continuación se detallan:';
+                        if (liSueldo) liSueldo.style.display = "none";
+                        if (liGratificacion) liGratificacion.style.display = "none";
+                        if (liColacion) liColacion.style.display = "none";
+                        if (liMovilizacion) liMovilizacion.style.display = "none";
+                        if (liComisiones) {
+                            liComisiones.style.display = "list-item";
+                            liComisiones.setAttribute("value", "5");
                         }
-                    }
-
-                } else {
-                    // =========================================================
-                    // FLUJO SI NO ES EJECUTIVO O SI TIENE DATOS EN ANEXOS
-                    // =========================================================
-                    
-                    if (textoPrimero) textoPrimero.innerHTML = '<u><strong>PRIMERO. -</strong></u> Las partes vienen en sustituir las siguientes cláusulas del contrato de trabajo, las que a continuación se detallan:';
-                    
-                    if (!tieneDatosAnexo2) {
-                        // SI ANEXO2 ESTÁ VACÍO Y NO ES EJECUTIVO (Solo actualiza vigencia)
-                        if (contCuarta) contCuarta.style.display = "none"; 
-                        
-                        if (contSexta) {
-                            contSexta.style.display = "block";
-                            contSexta.innerHTML = '<u><strong>SEXTO. - DE LA VIGENCIA:</strong></u> El presente contrato tendrá una duración hasta el día <strong><span class="variable" id="dato-termino-anexo1"></span></strong>.';
-                            asignarTextoSeguro("dato-termino-anexo1", terminoAnexo1Format); 
-                        }
-
-                        // Fechas (Arranca post Contrato)
-                        inicioAnexoFormat = "[TerminoContrato + 1 DÍA]";
-                        if (terminoContratoRaw && !esDatoVacio(terminoContratoRaw)) {
-                            let fechaTerminoObj = obtenerFechaObjeto(terminoContratoRaw);
-                            if (fechaTerminoObj) {
-                                fechaTerminoObj.setDate(fechaTerminoObj.getDate() + 1); 
-                                let opciones = { day: 'numeric', month: 'long', year: 'numeric' };
-                                inicioAnexoFormat = fechaTerminoObj.toLocaleDateString('es-ES', opciones).replace(',', '');
-                                fechaParaTitulo = fechaTerminoObj; 
-                            }
-                        }
-
                     } else {
-                        // SI ANEXO2 TIENE DATOS 
-                        if (contCuarta) contCuarta.style.display = "block"; 
+                        if (textoPrimero) textoPrimero.innerHTML = '<u><strong>PRIMERO. -</strong></u> Las partes vienen en sustituir las siguientes cláusulas del contrato de trabajo, las que a continuación se detallan:';
                         if (liSueldo) liSueldo.style.display = "list-item";
                         if (liGratificacion) liGratificacion.style.display = "list-item";
                         if (liComisiones) liComisiones.style.display = "none";
-                        
-                        if (liColacion) {
-                            const numColacion = String(colacionRaw).replace(/[^\d]/g, ''); 
-                            if (numColacion === "0" || numColacion === "") {
-                                liColacion.style.display = "none";
-                            } else {
-                                liColacion.style.display = "list-item";
-                                asignarTextoSeguro("dato-colacion", colacionFormat);
-                            }
-                        }
 
+                        if (liColacion) {
+                            const numColacion = String(colacionRaw).replace(/[^\d]/g, '');
+                            liColacion.style.display = (numColacion === "0" || numColacion === "") ? "none" : "list-item";
+                            if (liColacion.style.display === "list-item") asignarTextoSeguro("dato-colacion", colacionFormat);
+                        }
                         if (liMovilizacion) {
                             const numMovilizacion = String(movilizacionRaw).replace(/[^\d]/g, '');
-                            if (numMovilizacion === "0" || numMovilizacion === "") {
-                                liMovilizacion.style.display = "none";
-                            } else {
-                                liMovilizacion.style.display = "list-item";
-                                asignarTextoSeguro("dato-movilizacion", movilizacionFormat);
-                            }
+                            liMovilizacion.style.display = (numMovilizacion === "0" || numMovilizacion === "") ? "none" : "list-item";
+                            if (liMovilizacion.style.display === "list-item") asignarTextoSeguro("dato-movilizacion", movilizacionFormat);
                         }
+                    }
+                }
 
-                        if (contSexta) {
-                            contSexta.style.display = "block";
-                            if (esIndefinido) {
-                                contSexta.innerHTML = '<u><strong>SEXTO. - DE LA VIGENCIA:</strong></u> El presente contrato tendrá una duración <strong>indefinida</strong>.';
-                            } else {
-                                let valLimpioAnexo2 = String(anexo2Raw).trim();
-                                contSexta.innerHTML = `<u><strong>SEXTO. - DE LA VIGENCIA:</strong></u> El presente contrato tendrá una duración <strong>${valLimpioAnexo2}</strong>.`;
-                            }
-                        }
-
-                        // Fechas (Arranca post Anexo 1)
+                // Procesamiento interno de Vigencia y Fechas Automáticas
+                if (showVigencia) {
+                    if (isIndefinido) {
+                        if (contSexta) contSexta.innerHTML = '<u><strong>SEXTO. - DE LA VIGENCIA:</strong></u> El presente contrato tendrá una duración <strong>indefinida</strong>.';
                         inicioAnexoFormat = "[TerminoAnexo1 + 1 DÍA]";
                         if (terminoAnexo1Raw && !esDatoVacio(terminoAnexo1Raw)) {
                             let fechaTerminoAnexoObj = obtenerFechaObjeto(terminoAnexo1Raw);
                             if (fechaTerminoAnexoObj) {
                                 fechaTerminoAnexoObj.setDate(fechaTerminoAnexoObj.getDate() + 1);
-                                let opciones = { day: 'numeric', month: 'long', year: 'numeric' };
-                                inicioAnexoFormat = fechaTerminoAnexoObj.toLocaleDateString('es-ES', opciones).replace(',', '');
+                                inicioAnexoFormat = fechaTerminoAnexoObj.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }).replace(',', '');
                                 fechaParaTitulo = fechaTerminoAnexoObj; 
                             }
                         }
+                    } else {
+                        if (contSexta) {
+                            contSexta.innerHTML = '<u><strong>SEXTO. - DE LA VIGENCIA:</strong></u> El presente contrato tendrá una duración hasta el día <strong><span class="variable" id="dato-termino-anexo1"></span></strong>.';
+                            setTimeout(() => asignarTextoSeguro("dato-termino-anexo1", terminoAnexo1Format), 0);
+                        }
+                        inicioAnexoFormat = "[TerminoContrato + 1 DÍA]";
+                        if (terminoContratoRaw && !esDatoVacio(terminoContratoRaw)) {
+                            let fechaTerminoObj = obtenerFechaObjeto(terminoContratoRaw);
+                            if (fechaTerminoObj) {
+                                fechaTerminoObj.setDate(fechaTerminoObj.getDate() + 1);
+                                inicioAnexoFormat = fechaTerminoObj.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }).replace(',', '');
+                                fechaParaTitulo = fechaTerminoObj; 
+                            }
+                        }
                     }
+                } else if (isComisiones) {
+                    inicioAnexoFormat = "[Inicio Contrato]";
+                    if (inicioContratoRaw && !esDatoVacio(inicioContratoRaw)) {
+                        let fechaInicioObj = obtenerFechaObjeto(inicioContratoRaw);
+                        if (fechaInicioObj) {
+                            inicioAnexoFormat = fechaInicioObj.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }).replace(',', '');
+                            fechaParaTitulo = fechaInicioObj; 
+                        }
+                    }
+                } else {
+                    inicioAnexoFormat = "[Fecha Anexo]"; 
                 }
-                // =========================================================
 
-                // Insertar variables comunes en el DOM
+                // Inyectar variables al DOM
                 asignarTextoSeguro("dato-nombres", nombres || "[Nombres]");
                 asignarTextoSeguro("dato-paterno", paterno || "[Apellido Paterno]");
                 asignarTextoSeguro("dato-materno", materno || "[Apellido Materno]");
@@ -582,8 +640,9 @@
                 asignarTextoSeguro("dato-inicio-anexo", inicioAnexoFormat);
                 asignarTextoSeguro("dato-inicio-anexo-intro", inicioAnexoFormat);
                 asignarTextoSeguro("dato-centro-costo-intro", centroCostoCiudad);
+                asignarTextoSeguro("dato-cargo-anexo", cargoRaw || "[Cargo]");
                 
-                // Nombre del archivo de impresión
+                // Nombre del archivo dinámico para la impresión
                 let primerNombre = nombres.trim().split(" ")[0];
                 let fechaPuntos = "";
                 
@@ -601,16 +660,15 @@
                 }
                 
             } else {
-                // Estado por defecto (vacío)
+                // Estado en blanco si no hay selección
                 if (textoPrimero) textoPrimero.innerHTML = '<u><strong>PRIMERO. -</strong></u> Las partes vienen en sustituir las siguientes cláusulas del contrato de trabajo, las que a continuación se detallan:';
-                
+                if (contCargo) contCargo.style.display = "none";
                 if (contCuarta) contCuarta.style.display = "block";
                 if (liSueldo) liSueldo.style.display = "list-item";
                 if (liGratificacion) liGratificacion.style.display = "list-item";
                 if (liColacion) liColacion.style.display = "list-item";
                 if (liMovilizacion) liMovilizacion.style.display = "list-item";
                 if (liComisiones) liComisiones.style.display = "none";
-                
                 if (contSexta) {
                     contSexta.style.display = "block";
                     contSexta.innerHTML = '<u><strong>SEXTO. - DE LA VIGENCIA:</strong></u> El presente contrato tendrá una duración hasta el día <strong><span class="variable" id="dato-termino-anexo1">[TerminoAnexo1]</span></strong>.';
@@ -627,6 +685,7 @@
                 asignarTextoSeguro("dato-centro-costo-intro", "[Centro de Costo]");
                 asignarTextoSeguro("dato-colacion", "[Colación]");
                 asignarTextoSeguro("dato-movilizacion", "[Movilización]");
+                asignarTextoSeguro("dato-cargo-anexo", "[Cargo]");
                 
                 document.title = "Anexo Contrato de Trabajo Dinámico - Preomed";
             }
