@@ -77,6 +77,7 @@
             <option value="cargo">Cargo</option>
             <option value="sueldo">Sueldo</option>
             <option value="cargo_sueldo">Cargo + Sueldo</option>
+            <option value="horario">Horario</option>
             <option value="comisiones">Comisiones</option>
         </select>
 
@@ -106,6 +107,11 @@
 
                         <div id="contenedor-clausula-cargo" style="margin-left: 40px; display: none; margin-bottom: 15px;">
                             <p class="nueva-clausula sin-sangria" style="margin-bottom: 5px;"><u><strong>PRIMERO. - DE LAS FUNCIONES Y CARGO:</strong></u> El/La trabajador/a se obliga a desempeñar las funciones propias de “<strong><span class="variable" id="dato-cargo-anexo">[Cargo]</span></strong>” de acuerdo con las instrucciones que al efecto sean impartidas por el empleador, estableciendo de común acuerdo que las funciones y responsabilidades propias del cargo o función que desempeñará el/la trabajador/a se encuentran establecidas en el descriptor de cargo correspondiente, documento que recepcionado por el/la trabajador/a se entiende incorporado al presente contrato. El/La trabajador/a queda obligado a cumplir leal y correctamente con todos los deberes que le imponga este instrumento o aquéllos que se deriven de las funciones y cargo, debiendo ejecutar las instrucciones que le confieran sus superiores. Del mismo modo el/la trabajador/a se obliga a desempeñar en forma eficaz, las funciones y el cargo para el cual ha sido contratado, empleando para ello la mayor diligencia y dedicación.</p>
+                        </div>
+
+                        <div id="contenedor-clausula-horario" style="margin-left: 40px; display: none; margin-bottom: 15px;">
+                            <p class="nueva-clausula sin-sangria" style="margin-bottom: 5px;"><u><strong>TERCERO. - DE LA JORNADA DE TRABAJO:</strong></u> La jornada de trabajo será de <strong><span class="variable" id="dato-jornada-anexo">[Jornada]</span></strong> horas semanales de acuerdo con el artículo 22 del Código del Trabajo, la cual tendrá un descanso de <strong><span class="variable" id="dato-tiempo-colacion-anexo">[Tiempo Colación]</span></strong> no imputable a dicha jornada, la distribución de la jornada será de la siguiente manera de acuerdo con el artículo 28 del Código del Trabajo:<br><br>
+                            <span class="variable formato-bloque" id="dato-horario-anexo" style="display: block; margin-top: 10px; font-weight: normal; font-style: italic;">[Horario]</span></p>
                         </div>
 
                         <div id="contenedor-clausula-cuarta" style="margin-left: 40px;">
@@ -420,6 +426,7 @@
             
             // Referencias DOM
             const contCargo = document.getElementById("contenedor-clausula-cargo");
+            const contHorario = document.getElementById("contenedor-clausula-horario");
             const contCuarta = document.getElementById("contenedor-clausula-cuarta");
             const contSexta = document.getElementById("contenedor-clausula-sexta");
             const textoPrimero = document.getElementById("texto-primero");
@@ -435,6 +442,7 @@
                 
                 // 1. EVALUAMOS LAS BANDERAS DE VISIBILIDAD PRIMERO
                 let showCargo = false;
+                let showHorario = false;
                 let showSueldo = false;
                 let showVigencia = false;
                 let isIndefinido = false;
@@ -477,6 +485,9 @@
                     case "cargo_sueldo":
                         showCargo = true; showSueldo = true;
                         break;
+                    case "horario":
+                        showHorario = true;
+                        break;
                 }
 
                 // 2. EXTRACCIÓN DE DATOS BASE
@@ -490,12 +501,37 @@
                 const terminoAnexo1Raw = buscarPropiedad(datos, "terminoanexo1") || buscarPropiedad(datos, "termino_anexo1") || "";
                 const inicioContratoRaw = buscarPropiedad(datos, "iniciocontrato") || buscarPropiedad(datos, "inicio_contrato") || "";
 
+                // EXTRACCIÓN DE NUEVA FECHA
+                const nuevaFechaRaw = buscarPropiedad(datos, "nuevafecha") || buscarPropiedad(datos, "nueva_fecha") || "";
+                let nuevaFechaFormat = "[Nueva Fecha]";
+                let nuevaFechaObj = null;
+                
+                if (nuevaFechaRaw && !esDatoVacio(nuevaFechaRaw)) {
+                    nuevaFechaObj = obtenerFechaObjeto(nuevaFechaRaw);
+                    if (nuevaFechaObj) {
+                        nuevaFechaFormat = nuevaFechaObj.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }).replace(',', '');
+                    }
+                }
+
                 // 3. EXTRACCIÓN DE DATOS SEGÚN NUEVA LÓGICA ESPECÍFICA
                 
                 // Cargo
                 const cargoRaw = showCargo ? 
                     (buscarPropiedad(datos, "nuevocargo") || "[Nuevo Cargo]") : 
                     (buscarPropiedad(datos, "cargo") || "[Cargo]");
+
+                // Horario, Jornada y Tiempo de Colación (con Respaldo si es vacío o "0")
+                let nuevaJornadaVal = buscarPropiedad(datos, "nuevajornada");
+                let jornadaOriginal = buscarPropiedad(datos, "jornada");
+                const jornadaRaw = showHorario ? ((esDatoVacio(nuevaJornadaVal) || String(nuevaJornadaVal).trim() === "0") ? (jornadaOriginal || "[Jornada]") : nuevaJornadaVal) : (jornadaOriginal || "[Jornada]");
+
+                let nuevoTiempoCol = buscarPropiedad(datos, "nuevotiempocolacion") || buscarPropiedad(datos, "nuevotiempocolación");
+                let tiempoColOriginal = buscarPropiedad(datos, "tiempocolacion") || buscarPropiedad(datos, "tiempocolación");
+                const tiempoColacionRaw = showHorario ? ((esDatoVacio(nuevoTiempoCol) || String(nuevoTiempoCol).trim() === "0") ? (tiempoColOriginal || "[Tiempo Colación]") : nuevoTiempoCol) : (tiempoColOriginal || "[Tiempo Colación]");
+
+                let nuevoHorarioVal = buscarPropiedad(datos, "nuevohorario");
+                let horarioOriginal = buscarPropiedad(datos, "horario");
+                const horarioRaw = showHorario ? ((esDatoVacio(nuevoHorarioVal) || String(nuevoHorarioVal).trim() === "0") ? (horarioOriginal || "[Horario]") : nuevoHorarioVal) : (horarioOriginal || "[Horario]");
                 
                 // Inicialización de contenedores de dinero
                 let sbIndefinidoRaw = "[SBIndefinido]";
@@ -516,7 +552,6 @@
                         } else if (tipoAnexo.includes("indefinido")) {
                             sbIndefinidoRaw = buscarPropiedad(datos, "nuevosbindefinido") || "[Nuevo SB Indefinido]";
                         } else {
-                            // Si solo elige 'sueldo' o 'cargo_sueldo', busca indefinido primero, luego fijo, luego alerta.
                             sbIndefinidoRaw = buscarPropiedad(datos, "nuevosbindefinido") || buscarPropiedad(datos, "nuevosbfijo") || "[Nuevo SB]";
                         }
 
@@ -555,6 +590,7 @@
 
                 // 4. RENDERIZADO DE BLOQUES PRINCIPALES
                 if (contCargo) contCargo.style.display = showCargo ? "block" : "none";
+                if (contHorario) contHorario.style.display = showHorario ? "block" : "none";
                 if (contCuarta) contCuarta.style.display = showSueldo ? "block" : "none";
                 if (contSexta) contSexta.style.display = showVigencia ? "block" : "none";
 
@@ -589,17 +625,29 @@
                     }
                 }
 
-                // Procesamiento interno de Vigencia y Fechas Automáticas
+                // 5. PROCESAMIENTO DE VIGENCIA Y FECHAS
+                const usaNuevaFecha = [
+                    "plazo_fijo_sueldo", "plazo_fijo_cargo", "plazo_fijo_sueldo_cargo", 
+                    "indefinido_sueldo", "indefinido_cargo", "indefinido_sueldo_cargo", 
+                    "cargo", "sueldo", "cargo_sueldo", "horario"
+                ].includes(tipoAnexo);
+
                 if (showVigencia) {
                     if (isIndefinido) {
                         if (contSexta) contSexta.innerHTML = '<u><strong>SEXTO. - DE LA VIGENCIA:</strong></u> El presente contrato tendrá una duración <strong>indefinida</strong>.';
-                        inicioAnexoFormat = "[TerminoAnexo1 + 1 DÍA]";
-                        if (terminoAnexo1Raw && !esDatoVacio(terminoAnexo1Raw)) {
-                            let fechaTerminoAnexoObj = obtenerFechaObjeto(terminoAnexo1Raw);
-                            if (fechaTerminoAnexoObj) {
-                                fechaTerminoAnexoObj.setDate(fechaTerminoAnexoObj.getDate() + 1);
-                                inicioAnexoFormat = fechaTerminoAnexoObj.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }).replace(',', '');
-                                fechaParaTitulo = fechaTerminoAnexoObj; 
+                        
+                        if (usaNuevaFecha) {
+                            inicioAnexoFormat = nuevaFechaFormat;
+                            fechaParaTitulo = nuevaFechaObj;
+                        } else {
+                            inicioAnexoFormat = "[TerminoAnexo1 + 1 DÍA]";
+                            if (terminoAnexo1Raw && !esDatoVacio(terminoAnexo1Raw)) {
+                                let fechaTerminoAnexoObj = obtenerFechaObjeto(terminoAnexo1Raw);
+                                if (fechaTerminoAnexoObj) {
+                                    fechaTerminoAnexoObj.setDate(fechaTerminoAnexoObj.getDate() + 1);
+                                    inicioAnexoFormat = fechaTerminoAnexoObj.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }).replace(',', '');
+                                    fechaParaTitulo = fechaTerminoAnexoObj; 
+                                }
                             }
                         }
                     } else {
@@ -607,16 +655,26 @@
                             contSexta.innerHTML = '<u><strong>SEXTO. - DE LA VIGENCIA:</strong></u> El presente contrato tendrá una duración hasta el día <strong><span class="variable" id="dato-termino-anexo1"></span></strong>.';
                             setTimeout(() => asignarTextoSeguro("dato-termino-anexo1", terminoAnexo1Format), 0);
                         }
-                        inicioAnexoFormat = "[TerminoContrato + 1 DÍA]";
-                        if (terminoContratoRaw && !esDatoVacio(terminoContratoRaw)) {
-                            let fechaTerminoObj = obtenerFechaObjeto(terminoContratoRaw);
-                            if (fechaTerminoObj) {
-                                fechaTerminoObj.setDate(fechaTerminoObj.getDate() + 1);
-                                inicioAnexoFormat = fechaTerminoObj.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }).replace(',', '');
-                                fechaParaTitulo = fechaTerminoObj; 
+                        
+                        if (usaNuevaFecha) {
+                            inicioAnexoFormat = nuevaFechaFormat;
+                            fechaParaTitulo = nuevaFechaObj;
+                        } else {
+                            inicioAnexoFormat = "[TerminoContrato + 1 DÍA]";
+                            if (terminoContratoRaw && !esDatoVacio(terminoContratoRaw)) {
+                                let fechaTerminoObj = obtenerFechaObjeto(terminoContratoRaw);
+                                if (fechaTerminoObj) {
+                                    fechaTerminoObj.setDate(fechaTerminoObj.getDate() + 1);
+                                    inicioAnexoFormat = fechaTerminoObj.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }).replace(',', '');
+                                    fechaParaTitulo = fechaTerminoObj; 
+                                }
                             }
                         }
                     }
+                } else if (usaNuevaFecha) {
+                    // Para modificaciones que NO cambian la vigencia (ej: "Solo Cargo" o "Horario")
+                    inicioAnexoFormat = nuevaFechaFormat;
+                    fechaParaTitulo = nuevaFechaObj;
                 } else if (isComisiones) {
                     inicioAnexoFormat = "[Inicio Contrato]";
                     if (inicioContratoRaw && !esDatoVacio(inicioContratoRaw)) {
@@ -641,6 +699,9 @@
                 asignarTextoSeguro("dato-inicio-anexo-intro", inicioAnexoFormat);
                 asignarTextoSeguro("dato-centro-costo-intro", centroCostoCiudad);
                 asignarTextoSeguro("dato-cargo-anexo", cargoRaw || "[Cargo]");
+                asignarTextoSeguro("dato-jornada-anexo", jornadaRaw);
+                asignarTextoSeguro("dato-tiempo-colacion-anexo", tiempoColacionRaw);
+                asignarTextoSeguro("dato-horario-anexo", horarioRaw);
                 
                 // Nombre del archivo dinámico para la impresión
                 let primerNombre = nombres.trim().split(" ")[0];
@@ -663,6 +724,7 @@
                 // Estado en blanco si no hay selección
                 if (textoPrimero) textoPrimero.innerHTML = '<u><strong>PRIMERO. -</strong></u> Las partes vienen en sustituir las siguientes cláusulas del contrato de trabajo, las que a continuación se detallan:';
                 if (contCargo) contCargo.style.display = "none";
+                if (contHorario) contHorario.style.display = "none";
                 if (contCuarta) contCuarta.style.display = "block";
                 if (liSueldo) liSueldo.style.display = "list-item";
                 if (liGratificacion) liGratificacion.style.display = "list-item";
@@ -686,6 +748,9 @@
                 asignarTextoSeguro("dato-colacion", "[Colación]");
                 asignarTextoSeguro("dato-movilizacion", "[Movilización]");
                 asignarTextoSeguro("dato-cargo-anexo", "[Cargo]");
+                asignarTextoSeguro("dato-jornada-anexo", "[Jornada]");
+                asignarTextoSeguro("dato-tiempo-colacion-anexo", "[Tiempo Colación]");
+                asignarTextoSeguro("dato-horario-anexo", "[Horario]");
                 
                 document.title = "Anexo Contrato de Trabajo Dinámico - Preomed";
             }
