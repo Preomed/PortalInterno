@@ -13,7 +13,7 @@
         body { font-family: 'Aptos Display', Calibri, Arial, sans-serif; font-size: 9pt; line-height: 1.5; color: #000; max-width: 800px; margin: 20px auto; padding: 20px; background-color: #f9f9f9; }
         .controles { background: #e9ecef; padding: 20px; margin-bottom: 20px; border-radius: 8px; text-align: center; font-family: 'Aptos Display', Arial, sans-serif; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px; font-size: 12pt; }
         .controles label { font-size: 14px; margin-left: 10px; }
-        select, button { padding: 10px; font-size: 14px; font-family: inherit; border-radius: 5px; border: 1px solid #ccc; }
+        select, button, input { padding: 10px; font-size: 14px; font-family: inherit; border-radius: 5px; border: 1px solid #ccc; }
         button { background-color: #007bff; color: white; border: none; cursor: pointer; margin-left: 15px; }
         button:hover { background-color: #0056b3; }
         .contenedor-carta { background-color: #fff; padding: 40px; box-shadow: 0 0 10px rgba(0,0,0,0.1); text-align: justify; }
@@ -99,9 +99,20 @@
             <option value="cargo">Cargo</option>
             <option value="sueldo">Sueldo</option>
             <option value="cargo_sueldo">Cargo + Sueldo</option>
+            <option value="cargo_sueldo_horario">Cargo + Sueldo + Horario</option>
             <option value="horario">Horario</option>
             <option value="comisiones">Comisiones</option>
         </select>
+
+        <!-- CONTROLES PARA ANEXO PROVISORIO -->
+        <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; background: #fff; padding: 5px 10px; border-radius: 5px; border: 1px solid #ccc;">
+            <input type="checkbox" id="chk-provisorio" onchange="toggleProvisorio()"> Anexo Provisorio
+        </label>
+        
+        <div id="contenedor-fecha-termino" style="display: none; align-items: center;">
+            <label for="fecha-termino-prov"><strong>Fecha Término:</strong></label>
+            <input type="date" id="fecha-termino-prov" onchange="actualizarContrato()">
+        </div>
 
         <button onclick="window.print()">Imprimir PDF</button>
     </div>
@@ -132,7 +143,7 @@
                         </div>
 
                         <div id="contenedor-clausula-horario" style="margin-left: 40px; display: none; margin-bottom: 15px;">
-                            <p class="nueva-clausula sin-sangria" style="margin-bottom: 5px;"><u><strong>TERCERO. - DE LA JORNADA DE TRABAJO:</strong></u> La jornada de trabajo será de <strong><span class="variable" id="dato-jornada-anexo">[Jornada]</span></strong> horas semanales de acuerdo con el artículo 22 del Código del Trabajo, la cual tendrá un descanso de <strong><span class="variable" id="dato-tiempo-colacion-anexo">[Tiempo Colación]</span></strong> no imputable a dicha jornada, la distribución de la jornada será de la siguiente manera de acuerdo con el artículo 28 del Código del Trabajo:<br><br>
+                            <p class="nueva-clausula sin-sangria" style="margin-bottom: 5px;"><u><strong>TERCERO. - DE LA JORNADA DE TRABAJO:</strong></u> La jornada de trabajo será de <strong><span class="variable" id="dato-jornada-anexo">[Jornada]</span></strong> horas semanales de acuerdo con el artículo 22 del Código del Trabajo, la cual tendrá un descanso de <strong><span class="variable" id="dato-tiempo-colacion-anexo">[Tiempo Colación]</span></strong> no imputable a dicha jornada, la distribution de la jornada será de la siguiente manera de acuerdo con el artículo 28 del Código del Trabajo:<br><br>
                             <span class="variable formato-bloque" id="dato-horario-anexo" style="display: block; margin-top: 10px; font-weight: normal; font-style: italic;">[Horario]</span></p>
                         </div>
 
@@ -209,7 +220,8 @@
 
                         <p class="nueva-clausula sin-sangria"><u><strong>SEGUNDO. -</strong></u> Se deja constancia que lo estipulado en el presente anexo de contrato, sustituye y deja sin efecto todo anexo de contrato anterior.</p>
 
-                        <p class="nueva-clausula sin-sangria"><u><strong>TERCERO. -</strong></u> El presente anexo de contrato regirá a partir del <strong><span class="variable" id="dato-inicio-anexo">[Fecha Anexo]</span></strong>.-</p>
+                        <!-- CONTENEDOR CLAUSULA TERCERA -->
+                        <p class="nueva-clausula sin-sangria" id="contenedor-clausula-tercera"><u><strong>TERCERO. -</strong></u> El presente anexo de contrato regirá a partir del <strong><span class="variable" id="dato-inicio-anexo">[Fecha Anexo]</span></strong>.-</p>
 
                         <p class="nueva-clausula sin-sangria"><u><strong>CUARTO. -</strong></u> El presente anexo se suscribe electrónicamente a través de la plataforma de Gestor Documental de BUK, quedando disponible una copia de respaldo para su descarga en la misma plataforma.</p>
 
@@ -321,6 +333,17 @@
                 if (!isNaN(d.getTime())) return d;
             }
             return null;
+        }
+
+        function toggleProvisorio() {
+            const isChecked = document.getElementById("chk-provisorio").checked;
+            document.getElementById("contenedor-fecha-termino").style.display = isChecked ? "flex" : "none";
+            actualizarContrato();
+        }
+
+        function numeroALetras(num) {
+            const letras = ["cero", "un", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve", "diez", "once", "doce", "trece", "catorce", "quince", "dieciséis", "diecisiete", "dieciocho", "diecinueve", "veinte", "veintiún", "veintidós", "veintitrés", "veinticuatro"];
+            return letras[num] || num;
         }
 
         function procesarMeses() {
@@ -507,6 +530,9 @@
                     case "cargo_sueldo":
                         showCargo = true; showSueldo = true;
                         break;
+                    case "cargo_sueldo_horario":
+                        showCargo = true; showSueldo = true; showHorario = true;
+                        break;
                     case "horario":
                         showHorario = true;
                         break;
@@ -563,6 +589,7 @@
                 if (showSueldo) {
                     if (tipoAnexo === "sueldo" || 
                         tipoAnexo === "cargo_sueldo" || 
+                        tipoAnexo === "cargo_sueldo_horario" ||
                         tipoAnexo === "plazo_fijo_sueldo" || 
                         tipoAnexo === "plazo_fijo_sueldo_cargo" || 
                         tipoAnexo === "indefinido_sueldo" || 
@@ -651,7 +678,7 @@
                 const usaNuevaFecha = [
                     "plazo_fijo_sueldo", "plazo_fijo_cargo", "plazo_fijo_sueldo_cargo", 
                     "indefinido_sueldo", "indefinido_cargo", "indefinido_sueldo_cargo", 
-                    "cargo", "sueldo", "cargo_sueldo", "horario"
+                    "cargo", "sueldo", "cargo_sueldo", "cargo_sueldo_horario", "horario"
                 ].includes(tipoAnexo);
 
                 if (showVigencia) {
@@ -710,6 +737,45 @@
                     inicioAnexoFormat = "[Fecha Anexo]"; 
                 }
 
+                // ==========================================
+                // LÓGICA CLÁUSULA TERCERA - ANEXO PROVISORIO
+                // ==========================================
+                const chkProvisorio = document.getElementById("chk-provisorio");
+                const fechaTerminoProvVal = document.getElementById("fecha-termino-prov").value;
+                const clausulaTercera = document.getElementById("contenedor-clausula-tercera");
+
+                if (clausulaTercera) {
+                    if (chkProvisorio && chkProvisorio.checked && fechaParaTitulo && fechaTerminoProvVal) {
+                        
+                        // Generar objetos de fecha (Evita desfases de zona horaria forzando el inicio del día)
+                        let fechaTerminoObj = new Date(fechaTerminoProvVal + "T00:00:00");
+                        
+                        // Fecha de reversión (Término + 1 día)
+                        let fechaReversionObj = new Date(fechaTerminoObj);
+                        fechaReversionObj.setDate(fechaReversionObj.getDate() + 1);
+
+                        // Cálculo aproximado de meses 
+                        let mesesDiff = (fechaTerminoObj.getFullYear() - fechaParaTitulo.getFullYear()) * 12 + (fechaTerminoObj.getMonth() - fechaParaTitulo.getMonth());
+                        if (fechaTerminoObj.getDate() < fechaParaTitulo.getDate()) {
+                            mesesDiff--;
+                        }
+                        if (mesesDiff <= 0) mesesDiff = 1; // Forzar mínimo a 1 mes si las fechas son muy cercanas
+
+                        // Textos formateados
+                        let strInicio = fechaParaTitulo.toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' });
+                        let strTermino = fechaTerminoObj.toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' });
+                        let strReversion = fechaReversionObj.toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' });
+
+                        clausulaTercera.innerHTML = `<u><strong>TERCERO. -</strong></u> Las partes dejan expresa constancia y acuerdan que las modificaciones estipuladas en el presente anexo, relativas al nuevo cargo, remuneración y jornada de trabajo, tendrán un carácter estrictamente transitorio y temporal.<br><br>
+                        Dicha transitoriedad se extenderá por un período de <strong>${mesesDiff} (${numeroALetras(mesesDiff)}) meses</strong>, rigiendo de manera excepcional desde el <strong>${strInicio}</strong> hasta el <strong>${strTermino}</strong>.<br><br>
+                        Se acuerda expresamente que, a contar del <strong>${strReversion}</strong>, el/la trabajador/a cesará en estas funciones transitorias y retomará de pleno derecho su cargo, jornada laboral y estructura de remuneraciones que mantenía vigentes con anterioridad a la suscripción de este anexo, sin que ello constituya menoscabo alguno.`;
+                    } else {
+                        // Estado normal si no está marcado "Provisorio" o falta la fecha de término
+                        clausulaTercera.innerHTML = `<u><strong>TERCERO. -</strong></u> El presente anexo de contrato regirá a partir del <strong><span class="variable" id="dato-inicio-anexo">${inicioAnexoFormat}</span></strong>.-`;
+                    }
+                }
+                // ==========================================
+
                 // Inyectar variables al DOM
                 asignarTextoSeguro("dato-nombres", nombres || "[Nombres]");
                 asignarTextoSeguro("dato-paterno", paterno || "[Apellido Paterno]");
@@ -756,6 +822,11 @@
                 if (contSexta) {
                     contSexta.style.display = "block";
                     contSexta.innerHTML = '<u><strong>SEXTO. - DE LA VIGENCIA:</strong></u> El presente contrato tendrá una duración hasta el día <strong><span class="variable" id="dato-termino-anexo1">[TerminoAnexo1]</span></strong>.';
+                }
+
+                const clausulaTercera = document.getElementById("contenedor-clausula-tercera");
+                if (clausulaTercera) {
+                    clausulaTercera.innerHTML = `<u><strong>TERCERO. -</strong></u> El presente anexo de contrato regirá a partir del <strong><span class="variable" id="dato-inicio-anexo">[Fecha Anexo]</span></strong>.-`;
                 }
 
                 asignarTextoSeguro("dato-nombres", "[Nombres]");
