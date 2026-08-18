@@ -754,11 +754,11 @@
                         let fechaReversionObj = new Date(fechaTerminoObj);
                         fechaReversionObj.setDate(fechaReversionObj.getDate() + 1);
 
-                        // Cálculo aproximado de meses 
-                        let mesesDiff = (fechaTerminoObj.getFullYear() - fechaParaTitulo.getFullYear()) * 12 + (fechaTerminoObj.getMonth() - fechaParaTitulo.getMonth());
-                        if (fechaTerminoObj.getDate() < fechaParaTitulo.getDate()) {
-                            mesesDiff--;
-                        }
+                        // Cálculo más preciso de meses basado en la duración en días (inclusivo)
+                        const msPorDia = 1000 * 60 * 60 * 24;
+                        const diasTotales = Math.round((fechaTerminoObj.getTime() - fechaParaTitulo.getTime()) / msPorDia) + 1; // +1 para incluir el último día
+                        let mesesDiff = Math.round(diasTotales / 30.44); // 30.44 es el promedio matemático de días en un mes
+                        
                         if (mesesDiff <= 0) mesesDiff = 1; // Forzar mínimo a 1 mes si las fechas son muy cercanas
 
                         // Textos formateados
