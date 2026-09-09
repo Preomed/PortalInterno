@@ -13,6 +13,7 @@
         body { font-family: 'Aptos Display', Calibri, Arial, sans-serif; font-size: 9pt; line-height: 1.5; color: #000; max-width: 800px; margin: 20px auto; padding: 20px; background-color: #f9f9f9; }
         .controles { background: #e9ecef; padding: 20px; margin-bottom: 20px; border-radius: 8px; text-align: center; font-family: 'Aptos Display', Arial, sans-serif; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px; font-size: 12pt; }
         .controles label { font-size: 14px; margin-left: 10px; }
+        .checkbox-container { display: flex; align-items: center; gap: 5px; margin-left: 15px; }
         select, button { padding: 10px; font-size: 14px; font-family: inherit; border-radius: 5px; border: 1px solid #ccc; }
         button { background-color: #007bff; color: white; border: none; cursor: pointer; margin-left: 15px; }
         button:hover { background-color: #0056b3; }
@@ -63,6 +64,11 @@
         <select id="selector-trabajador" onchange="actualizarContrato()">
             <option value="">-- Seleccione --</option>
         </select>
+
+        <div class="checkbox-container">
+            <input type="checkbox" id="check-negociacion" onchange="actualizarContrato()">
+            <label for="check-negociacion" style="margin-left: 0; font-weight: bold;">Jefatura</label>
+        </div>
 
         <button onclick="window.print()">Imprimir PDF</button>
     </div>
@@ -137,19 +143,25 @@
 
                         <p class="nueva-clausula"><u><strong>DÉCIMO. - DE LA PROBIDAD, LEY N° 20.393 Y LEY N° 21.595:</strong></u> El/La trabajador/a se obliga a mantener un comportamiento probo, íntegro y debe abstenerse de realizar conductas que pudieran vincular a la Empresa con los delitos considerados en la Ley N° 20.393 sobre Responsabilidad Penal de las Personas Jurídicas, la Ley N° 21.595 de Delitos Económicos, y sus futuras modificaciones. El incumplimiento significará la terminación ipso facto del presente contrato de trabajo, sin indemnización alguna; de acuerdo con el artículo 160 N.° 7 del Código del Trabajo.</p>
 
-                        <p class="nueva-clausula"><u><strong>UNDÉCIMO. - DE LA CONFIDENCIALIDAD:</strong></u> El/La trabajador/a se obliga a guardar total reserva, dentro y fuera de la Empresa, de todos los hechos, antecedentes e informaciones de que tome conocimiento en el ejercicio de sus funciones o derivados de las actividades y negocios del Empleador y sus sociedades relacionadas, lo que considera en general pero no exclusivamente, estudios, desarrollos informáticos, tecnología aplicada y cualquier otro dato o antecedente de propiedad del Empleador y sus sociedades relacionadas, aún después de producida la terminación del presente Contrato. El/La trabajador/a consiente que está prohibida la divulgación, transferencia a cualquier título, comunicación, alteración, modificación o copia de dichos antecedentes e informaciones, así como la utilización indebida o para otros propósitos que no sean sus labores. Además, El/la trabajador/a se obliga a la protección de la información suministrada por el Empleador, debiendo tomar las medidas de seguridad apropiadas para la protección contra el acceso o difusión no autorizados.</p>
+                        <p class="nueva-clausula"><u><strong>UNDÉCIMO. - DE LA EXCLUSIVIDAD:</strong></u> El Empleado acuerda que en ningún momento durante la vigencia del presente contrato participará, a cualquier título que sea directa o indirectamente como propietario, ejecutivo, director empleado, agente, asesor o en otra calidad, o como mandatario en cualquier negocio o empresa o trabajo, a menos que reciba autorización expresa. Queda expresamente acordado que lo anterior no implica restringir o prohibir la participación que pueda tener el Empleado en acciones o bonos de sociedades abiertas o que se transen en la bolsa, en la medida que: (a) éste no posea derechos que representen más del cinco por ciento (5%) de las acciones con derecho a voto; o (b) participe en la administración, directorio o gerencia o como asesor de ésta. El incumplimiento de esta cláusula se considerará como infracción grave a las obligaciones que impone el contrato de trabajo, en los términos contenidos en el artículo 160 N° 7 del Código del Trabajo.</p>
 
-                        <p class="nueva-clausula"><u><strong>DUODÉCIMO. - DE LA PROPIEDAD INTELECTUAL:</strong></u> Las partes dejan expresa constancia y El/la trabajador/a declara en forma explícita que todo y cualquier procedimiento, marca, modelo, sistema, programa computacional o software, desarrollo o aplicación informática, proyecto u otro, y en general, cualquier invención o creación y cualquier otro elemento de éstos o derivado de ellos, de que conozca o en el que intervenga el/la trabajador/a, sea en forma directa o indirecta en el desempeño de sus labores, pertenece y pertenecerá única y exclusivamente al Empleador, o a quien éste designe, sin pago adicional de ninguna especie para el/la trabajador/a, aun cuando sea efectivamente su autor o creador.</p>
+                        <p class="nueva-clausula"><u><strong>DUODÉCIMO. - DE LA CONFIDENCIALIDAD:</strong></u> El trabajador se compromete a mantener estricta reserva y secreto respecto a cualquier evento, hecho o información, del que pudiera tener conocimiento en el cumplimiento de sus obligaciones, incluso después de la terminación del presente contrato de trabajo. A mayor abundamiento, en caso de ponerse término al presente contrato, el trabajador se obliga a comprometer su confidencialidad en el finiquito que deba suscribirse, en similares condiciones a las aquí pactadas. El trabajador se obliga mantener como secreto del empleador los nombres o direcciones de cualquier trabajador o cliente del empleador, los detalles o cláusulas de cualquier contrato, o acuerdo verbal o escrito entre el empleador y terceros, o los detalles respecto a cualquier información, manual de capacitación, técnica, planes de negocio, know how, propiedad intelectual e industrial, método o procedimiento que no sean generalmente conocido por los competidores del empleador, que se usen o se conozcan al mismo tiempo que provee los servicios a la empresa, y cualquier otra información marcada como secreto comercial o confidencial. Para estos efectos Información Confidencial significa información que no es de público conocimiento, considerada de propiedad de la empresa, relacionada con los procesos y servicios prestados por la empresa, incluyendo información de nuevos programas y software utilizados por el Empleador en el desarrollo de sus proyectos y gestiones inmobiliarias; así como cualquier información relacionada con invenciones, descubrimientos o mejoras pertenecientes a la empresa; información relacionada con investigaciones, desarrollos, adquisiciones, contabilidad, ingeniería, marketing, comercialización, márgenes, costos, políticas de descuentos y ventas de productos. Más aún, el trabajador se compromete a restituir al empleador inmediatamente terminado el presente contrato, o luego de un simple requerimiento verbal o escrito, la lista de trabajadores, la lista de clientes, publicidad y materiales de promoción, archivos computacionales, manuales y otros libros, papeles, documentos, o información (incluyendo copias de los mismos), planos, dibujos o maquetas según corresponda que pertenezcan o se relacionen con los clientes o el negocio del empleador o sus relacionadas y que hubiere tenido bajo su control y posesión. Consecuentemente, siendo plenamente consciente de los hechos, las partes acuerdan elevar al carácter de esencial el hecho que el trabajador se obligue a mantener en estricta reserva todo lo que llegue a su conocimiento, ya sea que directa o indirectamente, y que se refiera a la empresa, sus negocios y actividades. El incumplimiento de la presente obligación será un grave incumplimiento de las obligaciones del presente contrato, y dará al empleador derecho para poner término al mismo, sin perjuicio de las responsabilidades civiles y/o criminales del trabajador, según correspondan.</p>
 
-                        <p class="nueva-clausula"><u><strong>DECIMOTERCERO. - DE LA RESPONSABILIDAD POR DAÑOS:</strong></u> Las partes convienen que cualquier acción dolosa que realice el/la trabajador/a contra los ejecutivos de la empresa, los bienes del empleador, como asimismo contra alguno de sus compañeros de trabajo o cualquier otra persona natural, además de significar la terminación ipso facto del presente contrato de trabajo, sin indemnización alguna; Y de las responsabilidades penales, será motivo de responsabilidad civil ante la empresa, sus ejecutivos, sus dependientes o terceros.</p>
+                        <p class="nueva-clausula" id="clausula-negociacion" style="display: none;"><u><strong>DECIMOTERCERO. - PROHIBICIÓN DE NEGOCIAR COLECTIVAMENTE:</strong></u> De conformidad con lo dispuesto en el artículo 305 del Código del Trabajo, las partes dejan expresa constancia de que el trabajador, en atención a las funciones inherentes a su cargo de <span class="variable" id="dato-cargo-negociacion">[Cargo]</span>, cuenta con facultades de representación del empleador y está dotado de facultades generales de administración. Por consiguiente, queda expresamente prohibido de participar en procesos de negociación colectiva en la empresa.</p>
 
-                        <p class="nueva-clausula"><u><strong>DECIMOCUARTO. - DEL FERIADO ANUAL:</strong></u> El/La trabajador/a hará uso del feriado anual que le corresponda en conformidad a la ley, preferentemente en la época estival o de acuerdo con las necesidades operativas de la empresa, fijándose la fecha de mutuo acuerdo entre las partes.</p>
+                        <p class="nueva-clausula"><u><strong><span id="num-prop-intelectual">DECIMOTERCERO</span>. - DE LA PROPIEDAD INTELECTUAL:</strong></u> Las partes dejan expresa constancia y El/la trabajador/a declara en forma explícita que todo y cualquier procedimiento, marca, modelo, sistema, programa computacional o software, desarrollo o aplicación informática, proyecto u otro, y en general, cualquier invención o creación y cualquier otro elemento de éstos o derivado de ellos, de que conozca o en el que intervenga el/la trabajador/a, sea en forma directa o indirecta en el desempeño de sus labores, pertenece y pertenecerá única y exclusivamente al Empleador, o a quien éste designe, sin pago adicional de ninguna especie para el/la trabajador/a, aun cuando sea efectivamente su autor o creador.</p>
 
-                        <p class="nueva-clausula"><u><strong>DECIMOQUINTO. - DE LA FECHA DE INGRESO:</strong></u> Se deja constancia que el/la trabajador/a ingresará a prestar servicios para el empleador el día <strong><span class="variable" id="dato-inicio-contrato-clausula">[Inicio Contrato]</span></strong>.</p>
+                        <p class="nueva-clausula"><u><strong><span id="num-responsabilidad">DECIMOCUARTO</span>. - DE LA RESPONSABILIDAD POR DAÑOS:</strong></u> Las partes convienen que cualquier acción dolosa que realice el/la trabajador/a contra los ejecutivos de la empresa, los bienes del empleador, como asimismo contra alguno de sus compañeros de trabajo o cualquier otra persona natural, además de significar la terminación ipso facto del presente contrato de trabajo, sin indemnización alguna; Y de las responsabilidades penales, será motivo de responsabilidad civil ante la empresa, sus ejecutivos, sus dependientes o terceros.</p>
 
-                        <p class="nueva-clausula"><u><strong>DECIMOSEXTO. - DEL DOMICILIO LEGAL:</strong></u> Para todos los efectos legales y contractuales que deriven del presente instrumento, las partes fijan su domicilio especial en la ciudad de <span class="variable" id="dato-centro-costo-16">[Centro de Costo]</span> y se someten expresamente a la jurisdicción y competencia de sus Tribunales de Justicia.</p>
+                        <p class="nueva-clausula"><u><strong><span id="num-feriado">DECIMOQUINTO</span>. - DEL FERIADO ANUAL:</strong></u> El/La trabajador/a hará uso del feriado anual que le corresponda en conformidad a la ley, preferentemente en la época estival o de acuerdo con las necesidades operativas de la empresa, fijándose la fecha de mutuo acuerdo entre las partes.</p>
 
-                        <p class="nueva-clausula" style="margin-bottom: 0;"><u><strong>DECIMOSÉPTIMO. - DE LA DOCUMENTACIÓN ELECTRÓNICA:</strong></u> Por intermedio de este acto, <strong><span class="variable" id="dato-nombres-2">[Nombres]</span> <span class="variable" id="dato-paterno-2">[Apellido Paterno]</span> <span class="variable" id="dato-materno-2">[Apellido Materno]</span></strong> Rut. <strong><span class="variable" id="dato-rut-2">[RUT]</span></strong> acepta, que la documentación derivada de la relación laboral con <strong>Preomed Salud SpA</strong>, Rut. <strong>76.500.919-7</strong> pueda ser confeccionada, procesada, firmada y remitida de manera electrónica. Asimismo, acepta que la documentación laboral pueda ser firmada electrónicamente mediante la Plataforma de Gestor Documental de BUK.</p>
+                        <p class="nueva-clausula"><u><strong><span id="num-fecha-ingreso">DECIMOSEXTO</span>. - DE LA FECHA DE INGRESO:</strong></u> Se deja constancia que el/la trabajador/a ingresará a prestar servicios para el empleador el día <strong><span class="variable" id="dato-inicio-contrato-clausula">[Inicio Contrato]</span></strong>.</p>
+
+                        <p class="nueva-clausula"><u><strong><span id="num-domicilio">DECIMOSÉPTIMO</span>. - DEL DOMICILIO LEGAL:</strong></u> Para todos los efectos legales y contractuales que deriven del presente instrumento, las partes fijan su domicilio especial en la ciudad de <span class="variable" id="dato-centro-costo-16">[Centro de Costo]</span> y se someten expresamente a la jurisdicción y competencia de sus Tribunales de Justicia.</p>
+
+                        <p class="nueva-clausula"><u><strong><span id="num-info-medica">DECIMOCTAVO</span>. - SOLICITUD DE INFORMACIÓN MÉDICA:</strong></u> Para los efectos de la Ley N° 19.628, y en virtud a lo establecido por el Decreto Supremo N°3 de 1984, del Ministerio de Salud, que establece el Reglamento de Autorización de Licencias Médicas, en este acto el Trabajador reconoce la facultad que le concede la ley al Empleador para adoptar cualquier medida que se encuentre destinada a controlar y fiscalizar el debido cumplimiento y uso de la licencia médica de la que el trabajador pueda hacer uso, así como también la facultad del empleador de disponer visitas domiciliarias con los mismos fines anteriormente señalados.</p>
+
+                        <p class="nueva-clausula" style="margin-bottom: 0;"><u><strong><span id="num-doc-electronica">DECIMONOVENO</span>. - DE LA DOCUMENTACIÓN ELECTRÓNICA:</strong></u> Atendido el carácter digital del presente contrato, y de lo establecido por el artículo 3° de la ley N° 19.799 sobre Documentos Electrónicos, Firma Electrónica y Servicios de Certificación de dicha Firma, por intermedio de este acto, <strong><span class="variable" id="dato-nombres-2">[Nombres]</span> <span class="variable" id="dato-paterno-2">[Apellido Paterno]</span> <span class="variable" id="dato-materno-2">[Apellido Materno]</span></strong> Rut. <strong><span class="variable" id="dato-rut-2">[RUT]</span></strong> acepta, que la documentación derivada de la relación laboral con <strong>Preomed Salud SpA</strong>, Rut. <strong>76.500.919-7</strong> pueda ser confeccionada, procesada, firmada y remitida de manera electrónica. Asimismo, acepta que la documentación laboral pueda ser firmada electrónicamente mediante la Plataforma de Gestor Documental de BUK.</p>
         
                         <p class="sin-sangria" style="margin-top: 0;">La documentación laboral será remitida de acuerdo con los antecedentes proporcionados por el/la trabajador/a en el presente contrato, a la cuenta de correo electrónico personal <span class="variable" id="dato-correo-2">[Correo Electrónico]</span>. En el caso de no acordar esta modalidad, su documentación laboral será firmada y entregada en soporte papel.</p>
 
@@ -373,6 +385,33 @@
 
         function actualizarContrato() {
             const index = document.getElementById("selector-trabajador").value;
+            const checkNegociacion = document.getElementById("check-negociacion");
+            const clausulaNegociacion = document.getElementById("clausula-negociacion");
+            
+            const isChecked = checkNegociacion && checkNegociacion.checked;
+
+            if (checkNegociacion && clausulaNegociacion) {
+                clausulaNegociacion.style.display = isChecked ? "block" : "none";
+            }
+
+            // Actualización dinámica de numeración de cláusulas
+            if (isChecked) {
+                asignarTextoSeguro("num-prop-intelectual", "DECIMOCUARTO");
+                asignarTextoSeguro("num-responsabilidad", "DECIMOQUINTO");
+                asignarTextoSeguro("num-feriado", "DECIMOSEXTO");
+                asignarTextoSeguro("num-fecha-ingreso", "DECIMOSÉPTIMO");
+                asignarTextoSeguro("num-domicilio", "DECIMOCTAVO");
+                asignarTextoSeguro("num-info-medica", "DECIMONOVENO");
+                asignarTextoSeguro("num-doc-electronica", "VIGÉSIMO");
+            } else {
+                asignarTextoSeguro("num-prop-intelectual", "DECIMOTERCERO");
+                asignarTextoSeguro("num-responsabilidad", "DECIMOCUARTO");
+                asignarTextoSeguro("num-feriado", "DECIMOQUINTO");
+                asignarTextoSeguro("num-fecha-ingreso", "DECIMOSEXTO");
+                asignarTextoSeguro("num-domicilio", "DECIMOSÉPTIMO");
+                asignarTextoSeguro("num-info-medica", "DECIMOCTAVO");
+                asignarTextoSeguro("num-doc-electronica", "DECIMONOVENO");
+            }
             
             if (index !== "") {
                 const datos = listaTrabajadores[index];
@@ -461,6 +500,7 @@
                 asignarTextoSeguro("dato-salud", salud);
                 asignarTextoSeguro("dato-afp", afp);
                 asignarTextoSeguro("dato-cargo", cargo);
+                asignarTextoSeguro("dato-cargo-negociacion", cargo);
                 
                 asignarTextoSeguro("dato-sueldo", sueldoFormat);
                 asignarTextoSeguro("dato-banco", banco);
@@ -546,6 +586,7 @@
                 asignarTextoSeguro("dato-salud", "[Salud]");
                 asignarTextoSeguro("dato-afp", "[AFP]");
                 asignarTextoSeguro("dato-cargo", "[Cargo]");
+                asignarTextoSeguro("dato-cargo-negociacion", "[Cargo]");
                 asignarTextoSeguro("dato-sueldo", "[Sueldo Base]");
                 
                 asignarTextoSeguro("dato-banco", "[Banco]");
