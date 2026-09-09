@@ -17,7 +17,7 @@
         select, button { padding: 10px; font-size: 14px; font-family: inherit; border-radius: 5px; border: 1px solid #ccc; }
         button { background-color: #007bff; color: white; border: none; cursor: pointer; margin-left: 15px; }
         button:hover { background-color: #0056b3; }
-        .contenedor-carta { background-color: #fff; padding: 40px; box-shadow: 0 0 10px rgba(0,0,0,0.1); text-align: justify; }
+        .contenedor-carta { background-color: #fff; padding: 40px; box-shadow: 0 0 10px rgba(0,0,0,0.1); text-align: justify; position: relative; }
         .tabla-impresion { width: 100%; border-collapse: collapse; border: none; }
         thead { display: table-header-group; }
         tfoot { display: table-footer-group; }
@@ -49,6 +49,7 @@
             .controles { display: none !important; }
             .variable { background-color: transparent; font-weight: inherit; }
             p, li, .formato-bloque { page-break-inside: avoid; }
+            .pie-pagina-contenido { position: fixed; bottom: 0; left: 0; right: 0; padding-top: 0; }
         }
     </style>
 </head>
@@ -192,13 +193,18 @@
             <tfoot>
                 <tr>
                     <td>
-                        <div class="pie-pagina-contenido">
-                            CONTRATO DE TRABAJO
-                        </div>
+                        <!-- Este espacio es esencial para que la tabla empuje el contenido y no pise el footer -->
+                        <div style="height: 40px;"></div>
                     </td>
                 </tr>
             </tfoot>
         </table>
+
+        <!-- Este pie de página ahora está fuera de la tabla, logrando su fijación en impresión -->
+        <div class="pie-pagina-contenido">
+            CONTRATO DE TRABAJO
+        </div>
+
     </div>
 
     <script>
