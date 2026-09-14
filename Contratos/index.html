@@ -28,8 +28,8 @@
         p { margin-bottom: 15px; text-indent: 0; }
         p.sin-sangria { text-indent: 0; }
         .nueva-clausula { margin-top: 15px; }
-        ol { margin-top: 0; margin-bottom: 15px; padding-left: 60px; }
-        ol li { text-align: justify; } 
+        ol, ul { margin-top: 0; margin-bottom: 15px; padding-left: 60px; }
+        ol li, ul li { text-align: justify; } 
         .firmas { display: flex; justify-content: space-between; margin-top: 80px; padding: 0 40px; }
         .bloque-firma { text-align: center; width: 40%; position: relative; }
         .linea-firma { border-top: 1px solid #000; margin-bottom: 5px; }
@@ -71,6 +71,11 @@
             <label for="check-negociacion" style="margin-left: 0; font-weight: bold;">Jefatura</label>
         </div>
 
+        <div class="checkbox-container">
+            <input type="checkbox" id="check-gerencia" onchange="actualizarContrato()">
+            <label for="check-gerencia" style="margin-left: 0; font-weight: bold; color: #d9534f;">Gerencia</label>
+        </div>
+
         <button onclick="window.print()">Imprimir PDF</button>
     </div>
 
@@ -93,78 +98,229 @@
 
                         <p>En <span class="variable" id="dato-centro-costo-intro">[Centro de Costo]</span>, a <strong><span class="variable" id="dato-inicio-contrato-intro">[Inicio Contrato]</span></strong>, entre la sociedad <strong>Preomed Salud SpA</strong>, Rut. <strong>76.500.919-7</strong>, representada legalmente por Doña <strong>Yoselyn Valesca Álvarez Duarte</strong>, Rut. <strong>16.135.473-2</strong>, ambos con domicilio comercial en la ciudad de Antofagasta, calle Las Bandurrias n° 9078, en lo sucesivo el empleador, y Don/ña <strong><span class="variable" id="dato-nombres">[Nombres]</span> <span class="variable" id="dato-paterno">[Apellido Paterno]</span> <span class="variable" id="dato-materno">[Apellido Materno]</span></strong>, Rut. <strong><span class="variable" id="dato-rut">[RUT]</span></strong>, con fecha de nacimiento el <span class="variable" id="dato-fecha-nacimiento">[Fecha de Nacimiento]</span>, de nacionalidad <span class="variable" id="dato-nacionalidad">[Nacionalidad]</span>, estado civil <span class="variable" id="dato-estado-civil">[Estado Civil]</span>, con domicilio particular en <span class="variable" id="dato-domicilio">[Domicilio]</span>, <span class="variable" id="dato-comuna">[Comuna]</span>, correo electrónico <span class="variable" id="dato-correo">[Correo Electrónico]</span>, teléfono de contacto +56 9 <span class="variable" id="dato-telefono">[Teléfono]</span>, teniendo como sistema de salud <strong><span class="variable" id="dato-salud">[Salud]</span></strong> y como sistema de previsión <strong>AFP</strong> <strong><span class="variable" id="dato-afp">[AFP]</span></strong>, en adelante, el/la trabajador/a, se ha convenido suscribir un contrato de trabajo, estableciendo las siguientes cláusulas:</p>
 
-                        <p class="nueva-clausula"><u><strong>PRIMERO. - DE LAS FUNCIONES Y CARGO:</strong></u> El/La trabajador/a se obliga a desempeñar las funciones propias de “<strong><span class="variable" id="dato-cargo">[Cargo]</span></strong>” de acuerdo con las instrucciones que al efecto sean impartidas por el empleador, estableciendo de común acuerdo que las funciones y responsabilidades propias del cargo o función que desempeñará el/la trabajador/a se encuentran establecidas en el descriptor de cargo correspondiente, documento que recepcionado por el/la trabajador/a se entiende incorporado al presente contrato. El/La trabajador/a queda obligado a cumplir leal y correctamente con todos los deberes que le imponga este instrumento o aquéllos que se deriven de las funciones y cargo, debiendo ejecutar las instrucciones que le confieran sus superiores. Del mismo modo el/la trabajador/a se obliga a desempeñar en forma eficaz, las funciones y el cargo para el cual ha sido contratado, empleando para ello la mayor diligencia y dedicación.</p>
+                        <!-- INICIO CLÁUSULAS ESTÁNDAR -->
+                        <div id="clausulas-estandar">
+                            <p class="nueva-clausula"><u><strong>PRIMERO. - DE LAS FUNCIONES Y CARGO:</strong></u> El/La trabajador/a se obliga a desempeñar las funciones propias de “<strong><span class="variable" id="dato-cargo">[Cargo]</span></strong>” de acuerdo con las instrucciones que al efecto sean impartidas por el empleador, estableciendo de común acuerdo que las funciones y responsabilidades propias del cargo o función que desempeñará el/la trabajador/a se encuentran establecidas en el descriptor de cargo correspondiente, documento que recepcionado por el/la trabajador/a se entiende incorporado al presente contrato. El/La trabajador/a queda obligado a cumplir leal y correctamente con todos los deberes que le imponga este instrumento o aquéllos que se deriven de las funciones y cargo, debiendo ejecutar las instrucciones que le confieran sus superiores. Del mismo modo el/la trabajador/a se obliga a desempeñar en forma eficaz, las funciones y el cargo para el cual ha sido contratado, empleando para ello la mayor diligencia y dedicación.</p>
 
-                        <p class="nueva-clausula"><u><strong>SEGUNDO. - DEL LUGAR DE TRABAJO:</strong></u> Los servicios serán prestados en el centro médico ubicado en <span class="variable" id="dato-centro-costo">[Centro de Costo]</span>, <span class="variable" id="dato-direccion-centro-costo">[Dirección Centro de Costo]</span>, sin perjuicio de lo anterior, el empleador podrá alterar el sitio o recinto en que deban prestarse los servicios, siempre que quede dentro de la misma ciudad o lugar, de acuerdo con lo establecido en el artículo 12 del Código del Trabajo.</p>
+                            <p class="nueva-clausula"><u><strong>SEGUNDO. - DEL LUGAR DE TRABAJO:</strong></u> Los servicios serán prestados en el centro médico ubicado en <span class="variable" id="dato-centro-costo">[Centro de Costo]</span>, <span class="variable" id="dato-direccion-centro-costo">[Dirección Centro de Costo]</span>, sin perjuicio de lo anterior, el empleador podrá alterar el sitio o recinto en que deban prestarse los servicios, siempre que quede dentro de la misma ciudad o lugar, de acuerdo con lo establecido en el artículo 12 del Código del Trabajo.</p>
 
-                        <p class="nueva-clausula" style="margin-bottom: 5px;"><u><strong>TERCERO. - DE LA JORNADA DE TRABAJO:</strong></u> La jornada de trabajo será de <span class="variable" id="dato-jornada">[Jornada]</span> horas semanales de acuerdo con el artículo 22 del Código del Trabajo<span id="bloque-descanso">, la cual tendrá un descanso de <span class="variable" id="dato-tiempo-colacion">[Tiempo Colación]</span> no imputable a dicha jornada</span>, la distribución de la jornada será de la siguiente manera de acuerdo con el artículo 28 del Código del Trabajo:</p>
-                        <span class="variable formato-bloque" id="dato-horario">[Horario]</span>
+                            <p class="nueva-clausula" style="margin-bottom: 5px;"><u><strong>TERCERO. - DE LA JORNADA DE TRABAJO:</strong></u> La jornada de trabajo será de <span class="variable" id="dato-jornada">[Jornada]</span> horas semanales de acuerdo con el artículo 22 del Código del Trabajo<span id="bloque-descanso">, la cual tendrá un descanso de <span class="variable" id="dato-tiempo-colacion">[Tiempo Colación]</span> no imputable a dicha jornada</span>, la distribución de la jornada será de la siguiente manera de acuerdo con el artículo 28 del Código del Trabajo:</p>
+                            <span class="variable formato-bloque" id="dato-horario">[Horario]</span>
 
-                        <p class="nueva-clausula" style="margin-bottom: 5px; page-break-after: avoid;"><u><strong>CUARTO. - DE LAS REMUNERACIONES:</strong></u> El empleador se compromete a remunerar al trabajador mensualmente en la forma que se indica:</p>
-                        <ol type="a">
-                            <li style="margin-top: 0; margin-bottom: 0;">Sueldo Base Mensual <strong><span class="variable" id="dato-sueldo">[Sueldo Base]</span></strong> .- (proporcional a los días trabajados en el mes)</li>
-                            <li style="margin-top: 0; margin-bottom: 0;">La Gratificación legal mensual corresponderá al 25% de la Remuneración base con un tope según el Art. 50 del Código del Trabajo correspondiente a 4,75 ingresos mínimos mensuales.</li>
-                            <li id="li-colacion" style="margin-top: 0; margin-bottom: 0;">Asignación no Imponible de Colación <strong><span class="variable" id="dato-colacion">[Colación]</span></strong> .- (proporcional a los días trabajados en el mes)</li>
-                            <li id="li-movilizacion" style="margin-top: 0; margin-bottom: 0;">Asignación no Imponible de Movilización <strong><span class="variable" id="dato-movilizacion">[Movilización]</span></strong> .- (proporcional a los días trabajados en el mes)</li>
-                        </ol>
+                            <p class="nueva-clausula" style="margin-bottom: 5px; page-break-after: avoid;"><u><strong>CUARTO. - DE LAS REMUNERACIONES:</strong></u> El empleador se compromete a remunerar al trabajador mensualmente en la forma que se indica:</p>
+                            <ol type="a">
+                                <li style="margin-top: 0; margin-bottom: 0;">Sueldo Base Mensual <strong><span class="variable" id="dato-sueldo">[Sueldo Base]</span></strong> .- (proporcional a los días trabajados en el mes)</li>
+                                <li style="margin-top: 0; margin-bottom: 0;">La Gratificación legal mensual corresponderá al 25% de la Remuneración base con un tope según el Art. 50 del Código del Trabajo correspondiente a 4,75 ingresos mínimos mensuales.</li>
+                                <li id="li-colacion" style="margin-top: 0; margin-bottom: 0;">Asignación no Imponible de Colación <strong><span class="variable" id="dato-colacion">[Colación]</span></strong> .- (proporcional a los días trabajados en el mes)</li>
+                                <li id="li-movilizacion" style="margin-top: 0; margin-bottom: 0;">Asignación no Imponible de Movilización <strong><span class="variable" id="dato-movilizacion">[Movilización]</span></strong> .- (proporcional a los días trabajados en el mes)</li>
+                            </ol>
 
-                        <p class="nueva-clausula" style="margin-bottom: 0;"><u><strong>QUINTO. - DE LA FORMA DE PAGO Y DESCUENTOS LEGALES:</strong></u> Las remuneraciones se pagarán mensualmente por período vencido, a más tardar el segundo (2°) día hábil del mes siguiente, de acuerdo con los plazos establecidos en el artículo 55 del Código del Trabajo.</p>
-                        <p class="sin-sangria" style="margin-top: 0; margin-bottom: 0;">El pago se realizará en moneda nacional mediante transferencia electrónica o depósito en el Banco <strong><span class="variable" id="dato-banco">[Banco]</span></strong>, cuenta <span class="variable" id="dato-tipo-cuenta">[Tipo de Cuenta]</span> N° <strong><span class="variable" id="dato-cuenta">[cuenta]</span></strong>, indicada por el/la trabajador/a, en conformidad a lo dispuesto en el inciso segundo del artículo 54 del citado cuerpo legal. Para estos efectos, el/la trabajador/a en este acto otorga su expresa y amplia autorización a la empresa para efectuar el pago de sus remuneraciones a través de dicha vía.</p>
-                        <p class="sin-sangria" style="margin-top: 0; margin-bottom: 0;">De las sumas que correspondan, el Empleador deducirá los impuestos que las graven, las cotizaciones de seguridad social y demás descuentos legales y autorizados, en estricto cumplimiento a lo establecido en el artículo 58 del Código del Trabajo. Al respecto, se deja expresa constancia que la cotización legal obligatoria para salud corresponde al 7% de la remuneración imponible. En caso de que el/la trabajador/a se encuentre afiliado/a a una Institución de Salud Previsional (ISAPRE) y el costo del plan pactado supere dicho porcentaje legal, la cotización adicional o diferencia será de exclusivo cargo y costo del/la trabajador/a, autorizando desde ya al Empleador a descontar dicho excedente de sus remuneraciones conforme a lo notificado por la institución mediante el Formulario Único de Notificación (FUN).</p>
-                        <p class="sin-sangria" style="margin-top: 0;">Finalmente, el/la trabajador/a autoriza de manera expresa al Empleador para que descuente de sus remuneraciones el valor correspondiente al tiempo no trabajado, ya sea por atrasos, inasistencias injustificadas o permisos sin goce de sueldo, toda vez que el pago de la remuneración está directamente subordinado a la prestación efectiva de los servicios.</p>
+                            <p class="nueva-clausula" style="margin-bottom: 0;"><u><strong>QUINTO. - DE LA FORMA DE PAGO Y DESCUENTOS LEGALES:</strong></u> Las remuneraciones se pagarán mensualmente por período vencido, a más tardar el segundo (2°) día hábil del mes siguiente, de acuerdo con los plazos establecidos en el artículo 55 del Código del Trabajo.</p>
+                            <p class="sin-sangria" style="margin-top: 0; margin-bottom: 0;">El pago se realizará en moneda nacional mediante transferencia electrónica o depósito en el Banco <strong><span class="variable" id="dato-banco">[Banco]</span></strong>, cuenta <span class="variable" id="dato-tipo-cuenta">[Tipo de Cuenta]</span> N° <strong><span class="variable" id="dato-cuenta">[cuenta]</span></strong>, indicada por el/la trabajador/a, en conformidad a lo dispuesto en el inciso segundo del artículo 54 del citado cuerpo legal. Para estos efectos, el/la trabajador/a en este acto otorga su expresa y amplia autorización a la empresa para efectuar el pago de sus remuneraciones a través de dicha vía.</p>
+                            <p class="sin-sangria" style="margin-top: 0; margin-bottom: 0;">De las sumas que correspondan, el Empleador deducirá los impuestos que las graven, las cotizaciones de seguridad social y demás descuentos legales y autorizados, en estricto cumplimiento a lo establecido en el artículo 58 del Código del Trabajo. Al respecto, se deja expresa constancia que la cotización legal obligatoria para salud corresponde al 7% de la remuneración imponible. En caso de que el/la trabajador/a se encuentre afiliado/a a una Institución de Salud Previsional (ISAPRE) y el costo del plan pactado supere dicho porcentaje legal, la cotización adicional o diferencia será de exclusivo cargo y costo del/la trabajador/a, autorizando desde ya al Empleador a descontar dicho excedente de sus remuneraciones conforme a lo notificado por la institución mediante el Formulario Único de Notificación (FUN).</p>
+                            <p class="sin-sangria" style="margin-top: 0;">Finalmente, el/la trabajador/a autoriza de manera expresa al Empleador para que descuente de sus remuneraciones el valor correspondiente al tiempo no trabajado, ya sea por atrasos, inasistencias injustificadas o permisos sin goce de sueldo, toda vez que el pago de la remuneración está directamente subordinado a la prestación efectiva de los servicios.</p>
 
-                        <p class="nueva-clausula"><u><strong>SEXTO. - DE LA VIGENCIA:</strong></u> El presente contrato tendrá una duración hasta el día <strong><span class="variable" id="dato-termino-contrato">[Término Contrato]</span></strong>.</p>
+                            <p class="nueva-clausula"><u><strong>SEXTO. - DE LA VIGENCIA:</strong></u> El presente contrato tendrá una duración hasta el día <strong><span class="variable" id="dato-termino-contrato">[Término Contrato]</span></strong>.</p>
 
-                        <p class="nueva-clausula" style="margin-bottom: 5px; page-break-after: avoid;"><u><strong>SÉPTIMO. - DE LAS OBLIGACIONES:</strong></u> Las obligaciones del trabajador emanan de la naturaleza del presente contrato de trabajo y de la función que se obliga a realizar en la cláusula primera. Además, se obliga en forma particular, a lo siguiente:</p>
-                        <ol type="a">
-                            <li style="margin-top: 0; margin-bottom: 0;">desempeñar las labores e instrucciones que le sean impartidas, con la máxima dedicación, esmero y cuidado, cumpliendo todas las obligaciones pertinentes de prolijidad, claridad y cuidado propias de su función;</li>
-                            <li style="margin-top: 0; margin-bottom: 0;">efectuar su trabajo en forma educada, manteniendo un trato cortés y amable con los usuarios, proveedores, los otros trabajadores de la empresa y con sus jefes directos;</li>
-                            <li style="margin-top: 0; margin-bottom: 0;">emplear la máxima diligencia en el cuidado del equipo de trabajo, instalaciones del empleador y en general, de todos los bienes de la empresa;</li>
-                            <li style="margin-top: 0; margin-bottom: 0;">cuidar de la conservación, buen estado, aseo y uso adecuado de las instalaciones y materiales, evitando pérdidas y deterioros o gastos innecesarios;</li>
-                            <li style="margin-top: 0; margin-bottom: 0;">llegar puntualmente a su trabajo y registrar diariamente sus horas de entrada y salida;</li>
-                            <li style="margin-top: 0; margin-bottom: 0;">avisar oportunamente las ausencias y su motivo;</li>
-                            <li style="margin-top: 0; margin-bottom: 0;">comunicar dentro de las 48 horas siguientes de sucedido un cambio en los antecedentes personales, cambio de domicilio y que deben ser considerados en el contrato de trabajo;</li>
-                            <li style="margin-top: 0; margin-bottom: 0;">mantener una adecuada higiene personal.</li>
-                        </ol>
+                            <p class="nueva-clausula" style="margin-bottom: 5px; page-break-after: avoid;"><u><strong>SÉPTIMO. - DE LAS OBLIGACIONES:</strong></u> Las obligaciones del trabajador emanan de la naturaleza del presente contrato de trabajo y de la función que se obliga a realizar en la cláusula primera. Además, se obliga en forma particular, a lo siguiente:</p>
+                            <ol type="a">
+                                <li style="margin-top: 0; margin-bottom: 0;">desempeñar las labores e instrucciones que le sean impartidas, con la máxima dedicación, esmero y cuidado, cumpliendo todas las obligaciones pertinentes de prolijidad, claridad y cuidado propias de su función;</li>
+                                <li style="margin-top: 0; margin-bottom: 0;">efectuar su trabajo en forma educada, manteniendo un trato cortés y amable con los usuarios, proveedores, los otros trabajadores de la empresa y con sus jefes directos;</li>
+                                <li style="margin-top: 0; margin-bottom: 0;">emplear la máxima diligencia en el cuidado del equipo de trabajo, instalaciones del empleador y en general, de todos los bienes de la empresa;</li>
+                                <li style="margin-top: 0; margin-bottom: 0;">cuidar de la conservación, buen estado, aseo y uso adecuado de las instalaciones y materiales, evitando pérdidas y deterioros o gastos innecesarios;</li>
+                                <li style="margin-top: 0; margin-bottom: 0;">llegar puntualmente a su trabajo y registrar diariamente sus horas de entrada y salida;</li>
+                                <li style="margin-top: 0; margin-bottom: 0;">avisar oportunamente las ausencias y su motivo;</li>
+                                <li style="margin-top: 0; margin-bottom: 0;">comunicar dentro de las 48 horas siguientes de sucedido un cambio en los antecedentes personales, cambio de domicilio y que deben ser considerados en el contrato de trabajo;</li>
+                                <li style="margin-top: 0; margin-bottom: 0;">mantener una adecuada higiene personal.</li>
+                            </ol>
 
-                        <p class="nueva-clausula" style="margin-bottom: 5px; page-break-after: avoid;"><u><strong>OCTAVO. - DE LAS PROHIBICIONES:</strong></u> Las partes acuerdan establecer como prohibición expresa que el/la trabajador/a ejecute para terceros negociaciones o servicios que se encuentren dentro del giro del negocio del empleador, así como prestar su servicio a terceros que realicen un giro similar al del empleador. En caso de infracción a la prohibición señalada en el inciso anterior, el empleador queda habilitado para proceder conforme al N° 2 del artículo 160 del Código del Trabajo. Este contrato terminará en los casos señalados en los artículos 159, 160 y 161 del Código del Trabajo. Para los efectos del N° 1 del referido artículo 160, constituyen falta de probidad destinar para su uso personal o autorizar el uso por parte de terceros de bienes de la empresa, sin autorización expresa del empleador. Y para los efectos del N° 7 del mismo artículo 160, constituyen incumplimiento grave de las obligaciones que impone el contrato, el no cumplimiento de las obligaciones estipuladas en la cláusula Séptima del presente contrato, además de las siguientes prohibiciones:</p>
-                        <ol type="a">
-                            <li style="margin-top: 0; margin-bottom: 0;">presentarse a cumplir sus funciones en estado de intemperancia o bajo los efectos de drogas o sustancias psicotrópicas, consumir bebidas alcohólicas, drogas o sustancias psicotrópicas dentro de la jornada de trabajo o introducir dichas sustancias al lugar de trabajo;</li>
-                            <li style="margin-top: 0; margin-bottom: 0;">atrasos reiterados en el inicio de su jornada de trabajo;</li>
-                            <li style="margin-top: 0; margin-bottom: 0;">fumar durante la jornada de trabajo;</li>
-                            <li style="margin-top: 0; margin-bottom: 0;">ejecutar durante las horas de trabajo y en el desempeño de sus funciones actividades ajenas a su labor y al establecimiento, dedicarse a atender asuntos o negocios particulares;</li>
-                            <li style="margin-top: 0; margin-bottom: 0;">otorgar conocimiento a terceros o utilizar de cualquier manera y para provecho propio, la información propia del empleador;</li>
-                            <li style="margin-top: 0; margin-bottom: 0;">infringir las normas de seguridad establecidas en el Reglamento Interno de Orden Higiene y Seguridad;</li>
-                            <li style="margin-top: 0; margin-bottom: 0;">resistirse a acatar las órdenes e instrucciones de sus jefes;</li>
-                            <li style="margin-top: 0; margin-bottom: 0;">no registrar su asistencia y atrasos en forma debida en el registro de asistencia;</li>
-                            <li style="margin-top: 0; margin-bottom: 0;">ejercer cualquier conducta que constituya acoso sexual, acoso laboral o violencia en el trabajo, conforme a lo establecido en la Ley N° 21.643 (Ley Karin) y en el Reglamento Interno de la empresa, siendo esto considerado un incumplimiento grave de las obligaciones que impone el contrato.</li>
-                        </ol>
+                            <p class="nueva-clausula" style="margin-bottom: 5px; page-break-after: avoid;"><u><strong>OCTAVO. - DE LAS PROHIBICIONES:</strong></u> Las partes acuerdan establecer como prohibición expresa que el/la trabajador/a ejecute para terceros negociaciones o servicios que se encuentren dentro del giro del negocio del empleador, así como prestar su servicio a terceros que realicen un giro similar al del empleador. En caso de infracción a la prohibición señalada en el inciso anterior, el empleador queda habilitado para proceder conforme al N° 2 del artículo 160 del Código del Trabajo. Este contrato terminará en los casos señalados en los artículos 159, 160 y 161 del Código del Trabajo. Para los efectos del N° 1 del referido artículo 160, constituyen falta de probidad destinar para su uso personal o autorizar el uso por parte de terceros de bienes de la empresa, sin autorización expresa del empleador. Y para los efectos del N° 7 del mismo artículo 160, constituyen incumplimiento grave de las obligaciones que impone el contrato, el no cumplimiento de las obligaciones estipuladas en la cláusula Séptima del presente contrato, además de las siguientes prohibiciones:</p>
+                            <ol type="a">
+                                <li style="margin-top: 0; margin-bottom: 0;">presentarse a cumplir sus funciones en estado de intemperancia o bajo los efectos de drogas o sustancias psicotrópicas, consumir bebidas alcohólicas, drogas o sustancias psicotrópicas dentro de la jornada de trabajo o introducir dichas sustancias al lugar de trabajo;</li>
+                                <li style="margin-top: 0; margin-bottom: 0;">atrasos reiterados en el inicio de su jornada de trabajo;</li>
+                                <li style="margin-top: 0; margin-bottom: 0;">fumar durante la jornada de trabajo;</li>
+                                <li style="margin-top: 0; margin-bottom: 0;">ejecutar durante las horas de trabajo y en el desempeño de sus funciones actividades ajenas a su labor y al establecimiento, dedicarse a atender asuntos o negocios particulares;</li>
+                                <li style="margin-top: 0; margin-bottom: 0;">otorgar conocimiento a terceros o utilizar de cualquier manera y para provecho propio, la información propia del empleador;</li>
+                                <li style="margin-top: 0; margin-bottom: 0;">infringir las normas de seguridad establecidas en el Reglamento Interno de Orden Higiene y Seguridad;</li>
+                                <li style="margin-top: 0; margin-bottom: 0;">resistirse a acatar las órdenes e instrucciones de sus jefes;</li>
+                                <li style="margin-top: 0; margin-bottom: 0;">no registrar su asistencia y atrasos en forma debida en el registro de asistencia;</li>
+                                <li style="margin-top: 0; margin-bottom: 0;">ejercer cualquier conducta que constituya acoso sexual, acoso laboral o violencia en el trabajo, conforme a lo establecido en la Ley N° 21.643 (Ley Karin) y en el Reglamento Interno de la empresa, siendo esto considerado un incumplimiento grave de las obligaciones que impone el contrato.</li>
+                            </ol>
 
-                        <p class="nueva-clausula"><u><strong>NOVENO. - DEL REGLAMENTO INTERNO:</strong></u> Las partes convienen en elevar la calidad de esencial de este contrato, la obligatoriedad para el/la trabajador/a de cumplir celosamente con el Reglamento Interno de Orden, Higiene y Seguridad de la empresa, y sus eventuales modificaciones cuyo texto recibe en este acto, según consta en el presente contrato y en documento anexo de recepción de este. Igualmente, el/la trabajador/a declara conocer el texto íntegro de dicho Reglamento y sus modificaciones, el cual se entiende como parte integrante de este contrato, de tal manera, que su desobediencia o transgresión se estimará como incumplimiento grave a las obligaciones que impone el contrato, pudiendo el empleador poner término a este de inmediato y sin indemnización alguna.</p>
+                            <p class="nueva-clausula"><u><strong>NOVENO. - DEL REGLAMENTO INTERNO:</strong></u> Las partes convienen en elevar la calidad de esencial de este contrato, la obligatoriedad para el/la trabajador/a de cumplir celosamente con el Reglamento Interno de Orden, Higiene y Seguridad de la empresa, y sus eventuales modificaciones cuyo texto recibe en este acto, según consta en el presente contrato y en documento anexo de recepción de este. Igualmente, el/la trabajador/a declara conocer el texto íntegro de dicho Reglamento y sus modificaciones, el cual se entiende como parte integrante de este contrato, de tal manera, que su desobediencia o transgresión se estimará como incumplimiento grave a las obligaciones que impone el contrato, pudiendo el empleador poner término a este de inmediato y sin indemnización alguna.</p>
 
-                        <p class="nueva-clausula"><u><strong>DÉCIMO. - DE LA PROBIDAD, LEY N° 20.393 Y LEY N° 21.595:</strong></u> El/La trabajador/a se obliga a mantener un comportamiento probo, íntegro y debe abstenerse de realizar conductas que pudieran vincular a la Empresa con los delitos considerados en la Ley N° 20.393 sobre Responsabilidad Penal de las Personas Jurídicas, la Ley N° 21.595 de Delitos Económicos, y sus futuras modificaciones. El incumplimiento significará la terminación ipso facto del presente contrato de trabajo, sin indemnización alguna; de acuerdo con el artículo 160 N.° 7 del Código del Trabajo.</p>
+                            <p class="nueva-clausula"><u><strong>DÉCIMO. - DE LA PROBIDAD, LEY N° 20.393 Y LEY N° 21.595:</strong></u> El/La trabajador/a se obliga a mantener un comportamiento probo, íntegro y debe abstenerse de realizar conductas que pudieran vincular a la Empresa con los delitos considerados en la Ley N° 20.393 sobre Responsabilidad Penal de las Personas Jurídicas, la Ley N° 21.595 de Delitos Económicos, y sus futuras modificaciones. El incumplimiento significará la terminación ipso facto del presente contrato de trabajo, sin indemnización alguna; de acuerdo con el artículo 160 N.° 7 del Código del Trabajo.</p>
 
-                        <p class="nueva-clausula"><u><strong>UNDÉCIMO. - DE LA EXCLUSIVIDAD:</strong></u> El Empleado acuerda que en ningún momento durante la vigencia del presente contrato participará, a cualquier título que sea directa o indirectamente como propietario, ejecutivo, director empleado, agente, asesor o en otra calidad, o como mandatario en cualquier negocio o empresa o trabajo, a menos que reciba autorización expresa. Queda expresamente acordado que lo anterior no implica restringir o prohibir la participación que pueda tener el Empleado en acciones o bonos de sociedades abiertas o que se transen en la bolsa, en la medida que: (a) éste no posea derechos que representen más del cinco por ciento (5%) de las acciones con derecho a voto; o (b) participe en la administración, directorio o gerencia o como asesor de ésta. El incumplimiento de esta cláusula se considerará como infracción grave a las obligaciones que impone el contrato de trabajo, en los términos contenidos en el artículo 160 N° 7 del Código del Trabajo.</p>
+                            <p class="nueva-clausula"><u><strong>UNDÉCIMO. - DE LA EXCLUSIVIDAD:</strong></u> El Empleado acuerda que en ningún momento durante la vigencia del presente contrato participará, a cualquier título que sea directa o indirectamente como propietario, ejecutivo, director empleado, agente, asesor o en otra calidad, o como mandatario en cualquier negocio o empresa o trabajo, a menos que reciba autorización expresa. Queda expresamente acordado que lo anterior no implica restringir o prohibir la participación que pueda tener el Empleado en acciones o bonos de sociedades abiertas o que se transen en la bolsa, en la medida que: (a) éste no posea derechos que representen más del cinco por ciento (5%) de las acciones con derecho a voto; o (b) participe en la administración, directorio o gerencia o como asesor de ésta. El incumplimiento de esta cláusula se considerará como infracción grave a las obligaciones que impone el contrato de trabajo, en los términos contenidos en el artículo 160 N° 7 del Código del Trabajo.</p>
 
-                        <p class="nueva-clausula" style="page-break-inside: auto;"><u><strong>DUODÉCIMO. - DE LA CONFIDENCIALIDAD:</strong></u> El trabajador se compromete a mantener estricta reserva y secreto respecto a cualquier evento, hecho o información, del que pudiera tener conocimiento en el cumplimiento de sus obligaciones, incluso después de la terminación del presente contrato de trabajo. A mayor abundamiento, en caso de ponerse término al presente contrato, el trabajador se obliga a comprometer su confidencialidad en el finiquito que deba suscribirse, en similares condiciones a las aquí pactadas. El trabajador se obliga mantener como secreto del empleador los nombres o direcciones de cualquier trabajador o cliente del empleador, los detalles o cláusulas de cualquier contrato, o acuerdo verbal o escrito entre el empleador y terceros, o los detalles respecto a cualquier información, manual de capacitación, técnica, planes de negocio, know how, propiedad intelectual e industrial, método o procedimiento que no sean generalmente conocido por los competidores del empleador, que se usen o se conozcan al mismo tiempo que provee los servicios a la empresa, y cualquier otra información marcada como secreto comercial o confidencial. Para estos efectos Información Confidencial significa información que no es de público conocimiento, considerada de propiedad de la empresa, relacionada con los procesos y servicios prestados por la empresa, incluyendo información de nuevos programas y software utilizados por el Empleador en el desarrollo de sus proyectos y gestiones inmobiliarias; así como cualquier información relacionada con invenciones, descubrimientos o mejoras pertenecientes a la empresa; información relacionada con investigaciones, desarrollos, adquisiciones, contabilidad, ingeniería, marketing, comercialización, márgenes, costos, políticas de descuentos y ventas de productos. Más aún, el trabajador se compromete a restituir al empleador inmediatamente terminado el presente contrato, o luego de un simple requerimiento verbal o escrito, la lista de trabajadores, la lista de clientes, publicidad y materiales de promoción, archivos computacionales, manuales y otros libros, papeles, documentos, o información (incluyendo copias de los mismos), planos, dibujos o maquetas según corresponda que pertenezcan o se relacionen con los clientes o el negocio del empleador o sus relacionadas y que hubiere tenido bajo su control y posesión. Consecuentemente, siendo plenamente consciente de los hechos, las partes acuerdan elevar al carácter de esencial el hecho que el trabajador se obligue a mantener en estricta reserva todo lo que llegue a su conocimiento, ya sea que directa o indirectamente, y que se refiera a la empresa, sus negocios y actividades. El incumplimiento de la presente obligación será un grave incumplimiento de las obligaciones del presente contrato, y dará al empleador derecho para poner término al mismo, sin perjuicio de las responsabilidades civiles y/o criminales del trabajador, según correspondan.</p>
+                            <p class="nueva-clausula" style="page-break-inside: auto;"><u><strong>DUODÉCIMO. - DE LA CONFIDENCIALIDAD:</strong></u> El trabajador se compromete a mantener estricta reserva y secreto respecto a cualquier evento, hecho o información, del que pudiera tener conocimiento en el cumplimiento de sus obligaciones, incluso después de la terminación del presente contrato de trabajo. A mayor abundamiento, en caso de ponerse término al presente contrato, el trabajador se obliga a comprometer su confidencialidad en el finiquito que deba suscribirse, en similares condiciones a las aquí pactadas. El trabajador se obliga mantener como secreto del empleador los nombres o direcciones de cualquier trabajador o cliente del empleador, los detalles o cláusulas de cualquier contrato, o acuerdo verbal o escrito entre el empleador y terceros, o los detalles respecto a cualquier información, manual de capacitación, técnica, planes de negocio, know how, propiedad intelectual e industrial, método o procedimiento que no sean generalmente conocido por los competidores del empleador, que se usen o se conozcan al mismo tiempo que provee los servicios a la empresa, y cualquier otra información marcada como secreto comercial o confidencial. Para estos efectos Información Confidencial significa información que no es de público conocimiento, considerada de propiedad de la empresa, relacionada con los procesos y servicios prestados por la empresa, incluyendo información de nuevos programas y software utilizados por el Empleador en el desarrollo de sus proyectos y gestiones inmobiliarias; así como cualquier información relacionada con invenciones, descubrimientos o mejoras pertenecientes a la empresa; información relacionada con investigaciones, desarrollos, adquisiciones, contabilidad, ingeniería, marketing, comercialización, márgenes, costos, políticas de descuentos y ventas de productos. Más aún, el trabajador se compromete a restituir al empleador inmediatamente terminado el presente contrato, o luego de un simple requerimiento verbal o escrito, la lista de trabajadores, la lista de clientes, publicidad y materiales de promoción, archivos computacionales, manuales y otros libros, papeles, documentos, o información (incluyendo copias de los mismos), planos, dibujos o maquetas según corresponda que pertenezcan o se relacionen con los clientes o el negocio del empleador o sus relacionadas y que hubiere tenido bajo su control y posesión. Consecuentemente, siendo plenamente consciente de los hechos, las partes acuerdan elevar al carácter de esencial el hecho que el trabajador se obligue a mantener en estricta reserva todo lo que llegue a su conocimiento, ya sea que directa o indirectamente, y que se refiera a la empresa, sus negocios y actividades. El incumplimiento de la presente obligación será un grave incumplimiento de las obligaciones del presente contrato, y dará al empleador derecho para poner término al mismo, sin perjuicio de las responsabilidades civiles y/o criminales del trabajador, según correspondan.</p>
 
-                        <p class="nueva-clausula" id="clausula-negociacion" style="display: none;"><u><strong>DECIMOTERCERO. - PROHIBICIÓN DE NEGOCIAR COLECTIVAMENTE:</strong></u> De conformidad con lo dispuesto en el artículo 305 del Código del Trabajo, las partes dejan expresa constancia de que el trabajador, en atención a las funciones inherentes a su cargo de <span class="variable" id="dato-cargo-negociacion">[Cargo]</span>, cuenta con facultades de representación del empleador y está dotado de facultades generales de administración. Por consiguiente, queda expresamente prohibido de participar en procesos de negociación colectiva en la empresa.</p>
+                            <p class="nueva-clausula" id="clausula-negociacion" style="display: none;"><u><strong>DECIMOTERCERO. - PROHIBICIÓN DE NEGOCIAR COLECTIVAMENTE:</strong></u> De conformidad con lo dispuesto en el artículo 305 del Código del Trabajo, las partes dejan expresa constancia de que el trabajador, en atención a las funciones inherentes a su cargo de <span class="variable" id="dato-cargo-negociacion">[Cargo]</span>, cuenta con facultades de representación del empleador y está dotado de facultades generales de administración. Por consiguiente, queda expresamente prohibido de participar en procesos de negociación colectiva en la empresa.</p>
 
-                        <p class="nueva-clausula"><u><strong><span id="num-prop-intelectual">DECIMOTERCERO</span>. - DE LA PROPIEDAD INTELECTUAL:</strong></u> Las partes dejan expresa constancia y El/la trabajador/a declara en forma explícita que todo y cualquier procedimiento, marca, modelo, sistema, programa computacional o software, desarrollo o aplicación informática, proyecto u otro, y en general, cualquier invención o creación y cualquier otro elemento de éstos o derivado de ellos, de que conozca o en el que intervenga el/la trabajador/a, sea en forma directa o indirecta en el desempeño de sus labores, pertenece y pertenecerá única y exclusivamente al Empleador, o a quien éste designe, sin pago adicional de ninguna especie para el/la trabajador/a, aun cuando sea efectivamente su autor o creador.</p>
+                            <p class="nueva-clausula"><u><strong><span id="num-prop-intelectual">DECIMOTERCERO</span>. - DE LA PROPIEDAD INTELECTUAL:</strong></u> Las partes dejan expresa constancia y El/la trabajador/a declara en forma explícita que todo y cualquier procedimiento, marca, modelo, sistema, programa computacional o software, desarrollo o aplicación informática, proyecto u otro, y en general, cualquier invención o creación y cualquier otro elemento de éstos o derivado de ellos, de que conozca o en el que intervenga el/la trabajador/a, sea en forma directa o indirecta en el desempeño de sus labores, pertenece y pertenecerá única y exclusivamente al Empleador, o a quien éste designe, sin pago adicional de ninguna especie para el/la trabajador/a, aun cuando sea efectivamente su autor o creador.</p>
 
-                        <p class="nueva-clausula"><u><strong><span id="num-responsabilidad">DECIMOCUARTO</span>. - DE LA RESPONSABILIDAD POR DAÑOS:</strong></u> Las partes convienen que cualquier acción dolosa que realice el/la trabajador/a contra los ejecutivos de la empresa, los bienes del empleador, como asimismo contra alguno de sus compañeros de trabajo o cualquier otra persona natural, además de significar la terminación ipso facto del presente contrato de trabajo, sin indemnización alguna; Y de las responsabilidades penales, será motivo de responsabilidad civil ante la empresa, sus ejecutivos, sus dependientes o terceros.</p>
+                            <p class="nueva-clausula"><u><strong><span id="num-responsabilidad">DECIMOCUARTO</span>. - DE LA RESPONSABILIDAD POR DAÑOS:</strong></u> Las partes convienen que cualquier acción dolosa que realice el/la trabajador/a contra los ejecutivos de la empresa, los bienes del empleador, como asimismo contra alguno de sus compañeros de trabajo o cualquier otra persona natural, además de significar la terminación ipso facto del presente contrato de trabajo, sin indemnización alguna; Y de las responsabilidades penales, será motivo de responsabilidad civil ante la empresa, sus ejecutivos, sus dependientes o terceros.</p>
 
-                        <p class="nueva-clausula"><u><strong><span id="num-feriado">DECIMOQUINTO</span>. - DEL FERIADO ANUAL:</strong></u> El/La trabajador/a hará uso del feriado anual que le corresponda en conformidad a la ley, preferentemente en la época estival o de acuerdo con las necesidades operativas de la empresa, fijándose la fecha de mutuo acuerdo entre las partes.</p>
+                            <p class="nueva-clausula"><u><strong><span id="num-feriado">DECIMOQUINTO</span>. - DEL FERIADO ANUAL:</strong></u> El/La trabajador/a hará uso del feriado anual que le corresponda en conformidad a la ley, preferentemente en la época estival o de acuerdo con las necesidades operativas de la empresa, fijándose la fecha de mutuo acuerdo entre las partes.</p>
 
-                        <p class="nueva-clausula"><u><strong><span id="num-fecha-ingreso">DECIMOSEXTO</span>. - DE LA FECHA DE INGRESO:</strong></u> Se deja constancia que el/la trabajador/a ingresará a prestar servicios para el empleador el día <strong><span class="variable" id="dato-inicio-contrato-clausula">[Inicio Contrato]</span></strong>.</p>
+                            <p class="nueva-clausula"><u><strong><span id="num-fecha-ingreso">DECIMOSEXTO</span>. - DE LA FECHA DE INGRESO:</strong></u> Se deja constancia que el/la trabajador/a ingresará a prestar servicios para el empleador el día <strong><span class="variable" id="dato-inicio-contrato-clausula">[Inicio Contrato]</span></strong>.</p>
 
-                        <p class="nueva-clausula"><u><strong><span id="num-domicilio">DECIMOSÉPTIMO</span>. - DEL DOMICILIO LEGAL:</strong></u> Para todos los efectos legales y contractuales que deriven del presente instrumento, las partes fijan su domicilio especial en la ciudad de <span class="variable" id="dato-centro-costo-16">[Centro de Costo]</span> y se someten expresamente a la jurisdicción y competencia de sus Tribunales de Justicia.</p>
+                            <p class="nueva-clausula"><u><strong><span id="num-domicilio">DECIMOSÉPTIMO</span>. - DEL DOMICILIO LEGAL:</strong></u> Para todos los efectos legales y contractuales que deriven del presente instrumento, las partes fijan su domicilio especial en la ciudad de <span class="variable" id="dato-centro-costo-16">[Centro de Costo]</span> y se someten expresamente a la jurisdicción y competencia de sus Tribunales de Justicia.</p>
 
-                        <p class="nueva-clausula"><u><strong><span id="num-info-medica">DECIMOCTAVO</span>. - SOLICITUD DE INFORMACIÓN MÉDICA:</strong></u> Para los efectos de la Ley N° 19.628, y en virtud a lo establecido por el Decreto Supremo N°3 de 1984, del Ministerio de Salud, que establece el Reglamento de Autorización de Licencias Médicas, en este acto el Trabajador reconoce la facultad que le concede la ley al Empleador para adoptar cualquier medida que se encuentre destinada a controlar y fiscalizar el debido cumplimiento y uso de la licencia médica de la que el trabajador pueda hacer uso, así como también la facultad del empleador de disponer visitas domiciliarias con los mismos fines anteriormente señalados.</p>
+                            <p class="nueva-clausula"><u><strong><span id="num-info-medica">DECIMOCTAVO</span>. - SOLICITUD DE INFORMACIÓN MÉDICA:</strong></u> Para los efectos de la Ley N° 19.628, y en virtud a lo establecido por el Decreto Supremo N°3 de 1984, del Ministerio de Salud, que establece el Reglamento de Autorización de Licencias Médicas, en este acto el Trabajador reconoce la facultad que le concede la ley al Empleador para adoptar cualquier medida que se encuentre destinada a controlar y fiscalizar el debido cumplimiento y uso de la licencia médica de la que el trabajador pueda hacer uso, así como también la facultad del empleador de disponer visitas domiciliarias con los mismos fines anteriormente señalados.</p>
 
-                        <p class="nueva-clausula" style="margin-bottom: 0;"><u><strong><span id="num-doc-electronica">DECIMONOVENO</span>. - DE LA DOCUMENTACIÓN ELECTRÓNICA:</strong></u> Atendido el carácter digital del presente contrato, y de lo establecido por el artículo 3° de la ley N° 19.799 sobre Documentos Electrónicos, Firma Electrónica y Servicios de Certificación de dicha Firma, por intermedio de este acto, <strong><span class="variable" id="dato-nombres-2">[Nombres]</span> <span class="variable" id="dato-paterno-2">[Apellido Paterno]</span> <span class="variable" id="dato-materno-2">[Apellido Materno]</span></strong> Rut. <strong><span class="variable" id="dato-rut-2">[RUT]</span></strong> acepta, que la documentación derivada de la relación laboral con <strong>Preomed Salud SpA</strong>, Rut. <strong>76.500.919-7</strong> pueda ser confeccionada, procesada, firmada y remitida de manera electrónica. Asimismo, acepta que la documentación laboral pueda ser firmada electrónicamente mediante la Plataforma de Gestor Documental de BUK.</p>
-        
-                        <p class="sin-sangria" style="margin-top: 0;">La documentación laboral será remitida de acuerdo con los antecedentes proporcionados por el/la trabajador/a en el presente contrato, a la cuenta de correo electrónico personal <span class="variable" id="dato-correo-2">[Correo Electrónico]</span>. En el caso de no acordar esta modalidad, su documentación laboral será firmada y entregada en soporte papel.</p>
+                            <p class="nueva-clausula" style="margin-bottom: 0;"><u><strong><span id="num-doc-electronica">DECIMONOVENO</span>. - DE LA DOCUMENTACIÓN ELECTRÓNICA:</strong></u> Atendido el carácter digital del presente contrato, y de lo establecido por el artículo 3° de la ley N° 19.799 sobre Documentos Electrónicos, Firma Electrónica y Servicios de Certificación de dicha Firma, por intermedio de este acto, <strong><span class="variable" id="dato-nombres-2">[Nombres]</span> <span class="variable" id="dato-paterno-2">[Apellido Paterno]</span> <span class="variable" id="dato-materno-2">[Apellido Materno]</span></strong> Rut. <strong><span class="variable" id="dato-rut-2">[RUT]</span></strong> acepta, que la documentación derivada de la relación laboral con <strong>Preomed Salud SpA</strong>, Rut. <strong>76.500.919-7</strong> pueda ser confeccionada, procesada, firmada y remitida de manera electrónica. Asimismo, acepta que la documentación laboral pueda ser firmada electrónicamente mediante la Plataforma de Gestor Documental de BUK.<br><br>
+                            La documentación laboral será remitida de acuerdo con los antecedentes proporcionados por el/la trabajador/a en el presente contrato, a la cuenta de correo electrónico personal <span class="variable" id="dato-correo-2">[Correo Electrónico]</span>. En el caso de no acordar esta modalidad, su documentación laboral será firmada y entregada en soporte papel.</p>
+                        </div>
+                        <!-- FIN CLÁUSULAS ESTÁNDAR -->
+
+                        <!-- INICIO CLÁUSULAS GERENCIA -->
+                        <div id="clausulas-gerencia" style="display: none;">
+                            <p class="nueva-clausula"><u><strong>PRIMERO. - CARGO, NATURALEZA DE LOS SERVICIOS, LUGAR DE TRABAJO Y DEPENDENCIA:</strong></u> El Empleador contrata los servicios personales del Trabajador para que desempeñe el cargo de <strong><span class="variable" id="dato-cargo-g">[Cargo]</span></strong>, prestando servicios principalmente en <span class="variable" id="dato-direccion-centro-costo-g">[Dirección Centro de Costo]</span>, <span class="variable" id="dato-centro-costo-g">[Centro de Costo]</span>, sin perjuicio de los desplazamientos, reuniones, visitas, gestiones o labores que, atendida la naturaleza del cargo, deban realizarse en otros establecimientos, dependencias, centros, instalaciones de clientes, proveedores, empresas relacionadas u otros lugares vinculados con la operación del Empleador.<br><br>
+                            El Empleador podrá ejercer las facultades de modificación previstas en el artículo 12 del Código del Trabajo, únicamente dentro de los límites establecidos por dicha norma, esto es, tratándose de labores similares, dentro del mismo lugar o ciudad, y sin que ello importe menoscabo para el Trabajador.<br><br>
+                            En el desempeño del cargo de <strong><span class="variable" id="dato-cargo-g2">[Cargo]</span></strong>, el Trabajador deberá cumplir principalmente las siguientes funciones: En especial, y sin que la siguiente enumeración sea taxativa, corresponderá al Trabajador desarrollar las siguientes funciones:</p>
+                            <ol type="a">
+                                <li>Dirigir, coordinar y supervisar la gestión general de la Empresa y de sus distintas áreas, unidades y equipos de trabajo.</li>
+                                <li>Diseñar, proponer, implementar y controlar planes estratégicos, operacionales, comerciales y financieros, de acuerdo con las directrices impartidas por los socios, accionistas, directorio, administradores o representantes de la Empresa, según corresponda.</li>
+                                <li>Velar por el cumplimiento de los objetivos, metas, presupuestos, indicadores de gestión y planes de trabajo establecidos para la organización.</li>
+                                <li>Supervisar la gestión financiera, contable, presupuestaria y administrativa de la Empresa, incluyendo el control de ingresos, egresos, costos, inversiones, contratos y compromisos económicos, dentro de los límites de sus facultades.</li>
+                                <li>Participar en la definición e implementación de estrategias comerciales, negociación con clientes y proveedores, análisis de oportunidades de negocio y desarrollo de nuevas líneas, proyectos o servicios.</li>
+                                <li>Representar a la Empresa frente a clientes, proveedores, entidades públicas o privadas y terceros, únicamente dentro de las facultades y poderes que le hayan sido expresamente conferidos.</li>
+                                <li>Celebrar, negociar, suscribir, aprobar o gestionar contratos, convenios, órdenes de compra, propuestas comerciales y otros actos jurídicos o comerciales, exclusivamente dentro de los límites de autorización establecidos por la Empresa.</li>
+                                <li>Dirigir y supervisar la gestión de personas, incluyendo planificación de dotación, organización interna, evaluación de desempeño, cumplimiento de políticas laborales y coordinación con las áreas responsables, dentro de las facultades que le hayan sido conferidas.</li>
+                                <li>Proponer contrataciones, desvinculaciones, modificaciones organizacionales, remuneraciones, incentivos y estructuras de equipos, sujetándose a los niveles de aprobación establecidos por la Empresa.</li>
+                                <li>Velar por el cumplimiento de la legislación laboral, sanitaria, comercial, tributaria, regulatoria, de protección de datos, seguridad de la información, prevención de delitos y demás normativa aplicable a las actividades de la Empresa.</li>
+                                <li>Supervisar la correcta implementación y cumplimiento de políticas internas, reglamentos, procedimientos, protocolos, códigos de ética y mecanismos de control interno.</li>
+                                <li>Identificar, evaluar, gestionar y reportar riesgos legales, laborales, financieros, comerciales, operacionales, tecnológicos y reputacionales que puedan afectar a la Empresa.</li>
+                                <li>Mantener permanentemente informados a los socios, accionistas, directorio, administradores o representantes correspondientes respecto de materias relevantes para la marcha de la Empresa, incluyendo resultados, contingencias, riesgos, proyectos y decisiones estratégicas.</li>
+                                <li>Autorizar gastos, compras, contrataciones y compromisos económicos dentro de los montos y límites establecidos en la Matriz de Poderes y Niveles de Autorización de la Empresa.</li>
+                                <li>Velar por la correcta utilización, administración, protección y conservación de los bienes, fondos, sistemas, equipos, información y demás recursos corporativos puestos bajo su responsabilidad.</li>
+                                <li>Mantener la debida reserva y confidencialidad respecto de la información estratégica, comercial, financiera, laboral, contractual, tecnológica, operacional y demás información reservada a la que tenga acceso con ocasión de sus funciones.</li>
+                                <li>Velar por la adecuada protección de datos personales, bases de datos, credenciales, sistemas y demás activos de información de la Empresa.</li>
+                                <li>Prevenir, identificar y comunicar oportunamente situaciones de conflicto de interés, absteniéndose de intervenir en aquellas decisiones en que exista un interés personal incompatible con los intereses de la Empresa.</li>
+                                <li>Coordinar y supervisar la ejecución de proyectos estratégicos y transversales, procurando su correcto desarrollo, documentación, trazabilidad y cumplimiento de plazos y presupuestos.</li>
+                                <li>Preparar y presentar informes de gestión, estados de avance, reportes financieros, comerciales, laborales, operacionales y estratégicos cuando sean requeridos por la Empresa.</li>
+                                <li>Mantener adecuada trazabilidad y respaldo documental de las decisiones, autorizaciones, compromisos y actuaciones relevantes efectuadas en representación de la Empresa.</li>
+                                <li>Coordinar las relaciones con asesores externos, auditores, abogados, contadores, proveedores estratégicos y demás profesionales o empresas que presten servicios a la organización.</li>
+                                <li>Adoptar las medidas razonables y necesarias destinadas a asegurar la continuidad operacional de la Empresa y la adecuada coordinación entre sus diferentes áreas.</li>
+                                <li>Cumplir y hacer cumplir, dentro del ámbito de sus atribuciones, las políticas de seguridad y salud en el trabajo, prevención del acoso laboral, acoso sexual y violencia en el trabajo, así como las demás obligaciones establecidas en el Reglamento Interno de Orden, Higiene y Seguridad.</li>
+                                <li>Efectuar una adecuada entrega del cargo cuando corresponda, proporcionando información sobre proyectos, contratos, asuntos pendientes, accesos corporativos, documentación y demás antecedentes necesarios para garantizar la continuidad de las operaciones.</li>
+                                <li>Ejecutar todas aquellas otras funciones de dirección, administración, coordinación, planificación, supervisión, control y representación que resulten naturalmente vinculadas con el cargo y que sean compatibles con su posición, nivel de responsabilidad y facultades otorgadas.</li>
+                            </ol>
+                            <p class="sin-sangria">Las funciones anteriormente descritas deberán ejercerse siempre dentro de los poderes, límites de autorización, políticas internas y directrices impartidas por la Empresa, sin que la sola denominación del cargo permita al Trabajador asumir obligaciones o comprometer patrimonialmente a la Empresa más allá de las facultades expresamente conferidas. El listado anterior es enunciativo y no limita otras funciones específicas, alternativas o complementarias que sean propias del cargo, compatibles con su naturaleza y que sean instruidas por el Empleador conforme a la ley. Las funciones, facultades y responsabilidades particulares podrán complementarse mediante descriptor de cargo, matriz de poderes, anexo de funciones o documento equivalente.</p>
+
+                            <p class="nueva-clausula"><u><strong>SEGUNDO. - FACULTADES, RESPONSABILIDADES Y LÍMITES DE ACTUACIÓN:</strong></u> El Trabajador ejercerá únicamente las facultades de administración, representación, contratación, suscripción, disposición, aprobación de gastos, contratación de personal, descuentos comerciales o compromisos económicos que le hayan sido conferidas por el Empleador mediante escritura pública, mandato, delegación, matriz de poderes, política interna, anexo contractual o instrucción escrita válida.<br><br>
+                            El cargo o denominación contractual no autoriza por sí solo al Trabajador a comprometer económica o jurídicamente al Empleador fuera de los límites otorgados. Ante dudas sobre el alcance de sus atribuciones, deberá requerir autorización previa y por escrito del órgano, representante o jefatura competente.<br><br>
+                            Queda prohibido al Trabajador, salvo autorización previa y suficiente, contratar créditos, reconocer deudas, constituir garantías, celebrar contratos fuera de los límites aprobados, conceder descuentos extraordinarios, contratar o desvincular personal sin facultad para ello, modificar remuneraciones o beneficios, asumir compromisos financieros, o ejecutar cualquier acto que exceda los poderes o niveles de autorización vigentes.</p>
+
+                            <p class="nueva-clausula"><u><strong>TERCERO. - DELEGACIÓN DE FUNCIONES Y MANEJO DE PODERES O AUTORIZACIONES:</strong></u> El Trabajador no podrá delegar facultades, poderes, claves, autorizaciones, niveles de aprobación o responsabilidades que le hayan sido conferidas en atención a su cargo, salvo autorización expresa del Empleador o cuando el respectivo mandato, política o matriz de poderes lo permita.<br><br>
+                            Toda delegación autorizada deberá constar en forma trazable y quedar sujeta a los límites, controles y mecanismos de supervisión definidos por el Empleador. La delegación no exime al Trabajador de los deberes de control, diligencia y rendición de cuentas propios de su cargo.</p>
+                            
+                            <p class="nueva-clausula"><u><strong>CUARTO. - EXCLUSIÓN DE LIMITACIÓN DE JORNADA:</strong></u> Las partes dejan expresa constancia que, atendida la naturaleza de las funciones encomendadas al trabajador y de conformidad con lo dispuesto en el artículo 22 inciso segundo del Código del Trabajo, éste se encuentra excluido de la limitación de jornada de trabajo, por desempeñar sus labores sin fiscalización superior inmediata en los términos previstos por la legislación laboral vigente.<br><br>
+                            En consecuencia, el trabajador no estará sujeto a una jornada ordinaria de trabajo determinada ni a control de horario, debiendo organizar la ejecución de sus funciones de manera tal que permita el adecuado cumplimiento de las obligaciones propias de su cargo, de los objetivos encomendados por el empleador y de las instrucciones generales que éste imparta en el ejercicio de sus facultades de administración y dirección.<br><br>
+                            Lo anterior es sin perjuicio del deber del trabajador de cumplir oportunamente con las funciones para las cuales ha sido contratado, observando las políticas, procedimientos y directrices internas de la empresa que resulten aplicables.</p>
+
+                            <p class="nueva-clausula" style="margin-bottom: 5px; page-break-after: avoid;"><u><strong>QUINTO. - DE LAS REMUNERACIONES:</strong></u> El empleador se compromete a remunerar al trabajador mensualmente en la forma que se indica:</p>
+                            <ol type="a">
+                                <li style="margin-top: 0; margin-bottom: 0;">Sueldo Base Mensual <strong><span class="variable" id="dato-sueldo-g">[Sueldo Base]</span></strong> .- (proporcional a los días trabajados en el mes)</li>
+                                <li style="margin-top: 0; margin-bottom: 0;">La Gratificación legal mensual corresponderá al 25% de la Remuneración base con un tope según el Art. 50 del Código del Trabajo correspondiente a 4,75 ingresos mínimos mensuales.</li>
+                                <li id="li-colacion-g" style="margin-top: 0; margin-bottom: 0;">Asignación no Imponible de Colación <strong><span class="variable" id="dato-colacion-g">[Colación]</span></strong> .- (proporcional a los días trabajados en el mes)</li>
+                                <li id="li-movilizacion-g" style="margin-top: 0; margin-bottom: 0;">Asignación no Imponible de Movilización <strong><span class="variable" id="dato-movilizacion-g">[Movilización]</span></strong> .- (proporcional a los días trabajados en el mes)</li>
+                            </ol>
+
+                            <p class="nueva-clausula" style="margin-bottom: 0;"><u><strong>SEXTO. - DE LA FORMA DE PAGO Y DESCUENTOS LEGALES:</strong></u> Las remuneraciones se pagarán mensualmente por período vencido, a más tardar el segundo (2°) día hábil del mes siguiente, de acuerdo con los plazos establecidos en el artículo 55 del Código del Trabajo.</p>
+                            <p class="sin-sangria" style="margin-top: 0; margin-bottom: 0;">El pago se realizará en moneda nacional mediante transferencia electrónica o depósito en el Banco <strong><span class="variable" id="dato-banco-g">[Banco]</span></strong>, cuenta <span class="variable" id="dato-tipo-cuenta-g">[Tipo de Cuenta]</span> N° <strong><span class="variable" id="dato-cuenta-g">[cuenta]</span></strong>, indicada por el/la trabajador/a, en conformidad a lo dispuesto en el inciso segundo del artículo 54 del citado cuerpo legal. Para estos efectos, el/la trabajador/a en este acto otorga su expresa y amplia autorización a la empresa para efectuar el pago de sus remuneraciones a través de dicha vía.</p>
+                            <p class="sin-sangria" style="margin-top: 0; margin-bottom: 0;">De las sumas que correspondan, el Empleador deducirá los impuestos que las graven, las cotizaciones de seguridad social y demás descuentos legales y autorizados, en estricto cumplimiento a lo establecido en el artículo 58 del Código del Trabajo. Al respecto, se deja expresa constancia que la cotización legal obligatoria para salud corresponde al 7% de la remuneración imponible. En caso de que el/la trabajador/a se encuentre afiliado/a a una Institución de Salud Previsional (ISAPRE) y el costo del plan pactado supere dicho porcentaje legal, la cotización adicional o diferencia será de exclusivo cargo y costo del/la trabajador/a, autorizando desde ya al Empleador a descontar dicho excedente de sus remuneraciones conforme a lo notificado por la institución mediante el Formulario Único de Notificación (FUN).</p>
+
+                            <p class="nueva-clausula"><u><strong>SÉPTIMO. - VIGENCIA DEL CONTRATO:</strong></u> El presente contrato tendrá una duración hasta el día <strong><span class="variable" id="dato-termino-contrato-g">[Término Contrato]</span></strong>. En caso de pactarse plazo fijo, cualquier renovación deberá constar por escrito en el correspondiente anexo de contrato, respetando los límites legales aplicables. El contrato podrá terminar por las causales y formalidades establecidas en los artículos 159, 160, 161, 162, 163 bis y demás normas pertinentes del Código del Trabajo.</p>
+
+                            <p class="nueva-clausula"><u><strong>OCTAVO. - OBLIGACIONES GENERALES Y DEBER ESPECIAL DE BUENA FE, LEALTAD Y DILIGENCIA:</strong></u> El Trabajador se obliga especialmente a:</p>
+                            <ul>
+                                <li>Cumplir con diligencia, probidad, buena fe y lealtad las funciones propias del cargo.</li>
+                                <li>Respetar y cumplir el Reglamento Interno de Orden, Higiene y Seguridad, políticas, protocolos, instrucciones y procedimientos vigentes del Empleador.</li>
+                                <li>Obedecer las instrucciones lícitas de sus superiores o del órgano competente, dentro del marco del contrato y de la legislación vigente.</li>
+                                <li>Mantener un trato respetuoso, libre de violencia, acoso laboral, acoso sexual o conductas contrarias a la dignidad de las personas.</li>
+                                <li>Cumplir los protocolos de prevención e investigación de acoso laboral, acoso sexual y violencia en el trabajo.</li>
+                                <li>Usar adecuadamente los bienes, recursos, sistemas, fondos, tarjetas, vehículos, dispositivos, licencias, plataformas y herramientas entregadas por el Empleador.</li>
+                                <li>Mantener respaldo documental y trazabilidad suficiente de las decisiones, autorizaciones, rendiciones, contrataciones y gestiones relevantes efectuadas en representación del Empleador.</li>
+                                <li>Informar oportunamente contingencias, riesgos, conflictos de interés, incidentes de seguridad, incumplimientos normativos o cualquier antecedente relevante para la continuidad operacional o protección de la Empresa.</li>
+                                <li>Guardar reserva respecto de la Información Confidencial y datos personales a que acceda por sus funciones.</li>
+                                <li>Cumplir las demás obligaciones legales, contractuales y reglamentarias aplicables.</li>
+                            </ul>
+                            <p class="sin-sangria">Las Partes reconocen que la calificación de un incumplimiento como grave deberá analizarse en atención a las circunstancias concretas, sin que este contrato importe una calificación anticipada y automática de causal de despido.</p>
+
+                            <p class="nueva-clausula"><u><strong>NOVENO. - PROHIBICIONES GENERALES:</strong></u> Sin perjuicio de otras prohibiciones contenidas en el Reglamento Interno o políticas debidamente comunicadas, se prohíbe al Trabajador:</p>
+                            <ul>
+                                <li>Prestar servicios bajo los efectos del alcohol, drogas o sustancias que afecten la seguridad o correcto desempeño de sus funciones.</li>
+                                <li>Utilizar bienes, fondos, tarjetas, cuentas, vehículos, sistemas, equipos o recursos del Empleador para fines ajenos a las funciones, salvo autorización expresa o uso personal razonable permitido por política interna.</li>
+                                <li>Compartir claves, credenciales, tokens, accesos o autorizaciones personales.</li>
+                                <li>Eliminar, sustraer, copiar, reenviar o conservar información de la Empresa sin autorización.</li>
+                                <li>Comprometer económica o jurídicamente al Empleador fuera de sus facultades.</li>
+                                <li>Actuar en situaciones de conflicto de interés sin informar previamente y sin abstenerse cuando corresponda.</li>
+                                <li>Ejecutar negociaciones prohibidas dentro del giro del Empleador en los términos del artículo 160 N°2 del Código del Trabajo.</li>
+                                <li>Captar, desviar o utilizar en beneficio propio o de terceros clientes, proveedores, oportunidades comerciales, información, bases de datos o antecedentes obtenidos con ocasión del cargo, fuera de los límites legalmente permitidos.</li>
+                            </ul>
+                            <p class="sin-sangria">La infracción a estas prohibiciones podrá dar lugar a las medidas disciplinarias o laborales que correspondan conforme a la ley, el Reglamento Interno y la gravedad de los hechos.</p>
+
+                            <p class="nueva-clausula"><u><strong>DÉCIMO. - EXCLUSIVIDAD, INCOMPATIBILIDADES Y NO COMPETENCIA DURANTE LA RELACIÓN LABORAL:</strong></u> Durante la vigencia del contrato, el Trabajador deberá abstenerse de desarrollar actividades laborales, profesionales, comerciales o empresariales paralelas que generen un conflicto de interés efectivo, impliquen competencia con el Empleador, interfieran materialmente con el cumplimiento de sus funciones, supongan uso de Información Confidencial o involucren recursos corporativos no autorizados.<br><br>
+                            Conforme al artículo 160 N°2 del Código del Trabajo, queda expresamente prohibido al Trabajador ejecutar por cuenta propia o ajena negociaciones comprendidas dentro del giro del Empleador cuando ellas impliquen competencia con éste.<br><br>
+                            Esta cláusula no prohíbe actividades ajenas al giro del Empleador, ni actividades que no generen conflicto de interés, no interfieran con el cumplimiento de las funciones y no utilicen información o recursos corporativos. Cuando exista duda razonable, el Trabajador deberá informar previamente al Empleador.</p>
+
+                            <p class="nueva-clausula"><u><strong>DÉCIMO PRIMERO. - CONFLICTOS DE INTERÉS:</strong></u> El Trabajador deberá informar oportunamente y por escrito cualquier relación, participación, negocio, interés personal, familiar, societario o comercial que pueda afectar razonablemente su imparcialidad en decisiones relacionadas con el Empleador, sus clientes, proveedores, trabajadores, pacientes, empresas relacionadas o contrapartes.<br><br>
+                            Cuando exista conflicto de interés real o potencial, el Trabajador deberá abstenerse de intervenir en la decisión respectiva hasta recibir instrucciones del órgano o representante competente. Las relaciones personales o familiares sólo deberán informarse cuando tengan conexión objetiva con decisiones o actuaciones efectuadas en representación del Empleador, respetándose la vida privada y derechos fundamentales del Trabajador.</p>
+
+                            <p class="nueva-clausula"><u><strong>DÉCIMO SEGUNDO. - CONFIDENCIALIDAD Y DEBER DE RESERVA:</strong></u> El Trabajador reconoce que, por la naturaleza de sus funciones, podrá acceder a información estratégica, comercial, financiera, contable, laboral, operacional, tecnológica, contractual, clínica, de clientes, pacientes, proveedores, trabajadores o empresas relacionadas, que el Empleador mantiene razonablemente bajo reserva y cuya divulgación o uso no autorizado podría afectar sus intereses legítimos.<br><br>
+                            Para estos efectos, se entenderá por "Información Confidencial" toda información no pública, reservada o de acceso restringido, incluyendo especialmente estrategias comerciales, precios, márgenes, costos, presupuestos, estados financieros no públicos, contratos, negociaciones, bases de datos, nóminas, información de pacientes, información laboral estratégica, procesos internos, procedimientos, credenciales, configuraciones de sistemas, secretos empresariales, know how, metodologías, proyectos, informes y cualquier antecedente expresamente identificado como reservado cuando su naturaleza justifique razonablemente dicha calificación.<br><br>
+                            No tendrá carácter confidencial la información que sea legítimamente pública, aquella que el Trabajador pueda acreditar que conocía lícitamente antes de acceder a ella por su empleo, la obtenida lícitamente de un tercero no obligado a reserva o aquella cuya entrega sea exigida por ley, autoridad competente o resolución judicial.<br><br>
+                            El Trabajador se obliga a utilizar la Información Confidencial exclusivamente para el cumplimiento de sus funciones, absteniéndose de copiarla, reproducirla, transmitirla, divulgarla, almacenarla en cuentas personales, apropiársela o utilizarla en beneficio propio o de terceros, salvo autorización expresa del Empleador o exigencia legal.</p>
+
+                            <p class="nueva-clausula"><u><strong>DÉCIMO TERCERO. - VIGENCIA POSTERIOR DE LA CONFIDENCIALIDAD:</strong></u> La obligación de confidencialidad subsistirá después del término de la relación laboral respecto de información que mantenga objetivamente su carácter reservado. Tratándose de secretos empresariales, credenciales de seguridad, bases de datos no públicas, información estratégica, información de pacientes o datos personales especialmente protegidos, la obligación subsistirá mientras la información conserve jurídicamente su naturaleza confidencial o reservada.<br><br>
+                            Respecto de las demás categorías de Información Confidencial, la obligación subsistirá por un período tres años contado desde el término de la relación laboral, sin perjuicio de las obligaciones legales de reserva que deban subsistir por un período superior. Esta cláusula no impedirá al Trabajador utilizar su experiencia profesional, conocimientos generales, habilidades, competencias o información legítimamente pública en empleos o actividades posteriores.</p>
+
+                            <p class="nueva-clausula"><u><strong>DÉCIMO CUARTO. - PROHIBICIÓN DE USO O APROVECHAMIENTO DE INFORMACIÓN CORPORATIVA:</strong></u> El Trabajador no podrá utilizar información, documentos, bases de datos, credenciales, oportunidades comerciales, estrategias, antecedentes de clientes, pacientes o proveedores, ni cualquier Información Confidencial a la que acceda por razón del cargo, para beneficio propio o de terceros. Esta obligación se mantendrá después del término de la relación laboral en la medida necesaria para proteger información que conserve carácter confidencial, secreto empresarial o dato personal protegido, sin constituir una prohibición general de trabajar para terceros ni una restricción absoluta a la libertad de trabajo.</p>
+
+                            <p class="nueva-clausula"><u><strong>DÉCIMO QUINTO. - CLIENTES, PROVEEDORES Y OPORTUNIDADES COMERCIALES:</strong></u> Durante la vigencia del contrato queda prohibido al Trabajador captar, desviar o aprovechar para beneficio propio o de terceros clientes, proveedores u oportunidades comerciales conocidas exclusivamente en ejercicio de sus funciones y que correspondan razonablemente a proyectos, negocios o negociaciones del Empleador.<br><br>
+                            Con posterioridad al término del contrato, continuará prohibido utilizar Información Confidencial, secretos empresariales o bases de datos reservadas del Empleador para captar clientes, proveedores u oportunidades comerciales. Esta estipulación no constituye una prohibición general de competencia postcontractual.</p>
+
+                            <p class="nueva-clausula"><u><strong>DÉCIMO SEXTO. - PROTECCIÓN DE DATOS PERSONALES:</strong></u> El Trabajador deberá tratar los datos personales de trabajadores, postulantes, clientes, pacientes, proveedores, representantes, prestadores y demás personas únicamente en la medida necesaria para el cumplimiento de sus funciones y conforme a las instrucciones, políticas y bases jurídicas aplicables.<br><br>
+                            Queda prohibido copiar, extraer, transferir, comunicar, almacenar en cuentas personales o utilizar datos personales para fines distintos a los autorizados. El Trabajador deberá informar inmediatamente cualquier pérdida, acceso indebido, divulgación, alteración o incidente que pueda comprometer datos personales.<br><br>
+                            El Empleador tratará los datos personales del Trabajador para gestionar la relación laboral, cumplir obligaciones legales, previsionales, tributarias, de seguridad social, salud y seguridad en el trabajo, administración interna y demás finalidades legítimas vinculadas al contrato, conforme a la normativa vigente. Las Partes dejan constancia de que esta cláusula deberá interpretarse y actualizarse de acuerdo con la Ley N°19.628 y la normativa que la modifique o complemente, incluida la Ley N°21.719 cuando entre en vigencia.</p>
+
+                            <p class="nueva-clausula"><u><strong>DÉCIMO SÉPTIMO. - SEGURIDAD DE LA INFORMACIÓN, CORREOS Y RECURSOS TECNOLÓGICOS:</strong></u> El Trabajador deberá cumplir las políticas de seguridad de la información, ciberseguridad, uso de correos corporativos, sistemas, contraseñas, plataformas, documentos, archivos, dispositivos, respaldos, accesos remotos y demás recursos tecnológicos del Empleador.<br><br>
+                            En especial, deberá utilizar cuentas corporativas para asuntos laborales, proteger sus contraseñas y mecanismos de autenticación, abstenerse de compartir credenciales, usar dispositivos y repositorios autorizados, reportar incidentes de seguridad, no instalar programas no autorizados, no extraer información sin autorización y mantener la documentación corporativa en los sistemas definidos por el Empleador.<br><br>
+                            El Empleador podrá regular las condiciones, frecuencia y oportunidad de uso de los correos y sistemas corporativos, respetando siempre los derechos fundamentales del Trabajador, especialmente su intimidad, vida privada, honra e inviolabilidad de comunicaciones privadas, conforme al artículo 5 inciso primero del Código del Trabajo.</p>
+
+                            <p class="nueva-clausula"><u><strong>DÉCIMO OCTAVO. - PROPIEDAD INTELECTUAL, INDUSTRIAL Y TITULARIDAD DE DESARROLLOS:</strong></u> Los programas computacionales que el Trabajador produzca en el desempeño de sus funciones laborales se regirán por la Ley N°17.336 sobre Propiedad Intelectual. Las invenciones, modelos de utilidad, diseños industriales, secretos empresariales y demás creaciones comprendidas en la Ley N°19.039 se regirán por las normas sobre invenciones de servicio y demás disposiciones aplicables. En consecuencia, esta cláusula no constituirá una renuncia anticipada del Trabajador a derechos que legalmente le correspondan.<br><br>
+                            Sin perjuicio de lo anterior, pertenecerán al Empleador, en la medida permitida por la ley y atendida la naturaleza de las funciones contratadas, los documentos de trabajo, informes, procedimientos, bases de datos estructuradas, automatizaciones, sistemas, metodologías, diseños, estrategias, material comercial, manuales, reportes, presentaciones y demás productos elaborados específicamente por el Trabajador en cumplimiento de sus funciones para el Empleador. Cuando corresponda formalizar una cesión, autorización o instrumento específico respecto de un desarrollo determinado, las Partes deberán suscribir el documento respectivo, respetando la legislación aplicable.</p>
+
+                            <p class="nueva-clausula"><u><strong>DÉCIMO NOVENO. - CUSTODIA, DEVOLUCIÓN DE INFORMACIÓN Y ACTIVOS:</strong></u> El Trabajador deberá custodiar diligentemente los documentos, equipos, dispositivos, vehículos, tarjetas, credenciales, archivos, accesos, respaldos, llaves, fondos, plataformas, licencias y cualquier otro activo o información de propiedad del Empleador que le sea entregado o al que tenga acceso con ocasión del cargo.<br><br>
+                            Cuando el Empleador lo requiera y, especialmente, al término de la relación laboral, el Trabajador deberá devolver oportunamente dichos activos e información, absteniéndose de conservar copias físicas o digitales de Información Confidencial o datos personales, salvo obligación legal o necesidad legítima de ejercer derechos ante autoridad competente. La entrega de activos e información deberá documentarse mediante acta, protocolo o registro de devolución cuando la naturaleza del cargo o de los bienes entregados así lo justifique.</p>
+
+                            <p class="nueva-clausula"><u><strong>VIGÉSIMO. - ENTREGA FORMAL DEL CARGO:</strong></u> Al término de sus funciones, cualquiera sea la causal, y en la medida que ello sea materialmente posible, el Trabajador deberá efectuar una entrega ordenada del cargo al Empleador o a la persona que éste designe, incluyendo estado de proyectos, contratos, asuntos pendientes, claves corporativas bajo procedimiento seguro, accesos, documentación, compromisos, vencimientos, contactos relevantes, contingencias y demás antecedentes necesarios para asegurar la continuidad operacional. La entrega del cargo no comprenderá la revelación de contraseñas personales. Tratándose de credenciales corporativas individualizadas, deberá aplicarse el procedimiento técnico de revocación, transferencia o recuperación definido por el Empleador.</p>
+
+                            <p class="nueva-clausula"><u><strong>VIGÉSIMO PRIMERO. - COMUNICACIONES Y REPRESENTACIÓN INSTITUCIONAL:</strong></u> Las declaraciones públicas, comunicaciones a medios, pronunciamientos institucionales, compromisos frente a autoridades, clientes, pacientes, proveedores u otros terceros, y demás actuaciones que puedan comprometer oficialmente la posición del Empleador, sólo podrán efectuarse por personas autorizadas y dentro de las facultades conferidas. El Trabajador deberá abstenerse de emitir declaraciones, comunicaciones o compromisos en nombre del Empleador fuera del marco de sus funciones, poderes o autorizaciones.</p>
+
+                            <p class="nueva-clausula"><u><strong>VIGÉSIMO SEGUNDO. - RENDICIÓN DE CUENTAS, TRAZABILIDAD Y RESPALDO DOCUMENTAL:</strong></u> El Trabajador deberá mantener respaldo suficiente, verificable y trazable de decisiones y gestiones relevantes realizadas en representación del Empleador, especialmente aprobaciones, contrataciones, compras, gastos, descuentos, negociaciones, decisiones de personal, rendiciones de fondos, informes, proyectos y documentación exigida por auditoría, compliance o normativa aplicable. La falta de respaldo documental deberá ser informada oportunamente cuando pueda afectar la continuidad operacional, control interno, cumplimiento normativo o intereses del Empleador.</p>
+
+                            <p class="nueva-clausula"><u><strong>VIGÉSIMO TERCERO. - REGLAMENTO INTERNO, LEY KARIN Y POLÍTICAS CORPORATIVAS:</strong></u> El Trabajador declara haber recibido, leído y comprendido el Reglamento Interno de Orden, Higiene y Seguridad vigente del Empleador, obligándose a cumplirlo, así como sus modificaciones futuras debidamente comunicadas conforme a la normativa aplicable.<br><br>
+                            El Trabajador se compromete a cumplir y respetar los protocolos de prevención, investigación y sanción de acoso sexual, acoso laboral y violencia en el trabajo, y a contribuir activamente a un ambiente laboral basado en el respeto, buen trato y reconocimiento de la dignidad de las personas.<br><br>
+                            Cuando corresponda, el Trabajador deberá cumplir las políticas de prevención de delitos, anticorrupción, compliance, conflicto de interés, seguridad de la información, protección de datos, uso de recursos tecnológicos, ética y demás documentos internos aplicables a su cargo, siempre que hayan sido debidamente comunicados o incorporados conforme a derecho.</p>
+
+                            <p class="nueva-clausula"><u><strong>VIGÉSIMO CUARTO. - PROHIBICIÓN DE NEGOCIACIÓN COLECTIVA PARA CARGOS DEL ARTÍCULO 305 DEL CÓDIGO DEL TRABAJO:</strong></u> Sólo para aquellos cargos que efectivamente cuenten con facultades de representación del Empleador y facultades generales de administración, las Partes dejan expresa constancia, para los efectos del artículo 305 del Código del Trabajo, de que el Trabajador se encuentra dentro de aquellos dependientes impedidos legalmente de ejercer el derecho a negociar colectivamente mientras mantenga dichas facultades y concurran los presupuestos establecidos por dicha norma.<br><br>
+                            Esta estipulación constituye una constancia de la condición jurídica prevista por el artículo 305 del Código del Trabajo y no una renuncia convencional a derechos colectivos. Si posteriormente dejaran de concurrir los presupuestos legales que justifican esta condición, la cláusula deberá adecuarse a la situación efectiva del cargo.</p>
+
+                            <p class="nueva-clausula"><u><strong>VIGÉSIMO QUINTO. - RESPONSABILIDADES DERIVADAS DE INCUMPLIMIENTOS:</strong></u> El incumplimiento de las obligaciones de confidencialidad, seguridad de la información, protección de datos, lealtad, conflicto de interés, uso adecuado de recursos, rendición de cuentas o límites de actuación podrá dar lugar a las medidas laborales que correspondan de acuerdo con la naturaleza y gravedad de los hechos, el Reglamento Interno y la legislación vigente.<br><br>
+                            Cuando concurran los presupuestos legales, podrán resultar aplicables, entre otras, las causales de término contempladas en el artículo 160 N°1 letra a), N°2, N°5, N°6 o N°7 del Código del Trabajo. Los perjuicios eventualmente ocasionados deberán ser acreditados por las vías legales correspondientes. Este contrato no establece multas privadas ni descuentos automáticos de remuneraciones.</p>
+
+                            <p class="nueva-clausula"><u><strong>VIGÉSIMO SEXTO. - SOLICITUD DE INFORMACIÓN MÉDICA:</strong></u> Para los efectos de la Ley N° 19.628, y en virtud a lo establecido por el Decreto Supremo N°3 de 1984, del Ministerio de Salud, que establece el Reglamento de Autorización de Licencias Médicas, en este acto el Trabajador reconoce la facultad que le concede la ley al Empleador para adoptar cualquier medida que se encuentre destinada a controlar y fiscalizar el debido cumplimiento y uso de la licencia médica de la que el trabajador pueda hacer uso, así como también la facultad del empleador de disponer visitas domiciliarias con los mismos fines anteriormente señalados.</p>
+
+                            <p class="nueva-clausula"><u><strong>VIGÉSIMO SÉPTIMO. - MODIFICACIONES, REGISTRO Y ACEPTACIÓN:</strong></u> Toda modificación al presente contrato deberá constar por escrito y ser firmada por las Partes al dorso de los ejemplares o en documento anexo, conforme al artículo 11 del Código del Trabajo, salvo aquellas modificaciones que operen por el solo ministerio de la ley.<br><br>
+                            El Empleador efectuará el registro electrónico del contrato ante la Dirección del Trabajo dentro del plazo legal establecido en el artículo 9 bis del Código del Trabajo.</p>
+
+                            <p class="nueva-clausula" style="margin-bottom: 0;"><u><strong>VIGÉSIMO OCTAVO. - DE LA DOCUMENTACIÓN ELECTRÓNICA:</strong></u> Atendido el carácter digital del presente contrato, y de lo establecido por el artículo 3° de la ley N° 19.799 sobre Documentos Electrónicos, Firma Electrónica y Servicios de Certificación de dicha Firma, por intermedio de este acto, <strong><span class="variable" id="dato-nombres-g">[Nombres]</span> <span class="variable" id="dato-paterno-g">[Apellido Paterno]</span> <span class="variable" id="dato-materno-g">[Apellido Materno]</span></strong> Rut. <strong><span class="variable" id="dato-rut-g">[RUT]</span></strong> acepta, que la documentación derivada de la relación laboral con <strong>Preomed Salud SpA</strong>, Rut. <strong>76.500.919-7</strong> pueda ser confeccionada, procesada, firmada y remitida de manera electrónica. Asimismo, acepta que la documentación laboral pueda ser firmada electrónicamente mediante la Plataforma de Gestor Documental de BUK.<br><br>
+                            La documentación laboral será remitida de acuerdo con los antecedentes proporcionados por el/la trabajador/a en el presente contrato, a la cuenta de correo electrónico personal <span class="variable" id="dato-correo-g">[Correo Electrónico]</span>. En el caso de no acordar esta modalidad, su documentación laboral será firmada y entregada en soporte papel.</p>
+                        </div>
+                        <!-- FIN CLÁUSULAS GERENCIA -->
 
                         <p style="text-align: left; margin-top: 40px; text-indent: 0;">En señal de aceptación las partes firman electrónicamente a través de la plataforma BUK.</p>
 
@@ -193,14 +349,12 @@
             <tfoot>
                 <tr>
                     <td>
-                        <!-- Este espacio es esencial para que la tabla empuje el contenido y no pise el footer -->
                         <div style="height: 40px;"></div>
                     </td>
                 </tr>
             </tfoot>
         </table>
 
-        <!-- Este pie de página ahora está fuera de la tabla, logrando su fijación en impresión -->
         <div class="pie-pagina-contenido">
             CONTRATO DE TRABAJO
         </div>
@@ -392,16 +546,27 @@
         function actualizarContrato() {
             const index = document.getElementById("selector-trabajador").value;
             const checkNegociacion = document.getElementById("check-negociacion");
+            const checkGerencia = document.getElementById("check-gerencia");
             const clausulaNegociacion = document.getElementById("clausula-negociacion");
+            const clausulasEstandar = document.getElementById("clausulas-estandar");
+            const clausulasGerencia = document.getElementById("clausulas-gerencia");
             
-            const isChecked = checkNegociacion && checkNegociacion.checked;
+            const isCheckedNeg = checkNegociacion && checkNegociacion.checked;
+            const isCheckedGerencia = checkGerencia && checkGerencia.checked;
 
-            if (checkNegociacion && clausulaNegociacion) {
-                clausulaNegociacion.style.display = isChecked ? "block" : "none";
+            if (clausulasEstandar && clausulasGerencia) {
+                clausulasEstandar.style.display = isCheckedGerencia ? "none" : "block";
+                clausulasGerencia.style.display = isCheckedGerencia ? "block" : "none";
+            }
+            if (checkNegociacion) {
+                checkNegociacion.disabled = isCheckedGerencia; 
             }
 
-            // Actualización dinámica de numeración de cláusulas
-            if (isChecked) {
+            if (checkNegociacion && clausulaNegociacion) {
+                clausulaNegociacion.style.display = isCheckedNeg ? "block" : "none";
+            }
+
+            if (isCheckedNeg) {
                 asignarTextoSeguro("num-prop-intelectual", "DECIMOCUARTO");
                 asignarTextoSeguro("num-responsabilidad", "DECIMOQUINTO");
                 asignarTextoSeguro("num-feriado", "DECIMOSEXTO");
@@ -492,11 +657,9 @@
                 asignarTextoSeguro("dato-paterno-2", paterno);
                 asignarTextoSeguro("dato-materno", materno);
                 asignarTextoSeguro("dato-materno-2", materno);
-                
                 asignarTextoSeguro("dato-rut", rutFormateado);
                 asignarTextoSeguro("dato-rut-2", rutFormateado);
                 asignarTextoSeguro("dato-rut-firma", rutFormateado);
-                
                 asignarTextoSeguro("dato-fecha-nacimiento", fechaNacTexto); 
                 asignarTextoSeguro("dato-nacionalidad", nacionalidad);
                 asignarTextoSeguro("dato-estado-civil", estadoCivil);
@@ -509,12 +672,10 @@
                 asignarTextoSeguro("dato-afp", afp);
                 asignarTextoSeguro("dato-cargo", cargo);
                 asignarTextoSeguro("dato-cargo-negociacion", cargo);
-                
                 asignarTextoSeguro("dato-sueldo", sueldoFormat);
                 asignarTextoSeguro("dato-banco", banco);
                 asignarTextoSeguro("dato-cuenta", cuenta);
                 asignarTextoSeguro("dato-tipo-cuenta", tipoCuenta);
-
                 asignarTextoSeguro("dato-centro-costo-intro", centroCostoCiudad);
                 asignarTextoSeguro("dato-centro-costo-16", centroCostoCiudad);
                 asignarTextoSeguro("dato-inicio-contrato-intro", inicioContratoLargo);
@@ -522,6 +683,63 @@
                 asignarTextoSeguro("dato-direccion-centro-costo", direccionCentroCosto);
                 asignarTextoSeguro("dato-jornada", jornada);
                 asignarTextoSeguro("dato-horario", horario);
+                asignarTextoSeguro("dato-termino-contrato", terminoContratoCorto);
+                asignarTextoSeguro("dato-inicio-contrato-clausula", inicioContratoCorto);
+
+                asignarTextoSeguro("dato-cargo-g", cargo);
+                asignarTextoSeguro("dato-cargo-g2", cargo);
+                asignarTextoSeguro("dato-direccion-centro-costo-g", direccionCentroCosto);
+                asignarTextoSeguro("dato-centro-costo-g", centroCosto);
+                asignarTextoSeguro("dato-sueldo-g", sueldoFormat);
+                asignarTextoSeguro("dato-banco-g", banco);
+                asignarTextoSeguro("dato-cuenta-g", cuenta);
+                asignarTextoSeguro("dato-tipo-cuenta-g", tipoCuenta);
+                asignarTextoSeguro("dato-termino-contrato-g", terminoContratoCorto);
+                asignarTextoSeguro("dato-nombres-g", nombres);
+                asignarTextoSeguro("dato-paterno-g", paterno);
+                asignarTextoSeguro("dato-materno-g", materno);
+                asignarTextoSeguro("dato-rut-g", rutFormateado);
+                asignarTextoSeguro("dato-correo-g", correo);
+
+                const numColacion = String(colacionRaw).replace(/[^\d]/g, ''); 
+                const liColacion = document.getElementById("li-colacion");
+                if (liColacion) {
+                    if (numColacion === "0" || numColacion === "") {
+                        liColacion.style.display = "none";
+                    } else {
+                        liColacion.style.display = "list-item";
+                        asignarTextoSeguro("dato-colacion", colacionFormat);
+                    }
+                }
+                const liColacionG = document.getElementById("li-colacion-g");
+                if (liColacionG) {
+                    if (numColacion === "0" || numColacion === "") {
+                        liColacionG.style.display = "none";
+                    } else {
+                        liColacionG.style.display = "list-item";
+                        asignarTextoSeguro("dato-colacion-g", colacionFormat);
+                    }
+                }
+
+                const numMovilizacion = String(movilizacionRaw).replace(/[^\d]/g, '');
+                const liMovilizacion = document.getElementById("li-movilizacion");
+                if (liMovilizacion) {
+                    if (numMovilizacion === "0" || numMovilizacion === "") {
+                        liMovilizacion.style.display = "none";
+                    } else {
+                        liMovilizacion.style.display = "list-item";
+                        asignarTextoSeguro("dato-movilizacion", movilizacionFormat);
+                    }
+                }
+                const liMovilizacionG = document.getElementById("li-movilizacion-g");
+                if (liMovilizacionG) {
+                    if (numMovilizacion === "0" || numMovilizacion === "") {
+                        liMovilizacionG.style.display = "none";
+                    } else {
+                        liMovilizacionG.style.display = "list-item";
+                        asignarTextoSeguro("dato-movilizacion-g", movilizacionFormat);
+                    }
+                }
                 
                 const bloqueDescanso = document.getElementById("bloque-descanso");
                 if (bloqueDescanso) {
@@ -532,31 +750,6 @@
                         asignarTextoSeguro("dato-tiempo-colacion", tiempoColacion);
                     }
                 }
-
-                const liColacion = document.getElementById("li-colacion");
-                if (liColacion) {
-                    const numColacion = String(colacionRaw).replace(/[^\d]/g, ''); 
-                    if (numColacion === "0" || numColacion === "") {
-                        liColacion.style.display = "none";
-                    } else {
-                        liColacion.style.display = "list-item";
-                        asignarTextoSeguro("dato-colacion", colacionFormat);
-                    }
-                }
-
-                const liMovilizacion = document.getElementById("li-movilizacion");
-                if (liMovilizacion) {
-                    const numMovilizacion = String(movilizacionRaw).replace(/[^\d]/g, '');
-                    if (numMovilizacion === "0" || numMovilizacion === "") {
-                        liMovilizacion.style.display = "none";
-                    } else {
-                        liMovilizacion.style.display = "list-item";
-                        asignarTextoSeguro("dato-movilizacion", movilizacionFormat);
-                    }
-                }
-                
-                asignarTextoSeguro("dato-termino-contrato", terminoContratoCorto);
-                asignarTextoSeguro("dato-inicio-contrato-clausula", inicioContratoCorto);
                 
                 let primerNombre = nombres.trim().split(" ")[0];
                 let fechaPuntos = "";
@@ -597,11 +790,9 @@
                 asignarTextoSeguro("dato-cargo", "[Cargo]");
                 asignarTextoSeguro("dato-cargo-negociacion", "[Cargo]");
                 asignarTextoSeguro("dato-sueldo", "[Sueldo Base]");
-                
                 asignarTextoSeguro("dato-banco", "[Banco]");
                 asignarTextoSeguro("dato-cuenta", "[cuenta]");
                 asignarTextoSeguro("dato-tipo-cuenta", "[Tipo de Cuenta]");
-
                 asignarTextoSeguro("dato-centro-costo-intro", "[Centro de Costo]");
                 asignarTextoSeguro("dato-centro-costo-16", "[Centro de Costo]");
                 asignarTextoSeguro("dato-inicio-contrato-intro", "[Inicio Contrato]");
@@ -609,6 +800,23 @@
                 asignarTextoSeguro("dato-direccion-centro-costo", "[Dirección Centro de Costo]");
                 asignarTextoSeguro("dato-jornada", "[Jornada]");
                 asignarTextoSeguro("dato-horario", "[Horario]");
+                asignarTextoSeguro("dato-termino-contrato", "[Término Contrato]");
+                asignarTextoSeguro("dato-inicio-contrato-clausula", "[Inicio Contrato]");
+
+                asignarTextoSeguro("dato-cargo-g", "[Cargo]");
+                asignarTextoSeguro("dato-cargo-g2", "[Cargo]");
+                asignarTextoSeguro("dato-direccion-centro-costo-g", "[Dirección Centro de Costo]");
+                asignarTextoSeguro("dato-centro-costo-g", "[Centro de Costo]");
+                asignarTextoSeguro("dato-sueldo-g", "[Sueldo Base]");
+                asignarTextoSeguro("dato-banco-g", "[Banco]");
+                asignarTextoSeguro("dato-cuenta-g", "[cuenta]");
+                asignarTextoSeguro("dato-tipo-cuenta-g", "[Tipo de Cuenta]");
+                asignarTextoSeguro("dato-termino-contrato-g", "[Término Contrato]");
+                asignarTextoSeguro("dato-nombres-g", "[Nombres]");
+                asignarTextoSeguro("dato-paterno-g", "[Apellido Paterno]");
+                asignarTextoSeguro("dato-materno-g", "[Apellido Materno]");
+                asignarTextoSeguro("dato-rut-g", "[RUT]");
+                asignarTextoSeguro("dato-correo-g", "[Correo Electrónico]");
                 
                 const bloqueDescanso = document.getElementById("bloque-descanso");
                 if (bloqueDescanso) bloqueDescanso.style.display = "inline";
@@ -617,13 +825,16 @@
                 const liCol = document.getElementById("li-colacion");
                 if (liCol) liCol.style.display = "list-item";
                 asignarTextoSeguro("dato-colacion", "[Colación]");
+                const liColG = document.getElementById("li-colacion-g");
+                if (liColG) liColG.style.display = "list-item";
+                asignarTextoSeguro("dato-colacion-g", "[Colación]");
                 
                 const liMov = document.getElementById("li-movilizacion");
                 if (liMov) liMov.style.display = "list-item";
                 asignarTextoSeguro("dato-movilizacion", "[Movilización]");
-                
-                asignarTextoSeguro("dato-termino-contrato", "[Término Contrato]");
-                asignarTextoSeguro("dato-inicio-contrato-clausula", "[Inicio Contrato]");
+                const liMovG = document.getElementById("li-movilizacion-g");
+                if (liMovG) liMovG.style.display = "list-item";
+                asignarTextoSeguro("dato-movilizacion-g", "[Movilización]");
                 
                 document.title = "Contrato de Trabajo Dinámico - Preomed";
             }
@@ -634,7 +845,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-        // Tus credenciales de Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyAMimbWHOrplArchHjZrheLZlLSIxj1-Hk",
             authDomain: "preomed-salud---portal-interno.firebaseapp.com",
@@ -647,13 +857,10 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
 
-        // Verificamos si la persona tiene la sesión iniciada
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // Si el usuario es válido, revelamos la página
                 document.body.style.display = "block";
             } else {
-                // Si no hay sesión, lo devolvemos a la carpeta anterior (el Login)
                 window.location.replace("../index.html");
             }
         });
