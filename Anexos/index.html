@@ -40,6 +40,21 @@
         .variable { background-color: #fff3cd; font-weight: bold; transition: 0.3s; }
         .formato-bloque { display: block; white-space: pre-line; padding-left: 60px; text-indent: 0; }
 
+        /* Estilo para el bloque editable de cláusulas personalizadas */
+        #contenedor-clausulas-extra { 
+            padding: 15px; 
+            border: 2px dashed #007bff; 
+            background-color: #f4f8fc; 
+            border-radius: 5px; 
+            margin-bottom: 15px; 
+            outline: none;
+            transition: 0.3s;
+        }
+        #contenedor-clausulas-extra:focus {
+            border-color: #28a745;
+            background-color: #fff;
+        }
+
         @media print {
             @page { 
                 size: letter; 
@@ -56,7 +71,14 @@
             .controles { display: none !important; }
             .variable { background-color: transparent; font-weight: inherit; }
 
-            /* Fijamos el pie de página justo al borde del margen inferior */
+            /* Ocultar bordes de la zona editable al imprimir */
+            #contenedor-clausulas-extra {
+                border: none !important;
+                background-color: transparent !important;
+                padding: 0 !important;
+                margin-bottom: 15px !important;
+            }
+
             .pie-pagina-contenido {
                 position: fixed;
                 bottom: 0; 
@@ -65,7 +87,6 @@
                 padding-top: 0;
                 margin: 0;
             }
-            /* Dejamos un espacio fantasma al final de la tabla para que el texto de la firma no choque con el pie de página */
             tfoot td {
                 height: 1.2cm;
             }
@@ -115,6 +136,11 @@
         </div>
 
         <button onclick="window.print()">Imprimir PDF</button>
+
+        <!-- NUEVO CONTROL PARA CLAUSULAS PERSONALIZADAS/MULTISUCURSAL -->
+        <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; background: #fff; padding: 5px 10px; border-radius: 5px; border: 1px solid #ccc; flex-basis: 100%; justify-content: center; margin-top: 5px;">
+            <input type="checkbox" id="chk-clausula-personalizada" onchange="toggleClausulaPersonalizada()"> Habilitar Cláusulas Personalizadas / Multisucursal
+        </label>
     </div>
 
     <div class="contenedor-carta">
@@ -135,6 +161,18 @@
                         <h1>ANEXO CONTRATO DE TRABAJO</h1>
 
                         <p>En <span class="variable" id="dato-centro-costo-intro">[Centro de Costo]</span>, a <strong><span class="variable" id="dato-inicio-anexo-intro">[Fecha Anexo]</span></strong>, entre la sociedad <strong>Preomed Salud SpA</strong>, Rut. <strong>76.500.919-7</strong>, representada legalmente por Doña <strong>Yoselyn Valesca Álvarez Duarte</strong>, Rut. <strong>16.135.473-2</strong>, ambos con domicilio comercial en la ciudad de Antofagasta, calle Las Bandurrias n° 9078, en lo sucesivo el empleador, y Don/ña <strong><span class="variable" id="dato-nombres">[Nombres]</span> <span class="variable" id="dato-paterno">[Apellido Paterno]</span> <span class="variable" id="dato-materno">[Apellido Materno]</span></strong>, Rut. <strong><span class="variable" id="dato-rut">[RUT]</span></strong>, en adelante, el/la trabajador/a, se ha convenido actualizar el contrato de trabajo suscrito entre las partes, estableciendo las siguientes cláusulas:</p>
+
+                        <!-- NUEVO CONTENEDOR EDITABLE (Plantilla Multisucursal) -->
+                        <div id="contenedor-clausulas-extra" style="display: none;" contenteditable="true">
+                            <p class="nueva-clausula sin-sangria" style="margin-bottom: 5px;"><u><strong>PRIMERO. - Modificación de las Funciones (Cargo):</strong></u> Las partes acuerdan complementar la cláusula PRIMERA del contrato de trabajo base, en el sentido de ampliar el alcance territorial y de responsabilidades del cargo de “Jefe/a de Sucursal”.<br><br>
+                            A contar de la fecha de firma del presente anexo, el/la trabajador/a asume la coordinación, gestión y supervisión directa de las sucursales ubicadas en Arica, Iquique, Calama y Antofagasta Centro, además de su actual responsabilidad sobre la sucursal Antofagasta Norte. Las funciones y responsabilidades específicas de este rol ampliado se encuentran detalladas en el descriptor de cargo actualizado, documento que el/la trabajador/a declara recibir, conocer y aceptar en este acto, entendiéndose plenamente incorporado al contrato de trabajo. Todas las demás obligaciones de diligencia, lealtad y cumplimiento de instrucciones estipuladas en la cláusula original se mantienen inalterables y plenamente vigentes.</p>
+
+                            <p class="nueva-clausula sin-sangria" style="margin-bottom: 5px;"><u><strong>SEGUNDO. - Modificación del Lugar de Prestación de Servicios:</strong></u> Las partes acuerdan modificar la cláusula SEGUNDA referida al lugar de trabajo, la cual quedará redactada íntegramente de la siguiente manera:<br><br>
+                            "Los servicios serán prestados teniendo como base de operaciones el local comercial ubicado en Antofagasta Norte, calle Las Bandurrias N° 9078, comuna de Antofagasta.<br><br>
+                            Sin perjuicio de lo anterior, y atendida la nueva naturaleza multisucursal de sus responsabilidades descritas en la cláusula anterior, las partes acuerdan expresamente que el/la trabajador/a deberá desplazarse y prestar servicios presenciales de supervisión y jefatura en las sucursales ubicadas en las ciudades de Arica, Iquique, Calama y Antofagasta Centro, según los requerimientos, frecuencia y programación que defina el empleador.<br><br>
+                            Para todos los efectos legales, el empleador mantendrá la facultad de alterar el sitio o recinto base de los servicios, siempre que quede dentro de la misma ciudad o localidad, de acuerdo con lo establecido en el artículo 12 del Código del Trabajo.<br><br>
+                            Se deja constancia que todos los gastos derivados de los desplazamientos fuera de la ciudad base (Antofagasta) hacia las sucursales de Arica, Iquique y Calama, incluyendo pasajes, alojamiento, movilización y alimentación, serán costeados o reembolsados íntegramente por el empleador, de acuerdo con las políticas de viáticos vigentes en la empresa, garantizando que estos traslados no irrogarán menoscabo económico alguno para el/la trabajador/a."</p>
+                        </div>
 
                         <p class="nueva-clausula sin-sangria" id="texto-primero"><u><strong>PRIMERO. -</strong></u> Las partes vienen en sustituir las siguientes cláusulas del contrato de trabajo, las que a continuación se detallan:</p>
 
@@ -218,7 +256,8 @@
 
                         <p class="nueva-clausula sin-sangria" id="contenedor-clausula-sexta" style="margin-left: 40px;"><u><strong>SEXTO. - DE LA VIGENCIA:</strong></u> El presente contrato tendrá una duración hasta el día <strong><span class="variable" id="dato-termino-anexo1">[TerminoAnexo1]</span></strong>.</p>
 
-                        <p class="nueva-clausula sin-sangria"><u><strong>SEGUNDO. -</strong></u> Se deja constancia que lo estipulado en el presente anexo de contrato, sustituye y deja sin efecto todo anexo de contrato anterior.</p>
+                        <!-- PÁRRAFO SUSTITUYE MODIFICADO Y CON ID -->
+                        <p class="nueva-clausula sin-sangria" id="parrafo-sustituye"><u><strong>SEGUNDO. -</strong></u> Se deja constancia que lo estipulado en el presente anexo de contrato, sustituye y deja sin efecto todo anexo de contrato anterior.</p>
 
                         <!-- CONTENEDOR CLAUSULA TERCERA -->
                         <p class="nueva-clausula sin-sangria" id="contenedor-clausula-tercera"><u><strong>TERCERO. -</strong></u> El presente anexo de contrato regirá a partir del <strong><span class="variable" id="dato-inicio-anexo">[Fecha Anexo]</span></strong>.-</p>
@@ -339,6 +378,23 @@
             const isChecked = document.getElementById("chk-provisorio").checked;
             document.getElementById("contenedor-fecha-termino").style.display = isChecked ? "flex" : "none";
             actualizarContrato();
+        }
+
+        // LÓGICA DE CLAUSULAS PERSONALIZADAS
+        function toggleClausulaPersonalizada() {
+            const isChecked = document.getElementById("chk-clausula-personalizada").checked;
+            const contExtra = document.getElementById("contenedor-clausulas-extra");
+            const pSustituye = document.getElementById("parrafo-sustituye");
+
+            if (isChecked) {
+                contExtra.style.display = "block";
+                // Modifica el texto y ajusta la numeración a TERCERO
+                pSustituye.innerHTML = '<u><strong>TERCERO. -</strong></u> En todo lo no modificado expresamente por el presente documento, se mantienen inalterables y plenamente vigentes todas y cada una de las cláusulas del contrato de trabajo original, así como también todas las estipulaciones contenidas en los anexos de contrato suscritos con anterioridad entre las partes.';
+            } else {
+                contExtra.style.display = "none";
+                // Restaura al texto original (SEGUNDO)
+                pSustituye.innerHTML = '<u><strong>SEGUNDO. -</strong></u> Se deja constancia que lo estipulado en el presente anexo de contrato, sustituye y deja sin efecto todo anexo de contrato anterior.';
+            }
         }
 
         function numeroALetras(num) {
@@ -747,21 +803,16 @@
                 if (clausulaTercera) {
                     if (chkProvisorio && chkProvisorio.checked && fechaParaTitulo && fechaTerminoProvVal) {
                         
-                        // Generar objetos de fecha (Evita desfases de zona horaria forzando el inicio del día)
                         let fechaTerminoObj = new Date(fechaTerminoProvVal + "T00:00:00");
-                        
-                        // Fecha de reversión (Término + 1 día)
                         let fechaReversionObj = new Date(fechaTerminoObj);
                         fechaReversionObj.setDate(fechaReversionObj.getDate() + 1);
 
-                        // Cálculo más preciso de meses basado en la duración en días (inclusivo)
                         const msPorDia = 1000 * 60 * 60 * 24;
-                        const diasTotales = Math.round((fechaTerminoObj.getTime() - fechaParaTitulo.getTime()) / msPorDia) + 1; // +1 para incluir el último día
-                        let mesesDiff = Math.round(diasTotales / 30.44); // 30.44 es el promedio matemático de días en un mes
+                        const diasTotales = Math.round((fechaTerminoObj.getTime() - fechaParaTitulo.getTime()) / msPorDia) + 1; 
+                        let mesesDiff = Math.round(diasTotales / 30.44); 
                         
-                        if (mesesDiff <= 0) mesesDiff = 1; // Forzar mínimo a 1 mes si las fechas son muy cercanas
+                        if (mesesDiff <= 0) mesesDiff = 1;
 
-                        // Textos formateados
                         let strInicio = fechaParaTitulo.toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' });
                         let strTermino = fechaTerminoObj.toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' });
                         let strReversion = fechaReversionObj.toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' });
@@ -770,7 +821,6 @@
                         Dicha transitoriedad se extenderá por un período de <strong>${mesesDiff} (${numeroALetras(mesesDiff)}) meses</strong>, rigiendo de manera excepcional desde el <strong>${strInicio}</strong> hasta el <strong>${strTermino}</strong>.<br><br>
                         Se acuerda expresamente que, a contar del <strong>${strReversion}</strong>, el/la trabajador/a cesará en estas funciones transitorias y retomará de pleno derecho su cargo, jornada laboral y estructura de remuneraciones que mantenía vigentes con anterioridad a la suscripción de este anexo, sin que ello constituya menoscabo alguno.`;
                     } else {
-                        // Estado normal si no está marcado "Provisorio" o falta la fecha de término
                         clausulaTercera.innerHTML = `<u><strong>TERCERO. -</strong></u> El presente anexo de contrato regirá a partir del <strong><span class="variable" id="dato-inicio-anexo">${inicioAnexoFormat}</span></strong>.-`;
                     }
                 }
