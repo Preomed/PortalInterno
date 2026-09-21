@@ -109,6 +109,7 @@
         <label for="selector-motivo"><strong>Tipo Anexo:</strong></label>
         <select id="selector-motivo" onchange="actualizarContrato()">
             <option value="">-- Seleccione Tipo --</option>
+            <option value="sin_cambios" id="opt-sin-cambios" style="display: none;">Sin cambios</option>
             <option value="plazo_fijo">Plazo Fijo</option>
             <option value="plazo_fijo_sueldo">Plazo Fijo + Sueldo</option>
             <option value="plazo_fijo_cargo">Plazo Fijo + Cargo</option>
@@ -136,9 +137,9 @@
 
         <button onclick="window.print()">Imprimir PDF</button>
 
-        <!-- CONTROL MULTISUCURSAL -->
+        <!-- CONTROL MULTISUCURSAL / PERSONALIZADO -->
         <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; background: #fff; padding: 5px 10px; border-radius: 5px; border: 1px solid #ccc; flex-basis: 100%; justify-content: center; margin-top: 5px;">
-            <input type="checkbox" id="chk-clausula-personalizada" onchange="toggleClausulaPersonalizada()"> Habilitar Cláusulas Personalizadas / Multisucursal
+            <input type="checkbox" id="chk-clausula-personalizada" onchange="toggleClausulaPersonalizada()"> Habilitar Cláusulas Personalizadas
         </label>
     </div>
 
@@ -161,8 +162,8 @@
 
                         <p>En <span class="variable" id="dato-centro-costo-intro">[Centro de Costo]</span>, a <strong><span class="variable" id="dato-inicio-anexo-intro">[Fecha Anexo]</span></strong>, entre la sociedad <strong>Preomed Salud SpA</strong>, Rut. <strong>76.500.919-7</strong>, representada legalmente por Doña <strong>Yoselyn Valesca Álvarez Duarte</strong>, Rut. <strong>16.135.473-2</strong>, ambos con domicilio comercial en la ciudad de Antofagasta, calle Las Bandurrias n° 9078, en lo sucesivo el empleador, y Don/ña <strong><span class="variable" id="dato-nombres">[Nombres]</span> <span class="variable" id="dato-paterno">[Apellido Paterno]</span> <span class="variable" id="dato-materno">[Apellido Materno]</span></strong>, Rut. <strong><span class="variable" id="dato-rut">[RUT]</span></strong>, en adelante, el/la trabajador/a, se ha convenido actualizar el contrato de trabajo suscrito entre las partes, estableciendo las siguientes cláusulas:</p>
 
-                        <!-- PÁRRAFO INTRODUCTORIO AUTO-NUMERADO -->
-                        <p class="nueva-clausula sin-sangria" id="texto-primero"><u><strong><span class="num-anexo"></span>. -</strong></u> Las partes vienen en sustituir las siguientes cláusulas del contrato de trabajo, las que a continuación se detallan:</p>
+                        <!-- PÁRRAFO INTRODUCTORIO AUTO-NUMERADO FIJO -->
+                        <p class="nueva-clausula sin-sangria" id="texto-primero" style="display: block;"><u><strong><span class="num-anexo"></span>. -</strong></u> Las partes vienen en sustituir las siguientes cláusulas del contrato de trabajo, las que a continuación se detallan:</p>
 
                         <!-- CONTENEDOR EDITABLE UBICADO DEBAJO Y CON SANGRÍA -->
                         <div id="contenedor-clausulas-extra" style="display: none;" contenteditable="true">
@@ -331,11 +332,22 @@
         function toggleClausulaPersonalizada() {
             const isChecked = document.getElementById("chk-clausula-personalizada").checked;
             const contExtra = document.getElementById("contenedor-clausulas-extra");
+            const optSinCambios = document.getElementById("opt-sin-cambios");
+            const selectorMotivo = document.getElementById("selector-motivo");
 
             if (isChecked) {
                 contExtra.style.display = "block";
+                optSinCambios.style.display = "block"; // Muestra la opción en el select
+                optSinCambios.hidden = false;
             } else {
                 contExtra.style.display = "none";
+                optSinCambios.style.display = "none"; // Oculta la opción en el select
+                optSinCambios.hidden = true;
+                
+                // Si la opción "Sin cambios" estaba seleccionada al desmarcar la casilla, vuelve a la opción por defecto
+                if(selectorMotivo.value === "sin_cambios") {
+                    selectorMotivo.value = "";
+                }
             }
             
             // Llama a actualizarContrato para recalcular las visibilidades generales
@@ -481,7 +493,6 @@
             const liMovilizacion = document.getElementById("li-movilizacion");
             const liComisiones = document.getElementById("li-comisiones");
             const tipoAnexo = document.getElementById("selector-motivo").value;
-            const chkClausula = document.getElementById("chk-clausula-personalizada");
             
             if (index !== "") {
                 const datos = listaTrabajadores[index];
@@ -494,6 +505,7 @@
                 let isComisiones = false;
 
                 switch(tipoAnexo) {
+                    case "sin_cambios": break; // No activa ninguna modificación estándar
                     case "plazo_fijo": showVigencia = true; break;
                     case "plazo_fijo_sueldo": showVigencia = true; showSueldo = true; break;
                     case "plazo_fijo_cargo": showVigencia = true; showCargo = true; break;
@@ -592,8 +604,6 @@
                 if (contCuarta) contCuarta.style.display = showSueldo ? "block" : "none";
                 if (contSexta) contSexta.style.display = showVigencia ? "block" : "none";
 
-                let haySustitucion = showCargo || showHorario || showSueldo || showVigencia || (chkClausula && chkClausula.checked);
-
                 if (showSueldo) {
                     if (isComisiones) {
                         if (textoPrimero) {
@@ -610,7 +620,7 @@
                         }
                     } else {
                         if (textoPrimero) {
-                            textoPrimero.style.display = haySustitucion ? "block" : "none";
+                            textoPrimero.style.display = "block";
                             textoPrimero.innerHTML = '<u><strong><span class="num-anexo"></span>. -</strong></u> Las partes vienen en sustituir las siguientes cláusulas del contrato de trabajo, las que a continuación se detallan:';
                         }
                         if (liSueldo) liSueldo.style.display = "list-item";
@@ -630,12 +640,12 @@
                     }
                 } else {
                     if (textoPrimero) {
-                        textoPrimero.style.display = haySustitucion ? "block" : "none";
+                        textoPrimero.style.display = "block";
                         textoPrimero.innerHTML = '<u><strong><span class="num-anexo"></span>. -</strong></u> Las partes vienen en sustituir las siguientes cláusulas del contrato de trabajo, las que a continuación se detallan:';
                     }
                 }
 
-                const usaNuevaFecha = ["plazo_fijo_sueldo", "plazo_fijo_cargo", "plazo_fijo_sueldo_cargo", "indefinido_sueldo", "indefinido_cargo", "indefinido_sueldo_cargo", "cargo", "sueldo", "cargo_sueldo", "cargo_sueldo_horario", "horario"].includes(tipoAnexo);
+                const usaNuevaFecha = ["sin_cambios", "plazo_fijo_sueldo", "plazo_fijo_cargo", "plazo_fijo_sueldo_cargo", "indefinido_sueldo", "indefinido_cargo", "indefinido_sueldo_cargo", "cargo", "sueldo", "cargo_sueldo", "cargo_sueldo_horario", "horario"].includes(tipoAnexo);
 
                 if (showVigencia) {
                     if (isIndefinido) {
