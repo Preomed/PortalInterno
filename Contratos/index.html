@@ -619,12 +619,12 @@
                 const jornada = buscarPropiedad(datos, "jornada") || "[Jornada]";
                 const horario = buscarPropiedad(datos, "horario") || "[Horario]";
                 
-                // Lógica para alternar la Cláusula Tercera (Art. 22 Inciso 2)
+                // Lógica para alternar la Cláusula Tercera usando la variable "horario" en lugar de "jornada"
                 const divClausulaTerceraNormal = document.getElementById("clausula-tercera-normal");
                 const divClausulaTerceraArt22 = document.getElementById("clausula-tercera-art22");
                 
-                let textoJornadaLimpio = jornada.trim().toLowerCase();
-                if (textoJornadaLimpio === "inciso 2° del articulo 22" || (textoJornadaLimpio.includes("inciso 2") && textoJornadaLimpio.includes("22"))) {
+                let textoHorarioLimpio = horario.trim().toLowerCase();
+                if (textoHorarioLimpio === "inciso 2° del articulo 22" || (textoHorarioLimpio.includes("inciso 2") && textoHorarioLimpio.includes("22"))) {
                     if (divClausulaTerceraNormal) divClausulaTerceraNormal.style.display = "none";
                     if (divClausulaTerceraArt22) divClausulaTerceraArt22.style.display = "block";
                 } else {
