@@ -51,7 +51,7 @@
         .row-total:hover { background-color: #e2e8f0; }
         .row-grand-total { font-weight: 800; background-color: var(--primary-light); color: var(--primary); border-top: 2px solid var(--primary); font-size: 15px; }
         
-        /* Modificadores Visuales Solicitados */
+        /* Modificadores Visuales */
         .no-border-top { border-top: none !important; }
         .no-border-bottom td { border-bottom: none !important; }
         .pe-highlight { 
@@ -405,7 +405,15 @@
         const calcUtilidadAntes = calcMargenOp - calcCostosFin - calcDepreciacion;
         setV('UTILIDAD ANTES', calcUtilidadAntes);
 
-        const calcImpuesto = getV('IMPUESTO A LA RENTA');
+        // --- CÁLCULO DE IMPUESTO CORREGIDO ---
+        // Calcula el 12,5% sobre la utilidad antes de impuesto. Si hay pérdida (menor a 0), el impuesto es 0.
+        let calcImpuesto = 0;
+        if (calcUtilidadAntes > 0) {
+            calcImpuesto = calcUtilidadAntes * 0.125;
+        }
+        setV('IMPUESTO A LA RENTA', calcImpuesto);
+        // -------------------------------------
+
         const calcUtilidadDespues = calcUtilidadAntes - calcImpuesto;
         setV('UTILIDAD DESPUES', calcUtilidadDespues);
 
@@ -444,7 +452,7 @@
             'GASTOS CUENTAS',
             'GASTOS FIJOS',
             'MKT Y PUBLICIDAD', 'MARKETING Y PUBLICIDAD',
-            'GTO GENERALES', /* Aquí se eliminó OTROS GASTOS para que quede en Nivel 3 */
+            'GTO GENERALES',
             'SUELDOS ADMINISTRATIVOS', 'SUELDOS VENDEDORES',
             'GASTOS FINANCIEROS', 'SEGUROS', 'INTERESES BANCARIOS',
             'EQUIPOS MEDICOS', 'EQUIPOS Y MAQUINARIAS'
