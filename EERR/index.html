@@ -51,9 +51,24 @@
         .row-total:hover { background-color: #e2e8f0; }
         .row-grand-total { font-weight: 800; background-color: var(--primary-light); color: var(--primary); border-top: 2px solid var(--primary); font-size: 15px; }
         
-        .toggle-icon { display: inline-block; width: 16px; font-size: 10px; color: var(--accent); text-align: center; margin-right: 6px; }
+        /* Modificadores Visuales Solicitados */
+        .no-border-top { border-top: none !important; }
+        .no-border-bottom td { border-bottom: none !important; }
+        .pe-highlight { 
+            background-color: #bfdbfe !important; 
+            color: #1e3a8a !important; 
+            font-size: 16px !important; 
+            font-weight: 900 !important; 
+            border-top: 3px solid #1e3a8a !important; 
+        }
+        .pe-highlight td { border-bottom: none !important; }
         
-        .row-subitem td:first-child { padding-left: 45px !important; color: #475569; font-size: 13px; border-left: 3px solid var(--highlight); }
+        /* Estilos de 3 Niveles */
+        .row-subitem td:first-child { padding-left: 35px !important; color: #334155; font-size: 13px; font-weight: 600; border-left: 3px solid var(--highlight); }
+        .row-subitem.clickable:hover { background-color: #f1f5f9; }
+        .row-subsubitem td:first-child { padding-left: 65px !important; color: #64748b; font-size: 12px; border-left: 3px solid #cbd5e1; }
+        
+        .toggle-icon { display: inline-block; width: 16px; font-size: 10px; color: var(--accent); text-align: center; margin-right: 6px; }
         
         .val-positive { color: var(--success); }
         .val-negative { color: var(--error); }
@@ -147,11 +162,9 @@
         });
     });
 
-    // Función segura para leer números de cualquier formato
     function cleanNumber(rawValue) {
         if (typeof rawValue === 'number') return rawValue;
         if (!rawValue) return 0;
-        
         let s = String(rawValue).trim();
         let isNeg = false;
         
@@ -165,7 +178,6 @@
         
         s = s.replace(/[^0-9.,]/g, '');
         if (s === '') return 0;
-
         if (s.includes('.') && s.includes(',')) {
             s = s.replace(/\\./g, '').replace(',', '.');
         } else if (s.includes(',')) {
@@ -183,7 +195,6 @@
 
     function procesarDatos(allRows) {
         let headerIndex = -1;
-        
         for(let i = 0; i < allRows.length; i++) {
             const row = allRows[i].map(col => typeof col === 'string' ? col.trim() : col);
             if(row.includes('SUCURSAL') && row.includes('CATEGORIA')) {
@@ -200,7 +211,6 @@
         
         const fields = allRows[headerIndex].map(f => typeof f === 'string' ? f.trim() : f);
         const dataRows = allRows.slice(headerIndex + 1);
-        
         periodosDisponibles = fields.filter(f => f !== 'SUCURSAL' && f !== 'CATEGORIA' && f !== '');
         
         let processedRows = [];
@@ -212,13 +222,17 @@
             
             if (!obj.CATEGORIA || String(obj.CATEGORIA).trim() === '') return;
             
+            let categoriaOriginal = String(obj.CATEGORIA);
+
+            if (categoriaOriginal === 'GASTOS GENERALES') {
+                obj.CATEGORIA = 'OTROS GASTOS'; 
+            } else if (categoriaOriginal === 'GASTOS GENERALES ') {
+                obj.CATEGORIA = 'GASTOS GENERALES'; 
+            }
+
             let catStr = String(obj.CATEGORIA).trim();
             let catUpper = catStr.toUpperCase();
             
-            // FASE 1: UNIFICACIÓN DE NOMBRES
-            // Transformamos cualquier variación de "Pérdida" en "Utilidad". 
-            // Así, Puerto Montt (que solo tiene Pérdida) pasará a tener Utilidad, 
-            // y Viña del Mar (que podría tener ambas) tendrá dos filas llamadas Utilidad.
             if (catUpper.includes('PÉRDIDA DEL EJERCICIO') || catUpper.includes('PERDIDA DEL EJERCICIO') || catUpper.includes('UTILIDAD ANTES')) {
                 obj.CATEGORIA = 'UTILIDAD ANTES DE IMPUESTO';
             } else if (catUpper.includes('PÉRDIDA DESPUÉS') || catUpper.includes('PERDIDA DESPUES') || catUpper.includes('UTILIDAD DESPUES') || catUpper.includes('UTILIDAD DESPUÉS')) {
@@ -228,28 +242,7 @@
             processedRows.push(obj);
         });
 
-        // FASE 2: ELIMINAR DUPLICADOS EXACTOS
-        // Si una sucursal tiene 2 filas llamadas "UTILIDAD ANTES DE IMPUESTO" (porque venía una pérdida y una utilidad de Excel),
-        // las fusionamos tomando siempre el valor que no sea cero. Así JAMÁS se sumarán doble.
-        let rowMap = {};
-        processedRows.forEach(row => {
-            let key = row.SUCURSAL + '|' + row.CATEGORIA;
-            if (!rowMap[key]) {
-                rowMap[key] = { ...row };
-            } else {
-                // Si la fila ya existe, combinamos los datos para no duplicarlos matemáticamente
-                periodosDisponibles.forEach(p => {
-                    let currentVal = cleanNumber(rowMap[key][p]);
-                    let newVal = cleanNumber(row[p]);
-                    // Si el que teníamos guardado era 0, y el nuevo tiene valor, lo actualizamos.
-                    if (currentVal === 0 && newVal !== 0) {
-                        rowMap[key][p] = row[p];
-                    }
-                });
-            }
-        });
-
-        globalData = Object.values(rowMap);
+        globalData = processedRows;
 
         ordenCategoriasUnicas = [];
         globalData.forEach(row => {
@@ -262,9 +255,7 @@
         let maxIdx = -1;
         for (let i = ordenCategoriasUnicas.length - 1; i >= 0; i--) {
             let cUpper = ordenCategoriasUnicas[i].toUpperCase();
-            if (cUpper.includes('PUNTO DE EQUILIBRIO') || 
-                cUpper.includes('UTILIDAD') || 
-                cUpper.includes('IMPUESTO')) {
+            if (cUpper.includes('PUNTO DE EQUILIBRIO') || cUpper.includes('UTILIDAD') || cUpper.includes('IMPUESTO')) {
                 maxIdx = i;
                 break;
             }
@@ -273,11 +264,9 @@
         if (maxIdx !== -1) {
             ordenCategoriasUnicas = ordenCategoriasUnicas.slice(0, maxIdx + 1);
         }
-        
         ordenCategoriasUnicas = ordenCategoriasUnicas.filter(c => c.toUpperCase().trim() !== 'RESULTADO');
 
         inicializarFiltros();
-        
         document.getElementById('controls').style.display = 'grid';
         document.getElementById('resultsTable').style.display = 'table';
     }
@@ -309,7 +298,6 @@
         let nombreMesAnterior = meses[fechaActual.getMonth()];
 
         const mesEncontrado = periodosDisponibles.find(p => p.trim().toUpperCase() === nombreMesAnterior);
-
         if (mesEncontrado) {
             periodoSelect.value = mesEncontrado;
         } else {
@@ -324,26 +312,41 @@
     }
 
     function formatearMoneda(valor) {
-        return new Intl.NumberFormat('es-CL', {
-            style: 'currency',
-            currency: 'CLP',
-            minimumFractionDigits: 0
-        }).format(valor);
+        return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', minimumFractionDigits: 0 }).format(valor);
+    }
+    
+    function formatName(name, val) {
+        if (val < 0 && name.toUpperCase().includes('UTILIDAD')) {
+            return name.toUpperCase().replace(/UTILIDAD/ig, 'PÉRDIDA');
+        } else if (val >= 0 && name.toUpperCase().includes('PÉRDIDA')) {
+            return name.toUpperCase().replace(/PÉRDIDA/ig, 'UTILIDAD').replace(/PERDIDA/ig, 'UTILIDAD');
+        }
+        return name;
     }
 
-    function toggleGrupo(parentId) {
+    function toggleGrupo(parentId, e) {
+        if (e) e.stopPropagation(); 
+        
         const children = document.querySelectorAll('.child-of-' + parentId);
         if (children.length === 0) return;
         
-        const isHidden = children[0].style.display === 'none';
+        let firstChild = Array.from(children).find(c => c.classList.contains('direct-child-of-' + parentId));
+        if (!firstChild) return;
+        
+        const isHidden = firstChild.style.display === 'none';
         const icon = document.querySelector('#' + parentId + ' .toggle-icon');
-        
-        children.forEach(child => {
-            child.style.display = isHidden ? 'table-row' : 'none';
-        });
-        
-        if (icon) {
-            icon.textContent = isHidden ? '▼' : '▶';
+        if (icon) icon.textContent = isHidden ? '▼' : '▶';
+
+        if (isHidden) {
+            children.forEach(c => {
+                if (c.classList.contains('direct-child-of-' + parentId)) c.style.display = 'table-row';
+            });
+        } else {
+            children.forEach(c => {
+                c.style.display = 'none';
+                const cIcon = c.querySelector('.toggle-icon');
+                if (cIcon) cIcon.textContent = '▶';
+            });
         }
     }
 
@@ -353,7 +356,6 @@
         const tbody = document.querySelector('#resultsTable tbody');
         const emptyState = document.getElementById('emptyState');
         const table = document.getElementById('resultsTable');
-
         tbody.innerHTML = '';
 
         const agrupado = {};
@@ -362,7 +364,6 @@
             if (sucursal !== 'ALL' && row.SUCURSAL !== sucursal) return;
             const cat = String(row.CATEGORIA).trim();
             if (!ordenCategoriasUnicas.includes(cat)) return;
-            
             const val = cleanNumber(row[periodo]);
             if (!agrupado[cat]) agrupado[cat] = 0;
             agrupado[cat] += val;
@@ -377,123 +378,236 @@
         table.style.display = 'table';
         emptyState.style.display = 'none';
 
-        let valorBase = 0;
-        const nombreCategoriaBase = ordenCategoriasUnicas.find(c => c.toUpperCase().includes('INGRESOS POR VENTA')) || ordenCategoriasUnicas[0];
-        if (nombreCategoriaBase && agrupado[nombreCategoriaBase]) {
-            valorBase = agrupado[nombreCategoriaBase];
-        }
+        const getV = (str) => {
+            let k = Object.keys(agrupado).find(key => key.toUpperCase() === str.toUpperCase());
+            if (!k) k = Object.keys(agrupado).find(key => key.toUpperCase().includes(str.toUpperCase()));
+            return k ? agrupado[k] : 0;
+        };
 
-        const categoriasPrincipales = [
-            'ingresos por venta', 'ingresos por ventas', 'costo de venta', 'costos de venta', 
-            'margen bruto',
-            'sueldos operacionales', 'materiales e insumo', 'materiales e insumos', 'servicios externos', 'gastos generales', 
-            'gto generales', 'mkt y publicidad', 'comisiones de venta', 'comisiones de ventas',
-            'gastos fijos', 'costos fijos', 'costo fijos', 'costos variables', 'costo variable', 'costo variables',
-            'gastos de rr. hh.', 'gastos de rr.hh.', 'costos financieros', 
-            'depreciación', 'depreciacion', 'impuesto a la renta'
+        const setV = (str, val) => {
+            let k = Object.keys(agrupado).find(key => key.toUpperCase() === str.toUpperCase());
+            if (!k) k = Object.keys(agrupado).find(key => key.toUpperCase().includes(str.toUpperCase()));
+            if (k) agrupado[k] = val;
+        };
+
+        const calcIngresos = getV('INGRESOS POR VENTA');
+        const calcCostosVenta = getV('COSTOS DE VENTA');
+        const calcMargenBruto = calcIngresos - calcCostosVenta;
+        setV('MARGEN BRUTO', calcMargenBruto);
+
+        const calcGastosGen = getV('GASTOS GENERALES'); 
+        const calcGastosRRHH = getV('GASTOS DE RR. HH.') || getV('GASTOS DE RR.HH.');
+        const calcMargenOp = calcMargenBruto - calcGastosGen - calcGastosRRHH;
+        setV('MARGEN OPERACIONAL', calcMargenOp);
+
+        const calcCostosFin = getV('COSTOS FINANCIEROS');
+        const calcDepreciacion = getV('DEPRECIACIÓN') || getV('DEPRECIACION');
+        const calcUtilidadAntes = calcMargenOp - calcCostosFin - calcDepreciacion;
+        setV('UTILIDAD ANTES', calcUtilidadAntes);
+
+        const calcImpuesto = getV('IMPUESTO A LA RENTA');
+        const calcUtilidadDespues = calcUtilidadAntes - calcImpuesto;
+        setV('UTILIDAD DESPUES', calcUtilidadDespues);
+
+        const calcCostosFijos = getV('COSTOS FIJOS');
+        let calcPuntoEq = 0;
+        if (calcIngresos > 0) {
+            const mgContribucion = calcMargenBruto / calcIngresos;
+            if (mgContribucion !== 0) calcPuntoEq = calcCostosFijos / mgContribucion;
+        }
+        setV('PUNTO DE EQUILIBRIO', calcPuntoEq);
+
+        let valorBase = calcIngresos;
+
+        const Nivel1 = [
+            'INGRESOS POR VENTA', 'INGRESOS POR VENTAS',
+            'COSTOS DE VENTA', 'COSTO DE VENTA',
+            'MARGEN BRUTO',
+            'GASTOS GENERALES',
+            'GASTOS DE RR. HH.', 'GASTOS DE RR.HH.',
+            'MARGEN OPERACIONAL',
+            'COSTOS FINANCIEROS',
+            'DEPRECIACIÓN', 'DEPRECIACION',
+            'UTILIDAD ANTES DE IMPUESTO', 'UTILIDAD ANTES',
+            'IMPUESTO A LA RENTA',
+            'UTILIDAD DESPUES DE IMPUESTO', 'UTILIDAD DESPUES', 'UTILIDAD NETA',
+            'COSTOS FIJOS', 'COSTO FIJO',
+            'COSTOS VARIABLES', 'COSTO VARIABLE',
+            'PUNTO DE EQUILIBRIO'
         ];
 
-        let grupos = [];
-        let currentGrupo = null;
+        const Nivel2 = [
+            'MATERIALES E INSUMOS', 'MATERIALES E INSUMO',
+            'SUELDOS OPERACIONALES',
+            'SERVICIOS EXTERNOS',
+            'COMISIONES DE VENTA', 'COMISIONES DE VENTAS',
+            'GASTOS CUENTAS',
+            'GASTOS FIJOS',
+            'MKT Y PUBLICIDAD', 'MARKETING Y PUBLICIDAD',
+            'GTO GENERALES', /* Aquí se eliminó OTROS GASTOS para que quede en Nivel 3 */
+            'SUELDOS ADMINISTRATIVOS', 'SUELDOS VENDEDORES',
+            'GASTOS FINANCIEROS', 'SEGUROS', 'INTERESES BANCARIOS',
+            'EQUIPOS MEDICOS', 'EQUIPOS Y MAQUINARIAS'
+        ];
+
+        let tree = [];
+        let curL1 = null;
+        let curL2 = null;
 
         ordenCategoriasUnicas.forEach(cat => {
-            const cLower = cat.toLowerCase();
-            const esPrincipal = categoriasPrincipales.some(p => cLower.includes(p));
-            const esTotal = cLower.includes('equilibrio') || cLower.includes('utilidad') || (cLower.includes('margen') && !cLower.includes('margen bruto'));
+            let cUpper = cat.toUpperCase();
+            let isL1 = Nivel1.some(n => cUpper === n || cUpper.includes(n));
+            let isL2 = Nivel2.some(n => cUpper === n || cUpper.includes(n));
+            let isTotalRow = cUpper.includes('EQUILIBRIO') || cUpper.includes('UTILIDAD') || cUpper.includes('MARGEN') || cUpper.includes('IMPUESTO') || cUpper.includes('COSTOS FIJOS') || cUpper.includes('COSTOS VARIABLES');
 
-            if (esPrincipal || esTotal) {
-                currentGrupo = { principal: cat, isTotal: esTotal, children: [] };
-                grupos.push(currentGrupo);
+            if (isL1 || isTotalRow) {
+                curL1 = { name: cat, isTotal: isTotalRow, children: [] };
+                tree.push(curL1);
+                curL2 = null; 
+            } else if (isL2) {
+                curL2 = { name: cat, children: [] };
+                if (curL1) curL1.children.push({ type: 'L2', node: curL2 });
+                else {
+                    curL1 = { name: cat, isTotal: false, children: [] };
+                    tree.push(curL1);
+                }
             } else {
-                if (currentGrupo) {
-                    currentGrupo.children.push(cat);
-                } else {
-                    currentGrupo = { principal: cat, isTotal: false, children: [] };
-                    grupos.push(currentGrupo);
+                if (curL2) {
+                    curL2.children.push(cat);
+                } else if (curL1) {
+                    curL1.children.push({ type: 'L3', name: cat });
                 }
             }
         });
 
-        grupos.forEach((grupo, index) => {
-            const valPrincipal = agrupado[grupo.principal] || 0;
-            const visibleChildren = grupo.children.filter(c => (agrupado[c] || 0) !== 0);
+        let l1Counter = 0;
+        let l2Counter = 0;
 
-            if (valPrincipal === 0 && visibleChildren.length === 0) return;
-
-            const tr = document.createElement('tr');
-            if (grupo.isTotal) {
-                tr.className = 'row-grand-total';
-            } else {
-                tr.className = 'row-total';
-                if (visibleChildren.length > 0) {
-                    tr.id = 'grupo-' + index;
-                    tr.style.cursor = 'pointer';
-                    tr.onclick = function() { toggleGrupo(this.id); };
+        tree.forEach(l1 => {
+            let valL1 = agrupado[l1.name] || 0;
+            let hasChildren = l1.children.some(child => {
+                if (child.type === 'L3') return (agrupado[child.name] || 0) !== 0;
+                if (child.type === 'L2') {
+                    if ((agrupado[child.node.name] || 0) !== 0) return true;
+                    return child.node.children.some(l3 => (agrupado[l3] || 0) !== 0);
                 }
+                return false;
+            });
+
+            if (valL1 === 0 && !hasChildren) return;
+
+            let tr1 = document.createElement('tr');
+            let idL1 = 'l1-' + l1Counter++;
+            tr1.className = l1.isTotal ? 'row-grand-total' : 'row-total';
+            
+            let nameUpper = l1.name.toUpperCase();
+            
+            if (nameUpper.includes('UTILIDAD ANTES')) {
+                tr1.classList.add('no-border-bottom'); 
+            }
+            if (nameUpper.includes('IMPUESTO A LA RENTA')) {
+                tr1.classList.add('no-border-top'); 
+            }
+            if (nameUpper.includes('UTILIDAD DESPUES') || nameUpper.includes('UTILIDAD NETA')) {
+                tr1.classList.add('no-border-bottom'); 
+            }
+            if (nameUpper.includes('COSTOS FIJOS')) {
+                tr1.classList.add('no-border-top'); 
+                tr1.classList.add('no-border-bottom'); 
+            }
+            if (nameUpper.includes('COSTOS VARIABLES')) {
+                tr1.classList.add('no-border-top'); 
+            }
+            if (nameUpper.includes('EQUILIBRIO')) {
+                tr1.classList.add('pe-highlight'); 
             }
 
-            const colorClass = valPrincipal < 0 ? 'val-negative' : '';
-            let porcentajeTexto = '-';
-            if (valorBase !== 0) {
-                porcentajeTexto = ((valPrincipal / valorBase) * 100).toFixed(1) + '%';
+            let nameFormattedL1 = formatName(l1.name, valL1);
+            let catHtml = nameFormattedL1;
+            
+            if (!l1.isTotal && hasChildren) {
+                tr1.id = idL1;
+                tr1.style.cursor = 'pointer';
+                tr1.onclick = function(e) { toggleGrupo(this.id, e); };
+                catHtml = `<span class="toggle-icon">▶</span> ${nameFormattedL1}`;
             }
-
-            // FASE 3: REEMPLAZO VISUAL DINÁMICO
-            // Si el monto es negativo, mostramos Pérdida. Si es positivo, mostramos Utilidad.
-            let nombreMostrarPrincipal = grupo.principal;
-            if (valPrincipal < 0) {
-                let upperName = nombreMostrarPrincipal.toUpperCase();
-                if (upperName.includes('UTILIDAD ANTES')) {
-                    nombreMostrarPrincipal = 'PÉRDIDA DEL EJERCICIO';
-                } else if (upperName.includes('UTILIDAD DESPUES') || upperName.includes('UTILIDAD DESPUÉS')) {
-                    nombreMostrarPrincipal = 'PÉRDIDA DESPUÉS DE IMPUESTO';
-                } else if (upperName.includes('UTILIDAD')) {
-                    nombreMostrarPrincipal = nombreMostrarPrincipal.replace(/UTILIDAD/ig, 'PÉRDIDA');
-                }
-            }
-
-            let catHtml = nombreMostrarPrincipal;
-            if (!grupo.isTotal && visibleChildren.length > 0) {
-                catHtml = `<span class="toggle-icon">▶</span> ${nombreMostrarPrincipal}`;
-            }
-
-            tr.innerHTML = `
+            
+            let pctL1 = (valorBase !== 0 && !l1.name.toUpperCase().includes('EQUILIBRIO')) ? ((valL1 / valorBase) * 100).toFixed(1) + '%' : '-';
+            
+            tr1.innerHTML = `
                 <td>${catHtml}</td>
-                <td class="text-right ${colorClass}">${formatearMoneda(valPrincipal)}</td>
-                <td class="text-right val-percent">${porcentajeTexto}</td>
+                <td class="text-right ${valL1 < 0 ? 'val-negative' : ''}">${formatearMoneda(valL1)}</td>
+                <td class="text-right val-percent">${pctL1}</td>
             `;
-            tbody.appendChild(tr);
+            tbody.appendChild(tr1);
 
-            visibleChildren.forEach(child => {
-                const valChild = agrupado[child] || 0;
-                const trChild = document.createElement('tr');
-                trChild.className = 'row-subitem child-of-grupo-' + index;
-                trChild.style.display = 'none';
+            l1.children.forEach(child => {
+                if (child.type === 'L3') {
+                    let valL3 = agrupado[child.name] || 0;
+                    if (valL3 === 0) return;
+                    
+                    let tr3 = document.createElement('tr');
+                    tr3.className = `row-subsubitem child-of-${idL1} direct-child-of-${idL1}`;
+                    tr3.style.display = 'none';
+                    
+                    let nameFormattedL3 = formatName(child.name, valL3);
+                    let pctL3 = valorBase !== 0 ? ((valL3 / valorBase) * 100).toFixed(1) + '%' : '-';
+                    
+                    tr3.innerHTML = `
+                        <td>${nameFormattedL3}</td>
+                        <td class="text-right ${valL3 < 0 ? 'val-negative' : ''}">${formatearMoneda(valL3)}</td>
+                        <td class="text-right val-percent">${pctL3}</td>
+                    `;
+                    tbody.appendChild(tr3);
+                } else if (child.type === 'L2') {
+                    let l2Node = child.node;
+                    let valL2 = agrupado[l2Node.name] || 0;
+                    let l2HasChildren = l2Node.children.some(l3 => (agrupado[l3] || 0) !== 0);
+                    
+                    if (valL2 === 0 && !l2HasChildren) return;
 
-                const colorChild = valChild < 0 ? 'val-negative' : '';
-                let pctChild = '-';
-                if (valorBase !== 0) {
-                    pctChild = ((valChild / valorBase) * 100).toFixed(1) + '%';
-                }
-
-                let nombreMostrarChild = child;
-                if (valChild < 0) {
-                    let upperNameChild = nombreMostrarChild.toUpperCase();
-                    if (upperNameChild.includes('UTILIDAD ANTES')) {
-                        nombreMostrarChild = 'PÉRDIDA DEL EJERCICIO';
-                    } else if (upperNameChild.includes('UTILIDAD DESPUES') || upperNameChild.includes('UTILIDAD DESPUÉS')) {
-                        nombreMostrarChild = 'PÉRDIDA DESPUÉS DE IMPUESTO';
-                    } else if (upperNameChild.includes('UTILIDAD')) {
-                        nombreMostrarChild = nombreMostrarChild.replace(/UTILIDAD/ig, 'PÉRDIDA');
+                    let tr2 = document.createElement('tr');
+                    let idL2 = 'l2-' + l2Counter++;
+                    tr2.className = `row-subitem child-of-${idL1} direct-child-of-${idL1}`;
+                    tr2.style.display = 'none';
+                    
+                    let nameFormattedL2 = formatName(l2Node.name, valL2);
+                    let l2Html = nameFormattedL2;
+                    
+                    if (l2HasChildren) {
+                        tr2.id = idL2;
+                        tr2.classList.add('clickable');
+                        tr2.onclick = function(e) { toggleGrupo(this.id, e); };
+                        l2Html = `<span class="toggle-icon">▶</span> ${nameFormattedL2}`;
                     }
-                }
 
-                trChild.innerHTML = `
-                    <td>${nombreMostrarChild}</td>
-                    <td class="text-right ${colorChild}">${formatearMoneda(valChild)}</td>
-                    <td class="text-right val-percent">${pctChild}</td>
-                `;
-                tbody.appendChild(trChild);
+                    let pctL2 = valorBase !== 0 ? ((valL2 / valorBase) * 100).toFixed(1) + '%' : '-';
+
+                    tr2.innerHTML = `
+                        <td>${l2Html}</td>
+                        <td class="text-right ${valL2 < 0 ? 'val-negative' : ''}">${formatearMoneda(valL2)}</td>
+                        <td class="text-right val-percent">${pctL2}</td>
+                    `;
+                    tbody.appendChild(tr2);
+
+                    l2Node.children.forEach(l3Name => {
+                        let valL3 = agrupado[l3Name] || 0;
+                        if (valL3 === 0) return;
+                        let tr3 = document.createElement('tr');
+                        tr3.className = `row-subsubitem child-of-${idL1} child-of-${idL2} direct-child-of-${idL2}`;
+                        tr3.style.display = 'none';
+                        
+                        let nameFormattedL3 = formatName(l3Name, valL3);
+                        let pctL3 = valorBase !== 0 ? ((valL3 / valorBase) * 100).toFixed(1) + '%' : '-';
+                        
+                        tr3.innerHTML = `
+                            <td>${nameFormattedL3}</td>
+                            <td class="text-right ${valL3 < 0 ? 'val-negative' : ''}">${formatearMoneda(valL3)}</td>
+                            <td class="text-right val-percent">${pctL3}</td>
+                        `;
+                        tbody.appendChild(tr3);
+                    });
+                }
             });
         });
     }
@@ -503,7 +617,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-    // Tus credenciales de Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyAMimbWHOrplArchHjZrheLZlLSIxj1-Hk",
         authDomain: "preomed-salud---portal-interno.firebaseapp.com",
@@ -516,13 +629,10 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    // Verificamos si la persona tiene la sesión iniciada
     onAuthStateChanged(auth, (user) => {
         if (user) {
-            // Si el usuario es válido, revelamos la página
             document.body.style.display = "block";
         } else {
-            // Si no hay sesión, lo devolvemos a la carpeta anterior (el Login principal)
             window.location.replace("../index.html");
         }
     });
