@@ -39,18 +39,19 @@
         .variable { background-color: #fff3cd; font-weight: bold; transition: 0.3s; }
         .formato-bloque { display: block; white-space: pre-line; padding-left: 60px; text-indent: 0; }
 
-        /* Estilo ajustado con sangría de 40px para la zona de edición */
-        #contenedor-clausulas-extra { 
+        /* Estilos ajustados para zonas de edición */
+        #contenedor-clausulas-extra, #contenedor-condiciones-bono { 
             padding: 15px; 
             border: 2px dashed #007bff; 
             background-color: #f4f8fc; 
             border-radius: 5px; 
-            margin-bottom: 15px; 
-            margin-left: 40px;
             outline: none;
             transition: 0.3s;
         }
-        #contenedor-clausulas-extra:focus {
+        #contenedor-clausulas-extra { margin-bottom: 15px; margin-left: 40px; }
+        #contenedor-condiciones-bono { margin-top: 10px; margin-bottom: 10px; }
+        
+        #contenedor-clausulas-extra:focus, #contenedor-condiciones-bono:focus {
             border-color: #28a745;
             background-color: #fff;
         }
@@ -71,13 +72,14 @@
             .controles { display: none !important; }
             .variable { background-color: transparent; font-weight: inherit; }
 
-            /* Ocultar caja editable al imprimir manteniendo la sangría nativa */
-            #contenedor-clausulas-extra {
+            /* Ocultar cajas editables al imprimir manteniendo la estructura nativa */
+            #contenedor-clausulas-extra, #contenedor-condiciones-bono {
                 border: none !important;
                 background-color: transparent !important;
                 padding: 0 !important;
-                margin-bottom: 15px !important;
             }
+            #contenedor-clausulas-extra { margin-bottom: 15px !important; }
+            #contenedor-condiciones-bono { margin-top: 10px !important; margin-bottom: 10px !important; }
 
             .pie-pagina-contenido {
                 position: fixed;
@@ -141,6 +143,20 @@
         <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; background: #fff; padding: 5px 10px; border-radius: 5px; border: 1px solid #ccc; flex-basis: 100%; justify-content: center; margin-top: 5px;">
             <input type="checkbox" id="chk-clausula-personalizada" onchange="toggleClausulaPersonalizada()"> Habilitar Cláusulas Personalizadas
         </label>
+
+        <!-- CONTROL DE BONO ADICIONAL -->
+        <label id="contenedor-bono-adicional" style="display: none; align-items: center; flex-wrap: wrap; gap: 5px; background: #fff; padding: 5px 10px; border-radius: 5px; border: 1px solid #ccc; flex-basis: 100%; justify-content: center; margin-top: 5px;">
+            <strong>Agregar Bono Adicional:</strong>
+            <select id="selector-tipo-bono" onchange="actualizarContrato()">
+                <option value="">-- Ninguno --</option>
+                <option value="imponible">Bono Imponible</option>
+                <option value="no_imponible">Asignación No Imponible</option>
+            </select>
+            <input type="text" id="input-texto-bono" placeholder="Ej. Responsabilidad $50.000" oninput="actualizarContrato()" style="display: none; width: 250px;">
+            <label id="lbl-chk-condiciones" style="display: none; cursor: pointer; margin-left: 10px; border-left: 1px solid #ccc; padding-left: 10px; font-weight: normal;">
+                <input type="checkbox" id="chk-condiciones-bono" onchange="actualizarContrato()"> Añadir Condiciones
+            </label>
+        </label>
     </div>
 
     <div class="contenedor-carta">
@@ -188,14 +204,28 @@
 
                         <div id="contenedor-clausula-cuarta" style="margin-left: 40px;">
                             <p class="nueva-clausula sin-sangria" style="margin-bottom: 5px;"><u><strong>CUARTO. - DE LAS REMUNERACIONES:</strong></u> El empleador se compromete a remunerar al trabajador mensualmente en la forma que se indica:</p>
-                            <ol type="a">
+                            <ol type="a" style="margin-bottom: 0;">
                                 <li id="li-sueldo" style="margin-top: 0; margin-bottom: 0;">Sueldo Base Mensual <strong><span class="variable" id="dato-sb-indefinido">[SBIndefinido]</span></strong> .- (proporcional a los días trabajados en el mes)</li>
                                 <li id="li-gratificacion" style="margin-top: 0; margin-bottom: 0;">La Gratificación legal mensual corresponderá al 25% de la Remuneración base con un tope según el Art. 50 del Código del Trabajo correspondiente a 4,75 ingresos mínimos mensuales.</li>
+                                
+                                <!-- NUEVO BONO IMPONIBLE SEPARANDO TEXTO Y MONTO -->
+                                <li id="li-bono-imponible" style="display: none; margin-top: 0; margin-bottom: 0;">Bono de <span class="variable"><span id="dato-bono-nombre-imp">[Nombre]</span> <strong><span id="dato-bono-monto-imp">$[Monto]</span></strong></span> .- (proporcional a los días trabajados en el mes)</li>
+                                
                                 <li id="li-colacion" style="margin-top: 0; margin-bottom: 0;">Asignación no Imponible de Colación <strong><span class="variable" id="dato-colacion">[Colación]</span></strong> .- (proporcional a los días trabajados en el mes)</li>
                                 <li id="li-movilizacion" style="margin-top: 0; margin-bottom: 0;">Asignación no Imponible de Movilización <strong><span class="variable" id="dato-movilizacion">[Movilización]</span></strong> .- (proporcional a los días trabajados en el mes)</li>
                                 
+                                <!-- NUEVA ASIGNACIÓN NO IMPONIBLE SEPARANDO TEXTO Y MONTO -->
+                                <li id="li-bono-no-imponible" style="display: none; margin-top: 0; margin-bottom: 0;">Asignación no Imponible de <span class="variable"><span id="dato-bono-nombre-noimp">[Nombre]</span> <strong><span id="dato-bono-monto-noimp">$[Monto]</span></strong></span> .- (proporcional a los días trabajados en el mes)</li>
+                                
                                 <li id="li-comisiones" value="5" style="display: none; margin-top: 10px; margin-bottom: 0;"><strong>Comisiones por Ventas:</strong> Para la determinación de las comisiones... <em>(Mantenido según lógica original)</em></li>
                             </ol>
+
+                            <!-- TEXTO EDITABLE DE CONDICIONES DEL BONO -->
+                            <div id="contenedor-condiciones-bono" style="display: none;" contenteditable="true">
+                                <p class="sin-sangria" style="margin-top: 0; margin-bottom: 0;"><strong>Condiciones para el Pago del Bono.</strong> El pago del Bono estipulado precedentemente está estricta y exclusivamente supeditado al cumplimiento íntegro, oportuno y satisfactorio de las nuevas funciones y responsabilidades incorporadas en el Descriptor de Cargo.<br><br>
+                                Queda expresamente establecido que, en caso de que el Trabajador no cumpla con las condiciones, no devengará ni tendrá derecho al pago del referido bono en dicho período. El pago de este bono en uno o más períodos no constituye, bajo ninguna circunstancia, un derecho adquirido para períodos futuros si no se cumple la condición que lo origina.</p>
+                            </div>
+
                         </div>
 
                         <p class="nueva-clausula sin-sangria" id="contenedor-clausula-sexta" style="margin-left: 40px;"><u><strong>SEXTO. - DE LA VIGENCIA:</strong></u> El presente contrato tendrá una duración hasta el día <strong><span class="variable" id="dato-termino-anexo1">[TerminoAnexo1]</span></strong>.</p>
@@ -337,20 +367,18 @@
 
             if (isChecked) {
                 contExtra.style.display = "block";
-                optSinCambios.style.display = "block"; // Muestra la opción en el select
+                optSinCambios.style.display = "block"; 
                 optSinCambios.hidden = false;
             } else {
                 contExtra.style.display = "none";
-                optSinCambios.style.display = "none"; // Oculta la opción en el select
+                optSinCambios.style.display = "none"; 
                 optSinCambios.hidden = true;
                 
-                // Si la opción "Sin cambios" estaba seleccionada al desmarcar la casilla, vuelve a la opción por defecto
                 if(selectorMotivo.value === "sin_cambios") {
                     selectorMotivo.value = "";
                 }
             }
             
-            // Llama a actualizarContrato para recalcular las visibilidades generales
             actualizarContrato(); 
         }
 
@@ -481,6 +509,7 @@
 
         function actualizarContrato() {
             const index = document.getElementById("selector-trabajador").value;
+            const tipoAnexo = document.getElementById("selector-motivo").value;
             
             const contCargo = document.getElementById("contenedor-clausula-cargo");
             const contHorario = document.getElementById("contenedor-clausula-horario");
@@ -492,35 +521,93 @@
             const liColacion = document.getElementById("li-colacion");
             const liMovilizacion = document.getElementById("li-movilizacion");
             const liComisiones = document.getElementById("li-comisiones");
-            const tipoAnexo = document.getElementById("selector-motivo").value;
+
+            let showCargo = false;
+            let showHorario = false;
+            let showSueldo = false;
+            let showVigencia = false;
+            let isIndefinido = false;
+            let isComisiones = false;
+
+            switch(tipoAnexo) {
+                case "sin_cambios": break; 
+                case "plazo_fijo": showVigencia = true; break;
+                case "plazo_fijo_sueldo": showVigencia = true; showSueldo = true; break;
+                case "plazo_fijo_cargo": showVigencia = true; showCargo = true; break;
+                case "plazo_fijo_sueldo_cargo": showVigencia = true; showSueldo = true; showCargo = true; break;
+                case "indefinido": showVigencia = true; isIndefinido = true; showSueldo = true; break;
+                case "indefinido_sueldo": showVigencia = true; isIndefinido = true; showSueldo = true; break;
+                case "indefinido_cargo": showVigencia = true; isIndefinido = true; showCargo = true; showSueldo = true; break;
+                case "indefinido_sueldo_cargo": showVigencia = true; isIndefinido = true; showSueldo = true; showCargo = true; break;
+                case "comisiones": isComisiones = true; showSueldo = true; break;
+                case "cargo": showCargo = true; break;
+                case "sueldo": showSueldo = true; break;
+                case "cargo_sueldo": showCargo = true; showSueldo = true; break;
+                case "cargo_sueldo_horario": showCargo = true; showSueldo = true; showHorario = true; break;
+                case "horario": showHorario = true; break;
+            }
+
+            // --- LÓGICA DE BONO EXTRA SEPARANDO MONTO DE TEXTO ---
+            const contBonoAdicional = document.getElementById("contenedor-bono-adicional");
+            const tipoBonoExtra = document.getElementById("selector-tipo-bono").value;
+            const inputTextoBono = document.getElementById("input-texto-bono");
+            const lblChkCondiciones = document.getElementById("lbl-chk-condiciones");
+            const chkCondicionesBono = document.getElementById("chk-condiciones-bono");
+            const contCondicionesBono = document.getElementById("contenedor-condiciones-bono");
             
+            const liBonoImponible = document.getElementById("li-bono-imponible");
+            const liBonoNoImponible = document.getElementById("li-bono-no-imponible");
+
+            if (contBonoAdicional) {
+                contBonoAdicional.style.display = showSueldo ? "flex" : "none";
+            }
+
+            if (inputTextoBono) {
+                inputTextoBono.style.display = (showSueldo && tipoBonoExtra !== "") ? "inline-block" : "none";
+            }
+            if (lblChkCondiciones) {
+                lblChkCondiciones.style.display = (showSueldo && tipoBonoExtra !== "") ? "inline-block" : "none";
+            }
+
+            // Mostrar el texto de las condiciones si está tickeado y hay bono configurado
+            if (contCondicionesBono) {
+                contCondicionesBono.style.display = (showSueldo && tipoBonoExtra !== "" && chkCondicionesBono && chkCondicionesBono.checked) ? "block" : "none";
+            }
+
+            const textoIngresado = (inputTextoBono && inputTextoBono.value.trim()) || "[Nombre] $[Monto]";
+            let nombreB = textoIngresado;
+            let montoB = "";
+
+            let idxDolar = textoIngresado.indexOf("$");
+            if(idxDolar !== -1) {
+                nombreB = textoIngresado.substring(0, idxDolar).trim() + " "; 
+                montoB = textoIngresado.substring(idxDolar).trim();
+            }
+
+            if (showSueldo && !isComisiones) {
+                if (tipoBonoExtra === "imponible") {
+                    if (liBonoImponible) liBonoImponible.style.display = "list-item";
+                    if (liBonoNoImponible) liBonoNoImponible.style.display = "none";
+                    asignarTextoSeguro("dato-bono-nombre-imp", nombreB);
+                    asignarTextoSeguro("dato-bono-monto-imp", montoB);
+                } else if (tipoBonoExtra === "no_imponible") {
+                    if (liBonoImponible) liBonoImponible.style.display = "none";
+                    if (liBonoNoImponible) liBonoNoImponible.style.display = "list-item";
+                    asignarTextoSeguro("dato-bono-nombre-noimp", nombreB);
+                    asignarTextoSeguro("dato-bono-monto-noimp", montoB);
+                } else {
+                    if (liBonoImponible) liBonoImponible.style.display = "none";
+                    if (liBonoNoImponible) liBonoNoImponible.style.display = "none";
+                }
+            } else {
+                if (liBonoImponible) liBonoImponible.style.display = "none";
+                if (liBonoNoImponible) liBonoNoImponible.style.display = "none";
+            }
+            // --- FIN LÓGICA DE BONO EXTRA ---
+
+
             if (index !== "") {
                 const datos = listaTrabajadores[index];
-                
-                let showCargo = false;
-                let showHorario = false;
-                let showSueldo = false;
-                let showVigencia = false;
-                let isIndefinido = false;
-                let isComisiones = false;
-
-                switch(tipoAnexo) {
-                    case "sin_cambios": break; // No activa ninguna modificación estándar
-                    case "plazo_fijo": showVigencia = true; break;
-                    case "plazo_fijo_sueldo": showVigencia = true; showSueldo = true; break;
-                    case "plazo_fijo_cargo": showVigencia = true; showCargo = true; break;
-                    case "plazo_fijo_sueldo_cargo": showVigencia = true; showSueldo = true; showCargo = true; break;
-                    case "indefinido": showVigencia = true; isIndefinido = true; showSueldo = true; break;
-                    case "indefinido_sueldo": showVigencia = true; isIndefinido = true; showSueldo = true; break;
-                    case "indefinido_cargo": showVigencia = true; isIndefinido = true; showCargo = true; showSueldo = true; break;
-                    case "indefinido_sueldo_cargo": showVigencia = true; isIndefinido = true; showSueldo = true; showCargo = true; break;
-                    case "comisiones": isComisiones = true; showSueldo = true; break;
-                    case "cargo": showCargo = true; break;
-                    case "sueldo": showSueldo = true; break;
-                    case "cargo_sueldo": showCargo = true; showSueldo = true; break;
-                    case "cargo_sueldo_horario": showCargo = true; showSueldo = true; showHorario = true; break;
-                    case "horario": showHorario = true; break;
-                }
 
                 const nombres = buscarPropiedad(datos, "nombres") || buscarPropiedad(datos, "nombre") || "";
                 const paterno = buscarPropiedad(datos, "apellidopaterno") || "";
@@ -765,6 +852,7 @@
                 if (liColacion) liColacion.style.display = "list-item";
                 if (liMovilizacion) liMovilizacion.style.display = "list-item";
                 if (liComisiones) liComisiones.style.display = "none";
+                
                 if (contSexta) {
                     contSexta.style.display = "block";
                     contSexta.innerHTML = '<u><strong>SEXTO. - DE LA VIGENCIA:</strong></u> El presente contrato tendrá una duración hasta el día <strong><span class="variable" id="dato-termino-anexo1">[TerminoAnexo1]</span></strong>.';
