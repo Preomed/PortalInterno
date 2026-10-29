@@ -123,6 +123,7 @@
             <option value="cargo">Cargo</option>
             <option value="sueldo">Sueldo</option>
             <option value="cargo_sueldo">Cargo + Sueldo</option>
+            <option value="sueldo_horario">Sueldo + Horario</option>
             <option value="cargo_sueldo_horario">Cargo + Sueldo + Horario</option>
             <option value="horario">Horario</option>
             <option value="comisiones">Comisiones</option>
@@ -543,6 +544,7 @@
                 case "cargo": showCargo = true; break;
                 case "sueldo": showSueldo = true; break;
                 case "cargo_sueldo": showCargo = true; showSueldo = true; break;
+                case "sueldo_horario": showSueldo = true; showHorario = true; break;
                 case "cargo_sueldo_horario": showCargo = true; showSueldo = true; showHorario = true; break;
                 case "horario": showHorario = true; break;
             }
@@ -648,7 +650,7 @@
                 let movilizacionRaw = "0";
 
                 if (showSueldo) {
-                    if (tipoAnexo === "sueldo" || tipoAnexo === "cargo_sueldo" || tipoAnexo === "cargo_sueldo_horario" || tipoAnexo === "plazo_fijo_sueldo" || tipoAnexo === "plazo_fijo_sueldo_cargo" || tipoAnexo === "indefinido_sueldo" || tipoAnexo === "indefinido_sueldo_cargo") {
+                    if (tipoAnexo === "sueldo" || tipoAnexo === "cargo_sueldo" || tipoAnexo === "cargo_sueldo_horario" || tipoAnexo === "sueldo_horario" || tipoAnexo === "plazo_fijo_sueldo" || tipoAnexo === "plazo_fijo_sueldo_cargo" || tipoAnexo === "indefinido_sueldo" || tipoAnexo === "indefinido_sueldo_cargo") {
                         if (tipoAnexo.includes("plazo_fijo")) {
                             sbIndefinidoRaw = buscarPropiedad(datos, "nuevosbfijo") || "[Nuevo SB Fijo]";
                         } else if (tipoAnexo.includes("indefinido")) {
@@ -732,7 +734,7 @@
                     }
                 }
 
-                const usaNuevaFecha = ["sin_cambios", "plazo_fijo_sueldo", "plazo_fijo_cargo", "plazo_fijo_sueldo_cargo", "indefinido_sueldo", "indefinido_cargo", "indefinido_sueldo_cargo", "cargo", "sueldo", "cargo_sueldo", "cargo_sueldo_horario", "horario"].includes(tipoAnexo);
+                const usaNuevaFecha = ["sin_cambios", "plazo_fijo_sueldo", "plazo_fijo_cargo", "plazo_fijo_sueldo_cargo", "indefinido_sueldo", "indefinido_cargo", "indefinido_sueldo_cargo", "cargo", "sueldo", "cargo_sueldo", "cargo_sueldo_horario", "sueldo_horario", "horario"].includes(tipoAnexo);
 
                 if (showVigencia) {
                     if (isIndefinido) {
