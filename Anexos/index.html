@@ -658,3 +658,261 @@
                         } else if (tipoAnexo.includes("indefinido")) {
                             sbIndefinidoRaw = buscarPropiedad(datos, "nuevosbindefinido") || "[Nuevo SB Indefinido]";
                         } else {
+                            sbIndefinidoRaw = buscarPropiedad(datos, "nuevosbindefinido") || buscarPropiedad(datos, "nuevosbfijo") || "[Nuevo SB]";
+                        }
+                        colacionRaw = buscarPropiedad(datos, "nuevocolacion") || buscarPropiedad(datos, "nuevocolación") || "0";
+                        movilizacionRaw = buscarPropiedad(datos, "nuevomovilizacion") || buscarPropiedad(datos, "nuevomovilización") || "0";
+                    } else {
+                        sbIndefinidoRaw = buscarPropiedad(datos, "sbindefinido") || "[SBIndefinido]";
+                        colacionRaw = buscarPropiedad(datos, "colacion") || buscarPropiedad(datos, "colación") || "0";
+                        movilizacionRaw = buscarPropiedad(datos, "movilizacion") || buscarPropiedad(datos, "movilización") || "0";
+                    }
+                } else {
+                    sbIndefinidoRaw = buscarPropiedad(datos, "sbindefinido") || "[SBIndefinido]";
+                    colacionRaw = buscarPropiedad(datos, "colacion") || buscarPropiedad(datos, "colación") || "0";
+                    movilizacionRaw = buscarPropiedad(datos, "movilizacion") || buscarPropiedad(datos, "movilización") || "0";
+                }
+
+                let centroCostoCiudad = centroCosto;
+                if (centroCosto !== "[Centro de Costo]") {
+                    let ccLower = centroCosto.trim().toLowerCase();
+                    if (ccLower === "antofagasta centro" || ccLower === "antofagasta norte") {
+                        centroCostoCiudad = "Antofagasta";
+                    }
+                }
+
+                const rutFormateado = formatearRut(rutRaw) || "[RUT]";
+                const terminoAnexo1Format = formatearFecha(terminoAnexo1Raw, false) || "[TerminoAnexo1]";
+                const sbIndefinidoFormat = formatearDineroConSigno(sbIndefinidoRaw);
+                const colacionFormat = formatearDineroConSigno(colacionRaw);
+                const movilizacionFormat = formatearDineroConSigno(movilizacionRaw);
+
+                let inicioAnexoFormat = "";
+                let fechaParaTitulo = null;
+
+                if (contCargo) contCargo.style.display = showCargo ? "block" : "none";
+                if (contHorario) contHorario.style.display = showHorario ? "block" : "none";
+                if (contCuarta) contCuarta.style.display = showSueldo ? "block" : "none";
+                if (contSexta) contSexta.style.display = showVigencia ? "block" : "none";
+
+                if (showSueldo) {
+                    if (isComisiones) {
+                        if (textoPrimero) {
+                            textoPrimero.style.display = "block";
+                            textoPrimero.innerHTML = '<u><strong><span class="num-anexo"></span>. -</strong></u> Las partes vienen en sustituir y/o complementar las siguientes cláusulas del contrato de trabajo, las que a continuación se detallan:';
+                        }
+                        if (liSueldo) liSueldo.style.display = "none";
+                        if (liGratificacion) liGratificacion.style.display = "none";
+                        if (liColacion) liColacion.style.display = "none";
+                        if (liMovilizacion) liMovilizacion.style.display = "none";
+                        if (liComisiones) {
+                            liComisiones.style.display = "list-item";
+                            liComisiones.setAttribute("value", "5");
+                        }
+                    } else {
+                        if (textoPrimero) {
+                            textoPrimero.style.display = "block";
+                            textoPrimero.innerHTML = '<u><strong><span class="num-anexo"></span>. -</strong></u> Las partes vienen en sustituir y/o complementar las siguientes cláusulas del contrato de trabajo, las que a continuación se detallan:';
+                        }
+                        if (liSueldo) liSueldo.style.display = "list-item";
+                        if (liGratificacion) liGratificacion.style.display = "list-item";
+                        if (liComisiones) liComisiones.style.display = "none";
+
+                        if (liColacion) {
+                            const numColacion = String(colacionRaw).replace(/[^\d]/g, '');
+                            liColacion.style.display = (numColacion === "0" || numColacion === "") ? "none" : "list-item";
+                            if (liColacion.style.display === "list-item") asignarTextoSeguro("dato-colacion", colacionFormat);
+                        }
+                        if (liMovilizacion) {
+                            const numMovilizacion = String(movilizacionRaw).replace(/[^\d]/g, '');
+                            liMovilizacion.style.display = (numMovilizacion === "0" || numMovilizacion === "") ? "none" : "list-item";
+                            if (liMovilizacion.style.display === "list-item") asignarTextoSeguro("dato-movilizacion", movilizacionFormat);
+                        }
+                    }
+                } else {
+                    if (textoPrimero) {
+                        textoPrimero.style.display = "block";
+                        textoPrimero.innerHTML = '<u><strong><span class="num-anexo"></span>. -</strong></u> Las partes vienen en sustituir y/o complementar las siguientes cláusulas del contrato de trabajo, las que a continuación se detallan:';
+                    }
+                }
+
+                const usaNuevaFecha = ["sin_cambios", "plazo_fijo_sueldo", "plazo_fijo_cargo", "plazo_fijo_sueldo_cargo", "indefinido_sueldo", "indefinido_cargo", "indefinido_sueldo_cargo", "indefinido_sueldo_horario", "cargo", "sueldo", "cargo_sueldo", "cargo_sueldo_horario", "sueldo_horario", "horario"].includes(tipoAnexo);
+
+                if (showVigencia) {
+                    if (isIndefinido) {
+                        if (contSexta) contSexta.innerHTML = '<u><strong>SEXTO. - DE LA VIGENCIA:</strong></u> El presente contrato tendrá una duración <strong>indefinida</strong>.';
+                        if (usaNuevaFecha) {
+                            inicioAnexoFormat = nuevaFechaFormat; fechaParaTitulo = nuevaFechaObj;
+                        } else {
+                            inicioAnexoFormat = "[TerminoAnexo1 + 1 DÍA]";
+                            if (terminoAnexo1Raw && !esDatoVacio(terminoAnexo1Raw)) {
+                                let fechaTerminoAnexoObj = obtenerFechaObjeto(terminoAnexo1Raw);
+                                if (fechaTerminoAnexoObj) {
+                                    fechaTerminoAnexoObj.setDate(fechaTerminoAnexoObj.getDate() + 1);
+                                    inicioAnexoFormat = fechaTerminoAnexoObj.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }).replace(',', '');
+                                    fechaParaTitulo = fechaTerminoAnexoObj; 
+                                }
+                            }
+                        }
+                    } else {
+                        if (contSexta) {
+                            contSexta.innerHTML = '<u><strong>SEXTO. - DE LA VIGENCIA:</strong></u> El presente contrato tendrá una duración hasta el día <strong><span class="variable" id="dato-termino-anexo1"></span></strong>.';
+                            setTimeout(() => asignarTextoSeguro("dato-termino-anexo1", terminoAnexo1Format), 0);
+                        }
+                        if (usaNuevaFecha) {
+                            inicioAnexoFormat = nuevaFechaFormat; fechaParaTitulo = nuevaFechaObj;
+                        } else {
+                            inicioAnexoFormat = "[TerminoContrato + 1 DÍA]";
+                            if (terminoContratoRaw && !esDatoVacio(terminoContratoRaw)) {
+                                let fechaTerminoObj = obtenerFechaObjeto(terminoContratoRaw);
+                                if (fechaTerminoObj) {
+                                    fechaTerminoObj.setDate(fechaTerminoObj.getDate() + 1);
+                                    inicioAnexoFormat = fechaTerminoObj.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }).replace(',', '');
+                                    fechaParaTitulo = fechaTerminoObj; 
+                                }
+                            }
+                        }
+                    }
+                } else if (usaNuevaFecha) {
+                    inicioAnexoFormat = nuevaFechaFormat; fechaParaTitulo = nuevaFechaObj;
+                } else if (isComisiones) {
+                    inicioAnexoFormat = "[Inicio Contrato]";
+                    if (inicioContratoRaw && !esDatoVacio(inicioContratoRaw)) {
+                        let fechaInicioObj = obtenerFechaObjeto(inicioContratoRaw);
+                        if (fechaInicioObj) {
+                            inicioAnexoFormat = fechaInicioObj.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }).replace(',', '');
+                            fechaParaTitulo = fechaInicioObj; 
+                        }
+                    }
+                } else {
+                    inicioAnexoFormat = "[Fecha Anexo]"; 
+                }
+
+                const chkProvisorio = document.getElementById("chk-provisorio");
+                const fechaTerminoProvVal = document.getElementById("fecha-termino-prov").value;
+                const clausulaTercera = document.getElementById("contenedor-clausula-tercera");
+
+                if (clausulaTercera) {
+                    if (chkProvisorio && chkProvisorio.checked && fechaParaTitulo && fechaTerminoProvVal) {
+                        let fechaTerminoObj = new Date(fechaTerminoProvVal + "T00:00:00");
+                        let fechaReversionObj = new Date(fechaTerminoObj);
+                        fechaReversionObj.setDate(fechaReversionObj.getDate() + 1);
+                        const msPorDia = 1000 * 60 * 60 * 24;
+                        const diasTotales = Math.round((fechaTerminoObj.getTime() - fechaParaTitulo.getTime()) / msPorDia) + 1; 
+                        let mesesDiff = Math.round(diasTotales / 30.44); 
+                        if (mesesDiff <= 0) mesesDiff = 1;
+                        let strInicio = fechaParaTitulo.toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' });
+                        let strTermino = fechaTerminoObj.toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' });
+                        let strReversion = fechaReversionObj.toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' });
+
+                        clausulaTercera.innerHTML = `<u><strong><span class="num-anexo"></span>. -</strong></u> Las partes dejan expresa constancia y acuerdan que las modificaciones estipuladas en el presente anexo, relativas al nuevo cargo, remuneración y jornada de trabajo, tendrán un carácter estrictamente transitorio y temporal.<br><br>
+                        Dicha transitoriedad se extenderá por un período de <strong>${mesesDiff} (${numeroALetras(mesesDiff)}) meses</strong>, rigiendo de manera excepcional desde el <strong>${strInicio}</strong> hasta el <strong>${strTermino}</strong>.<br><br>
+                        Se acuerda expresamente que, a contar del <strong>${strReversion}</strong>, el/la trabajador/a cesará en estas funciones transitorias y retomará de pleno derecho su cargo, jornada laboral y estructura de remuneraciones que mantenía vigentes con anterioridad a la suscripción de este anexo, sin que ello constituya menoscabo alguno.`;
+                    } else {
+                        clausulaTercera.innerHTML = `<u><strong><span class="num-anexo"></span>. -</strong></u> El presente anexo de contrato regirá a partir del <strong><span class="variable" id="dato-inicio-anexo">${inicioAnexoFormat}</span></strong>.-`;
+                    }
+                }
+
+                asignarTextoSeguro("dato-nombres", nombres || "[Nombres]");
+                asignarTextoSeguro("dato-paterno", paterno || "[Apellido Paterno]");
+                asignarTextoSeguro("dato-materno", materno || "[Apellido Materno]");
+                asignarTextoSeguro("dato-rut", rutFormateado);
+                asignarTextoSeguro("dato-rut-firma", rutFormateado);
+                asignarTextoSeguro("dato-sb-indefinido", sbIndefinidoFormat || "[SBIndefinido]");
+                asignarTextoSeguro("dato-inicio-anexo", inicioAnexoFormat);
+                asignarTextoSeguro("dato-inicio-anexo-intro", inicioAnexoFormat);
+                asignarTextoSeguro("dato-centro-costo-intro", centroCostoCiudad);
+                asignarTextoSeguro("dato-cargo-anexo", cargoRaw || "[Cargo]");
+                asignarTextoSeguro("dato-jornada-anexo", jornadaRaw);
+                asignarTextoSeguro("dato-tiempo-colacion-anexo", tiempoColacionRaw);
+                asignarTextoSeguro("dato-horario-anexo", horarioRaw);
+                
+                let primerNombre = nombres.trim().split(" ")[0];
+                let fechaPuntos = "";
+                
+                if (fechaParaTitulo) {
+                    let dia = String(fechaParaTitulo.getDate()).padStart(2, '0');
+                    let mes = String(fechaParaTitulo.getMonth() + 1).padStart(2, '0');
+                    let anio = fechaParaTitulo.getFullYear();
+                    fechaPuntos = `${dia}.${mes}.${anio}`;
+                }
+                
+                if (primerNombre && paterno && fechaPuntos) {
+                    document.title = "Anexo Contrato de Trabajo - " + primerNombre + " " + paterno + " - " + fechaPuntos;
+                } else {
+                    document.title = "Anexo Contrato de Trabajo Dinámico - Preomed";
+                }
+                
+            } else {
+                if (textoPrimero) {
+                    textoPrimero.style.display = "block";
+                    textoPrimero.innerHTML = '<u><strong><span class="num-anexo"></span>. -</strong></u> Las partes vienen en sustituir y/o complementar las siguientes cláusulas del contrato de trabajo, las que a continuación se detallan:';
+                }
+                if (contCargo) contCargo.style.display = "none";
+                if (contHorario) contHorario.style.display = "none";
+                if (contCuarta) contCuarta.style.display = "block";
+                if (liSueldo) liSueldo.style.display = "list-item";
+                if (liGratificacion) liGratificacion.style.display = "list-item";
+                if (liColacion) liColacion.style.display = "list-item";
+                if (liMovilizacion) liMovilizacion.style.display = "list-item";
+                if (liComisiones) liComisiones.style.display = "none";
+                
+                if (contSexta) {
+                    contSexta.style.display = "block";
+                    contSexta.innerHTML = '<u><strong>SEXTO. - DE LA VIGENCIA:</strong></u> El presente contrato tendrá una duración hasta el día <strong><span class="variable" id="dato-termino-anexo1">[TerminoAnexo1]</span></strong>.';
+                }
+
+                const clausulaTercera = document.getElementById("contenedor-clausula-tercera");
+                if (clausulaTercera) {
+                    clausulaTercera.innerHTML = `<u><strong><span class="num-anexo"></span>. -</strong></u> El presente anexo de contrato regirá a partir del <strong><span class="variable" id="dato-inicio-anexo">[Fecha Anexo]</span></strong>.-`;
+                }
+
+                asignarTextoSeguro("dato-nombres", "[Nombres]");
+                asignarTextoSeguro("dato-paterno", "[Apellido Paterno]");
+                asignarTextoSeguro("dato-materno", "[Apellido Materno]");
+                asignarTextoSeguro("dato-rut", "[RUT]");
+                asignarTextoSeguro("dato-rut-firma", "[RUT]");
+                asignarTextoSeguro("dato-sb-indefinido", "[SBIndefinido]");
+                asignarTextoSeguro("dato-inicio-anexo", "[Fecha Anexo]");
+                asignarTextoSeguro("dato-inicio-anexo-intro", "[Fecha Anexo]");
+                asignarTextoSeguro("dato-centro-costo-intro", "[Centro de Costo]");
+                asignarTextoSeguro("dato-colacion", "[Colación]");
+                asignarTextoSeguro("dato-movilizacion", "[Movilización]");
+                asignarTextoSeguro("dato-cargo-anexo", "[Cargo]");
+                asignarTextoSeguro("dato-jornada-anexo", "[Jornada]");
+                asignarTextoSeguro("dato-tiempo-colacion-anexo", "[Tiempo Colación]");
+                asignarTextoSeguro("dato-horario-anexo", "[Horario]");
+                
+                document.title = "Anexo Contrato de Trabajo Dinámico - Preomed";
+            }
+            
+            actualizarNumeracion();
+        }
+    </script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAMimbWHOrplArchHjZrheLZlLSIxj1-Hk",
+            authDomain: "preomed-salud---portal-interno.firebaseapp.com",
+            projectId: "preomed-salud---portal-interno",
+            storageBucket: "preomed-salud---portal-interno.firebasestorage.app",
+            messagingSenderId: "292608840627",
+            appId: "1:292608840627:web:0ac4afdaa71ba8baa8b1c6"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.body.style.display = "block";
+            } else {
+                window.location.replace("../index.html");
+            }
+        });
+    </script>
+</body>
+</html>
