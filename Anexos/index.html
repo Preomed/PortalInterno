@@ -77,6 +77,11 @@
             .nueva-clausula { margin-top: 8px; }
             #texto-previo-firmas { margin-top: 15px !important; }
 
+            /* Aumentar la distribución específicamente en el Pacto HHEE para que no se vea comprimido */
+            #contenido-pacto p { margin-bottom: 14px !important; line-height: 1.5 !important; }
+            #contenido-pacto .nueva-clausula { margin-top: 14px !important; }
+            #contenido-pacto h1 { margin-bottom: 25px !important; margin-top: 10px !important; }
+
             #contenedor-clausulas-extra, #contenedor-condiciones-bono {
                 border: none !important;
                 background-color: transparent !important;
@@ -143,7 +148,7 @@
             <input type="checkbox" id="chk-pacto-hhee" onchange="togglePactoHHEE()"> Pacto de HHEE
         </label>
         
-        <!-- NUEVO CONTENEDOR FECHA DE INICIO DEL PACTO -->
+        <!-- CONTENEDOR FECHA DE INICIO DEL PACTO -->
         <div id="contenedor-fecha-inicio-pacto" style="display: none; align-items: center;">
             <label for="fecha-inicio-pacto"><strong>Fecha de Inicio:</strong></label>
             <input type="date" id="fecha-inicio-pacto" onchange="actualizarContrato()">
@@ -905,9 +910,14 @@
                 asignarTextoSeguro("dato-inicio-pacto", nuevaFechaFormat);
                 asignarTextoSeguro("dato-fin-pacto", fechaFinPactoFormat);
 
+                // --- LÓGICA DE TÍTULO PARA EL ARCHIVO GUARDADO ---
                 let primerNombre = nombres.trim().split(" ")[0];
                 let fechaPuntos = "";
                 
+                if (isPactoChecked) {
+                    fechaParaTitulo = nuevaFechaObj; // Forzar a que use la fecha de inicio del pacto
+                }
+
                 if (fechaParaTitulo) {
                     let dia = String(fechaParaTitulo.getDate()).padStart(2, '0');
                     let mes = String(fechaParaTitulo.getMonth() + 1).padStart(2, '0');
@@ -919,6 +929,8 @@
                 
                 if (primerNombre && paterno && fechaPuntos) {
                     document.title = prefijoTitulo + " - " + primerNombre + " " + paterno + " - " + fechaPuntos;
+                } else if (isPactoChecked && primerNombre && paterno) {
+                    document.title = prefijoTitulo + " - " + primerNombre + " " + paterno;
                 } else {
                     document.title = "Anexo Contrato de Trabajo Dinámico - Preomed";
                 }
