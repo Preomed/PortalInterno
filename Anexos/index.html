@@ -25,10 +25,10 @@
         
         .pie-pagina-contenido { text-align: center; font-weight: bold; font-size: 10pt; color: #555; padding-top: 15px; width: 100%; }
         
-        h1 { font-size: 11pt; text-decoration: underline; text-align: center; margin-bottom: 30px; margin-top: 10px; }
-        p { margin-bottom: 15px; text-indent: 40px; }
+        h1 { font-size: 11pt; text-decoration: underline; text-align: center; margin-bottom: 25px; margin-top: 5px; }
+        p { margin-bottom: 12px; text-indent: 40px; }
         p.sin-sangria { text-indent: 0; }
-        .nueva-clausula { margin-top: 15px; }
+        .nueva-clausula { margin-top: 12px; }
         ol { margin-top: 0; margin-bottom: 15px; padding-left: 60px; }
         ol li { text-align: justify; } 
         .firmas { display: flex; justify-content: space-between; margin-top: 10px; padding: 0 40px; }
@@ -39,7 +39,6 @@
         .variable { background-color: #fff3cd; font-weight: bold; transition: 0.3s; }
         .formato-bloque { display: block; white-space: pre-line; padding-left: 60px; text-indent: 0; }
 
-        /* Estilos ajustados para zonas de edición */
         #contenedor-clausulas-extra, #contenedor-condiciones-bono { 
             padding: 15px; 
             border: 2px dashed #007bff; 
@@ -56,10 +55,11 @@
             background-color: #fff;
         }
 
+        /* Ajustes específicos para impresión (Optimizado para 1 página) */
         @media print {
             @page { 
                 size: letter; 
-                margin: 1.5cm 1.5cm 2cm 1.5cm; 
+                margin: 1cm 1.2cm 1.5cm 1.2cm; 
                 @bottom-right { 
                     content: "Página " counter(page) " de " counter(pages); 
                     font-family: 'Aptos Display', Calibri, sans-serif; 
@@ -67,19 +67,23 @@
                     color: #666; 
                 }
             }
-            body { background-color: transparent; margin: 0; padding: 0; max-width: 100%; }
+            body { background-color: transparent; margin: 0; padding: 0; max-width: 100%; line-height: 1.35; }
             .contenedor-carta { box-shadow: none; padding: 0; }
             .controles { display: none !important; }
             .variable { background-color: transparent; font-weight: inherit; }
+            
+            h1 { margin-bottom: 15px; margin-top: 0; }
+            p { margin-bottom: 8px; }
+            .nueva-clausula { margin-top: 8px; }
+            #texto-previo-firmas { margin-top: 15px !important; }
 
-            /* Ocultar cajas editables al imprimir manteniendo la estructura nativa */
             #contenedor-clausulas-extra, #contenedor-condiciones-bono {
                 border: none !important;
                 background-color: transparent !important;
                 padding: 0 !important;
             }
-            #contenedor-clausulas-extra { margin-bottom: 15px !important; }
-            #contenedor-condiciones-bono { margin-top: 10px !important; margin-bottom: 10px !important; }
+            #contenedor-clausulas-extra { margin-bottom: 10px !important; }
+            #contenedor-condiciones-bono { margin-top: 5px !important; margin-bottom: 5px !important; }
 
             .pie-pagina-contenido {
                 position: fixed;
@@ -90,7 +94,7 @@
                 margin: 0;
             }
             tfoot td {
-                height: 1.2cm;
+                height: 1cm;
             }
         }
     </style>
@@ -120,7 +124,7 @@
             <option value="indefinido_sueldo">Indefinido + Sueldo</option>
             <option value="indefinido_cargo">Indefinido + Cargo</option>
             <option value="indefinido_sueldo_cargo">Indefinido + Sueldo + Cargo</option>
-            <option value="indefinido_sueldo_horario">Indefinido + Sueldo + Horario</option> <!-- NUEVO -->
+            <option value="indefinido_sueldo_horario">Indefinido + Sueldo + Horario</option>
             <option value="cargo">Cargo</option>
             <option value="sueldo">Sueldo</option>
             <option value="cargo_sueldo">Cargo + Sueldo</option>
@@ -133,7 +137,18 @@
         <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; background: #fff; padding: 5px 10px; border-radius: 5px; border: 1px solid #ccc;">
             <input type="checkbox" id="chk-provisorio" onchange="toggleProvisorio()"> Anexo Provisorio
         </label>
+
+        <!-- CASILLA PARA EL PACTO DE HHEE -->
+        <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; background: #e3f2fd; padding: 5px 10px; border-radius: 5px; border: 1px solid #90caf9;">
+            <input type="checkbox" id="chk-pacto-hhee" onchange="togglePactoHHEE()"> Pacto de HHEE
+        </label>
         
+        <!-- NUEVO CONTENEDOR FECHA DE INICIO DEL PACTO -->
+        <div id="contenedor-fecha-inicio-pacto" style="display: none; align-items: center;">
+            <label for="fecha-inicio-pacto"><strong>Fecha de Inicio:</strong></label>
+            <input type="date" id="fecha-inicio-pacto" onchange="actualizarContrato()">
+        </div>
+
         <div id="contenedor-fecha-termino" style="display: none; align-items: center;">
             <label for="fecha-termino-prov"><strong>Fecha Término:</strong></label>
             <input type="date" id="fecha-termino-prov" onchange="actualizarContrato()">
@@ -141,12 +156,10 @@
 
         <button onclick="window.print()">Imprimir PDF</button>
 
-        <!-- CONTROL MULTISUCURSAL / PERSONALIZADO -->
         <label style="display: flex; align-items: center; gap: 5px; cursor: pointer; background: #fff; padding: 5px 10px; border-radius: 5px; border: 1px solid #ccc; flex-basis: 100%; justify-content: center; margin-top: 5px;">
             <input type="checkbox" id="chk-clausula-personalizada" onchange="toggleClausulaPersonalizada()"> Habilitar Cláusulas Personalizadas
         </label>
 
-        <!-- CONTROL DE BONO ADICIONAL -->
         <label id="contenedor-bono-adicional" style="display: none; align-items: center; flex-wrap: wrap; gap: 5px; background: #fff; padding: 5px 10px; border-radius: 5px; border: 1px solid #ccc; flex-basis: 100%; justify-content: center; margin-top: 5px;">
             <strong>Agregar Bono Adicional:</strong>
             <select id="selector-tipo-bono" onchange="actualizarContrato()">
@@ -176,86 +189,99 @@
             <tbody>
                 <tr>
                     <td>
-                        <h1>ANEXO CONTRATO DE TRABAJO</h1>
+                        <!-- CONTENIDO ANEXO NORMAL -->
+                        <div id="contenido-anexo-normal">
+                            <h1>ANEXO CONTRATO DE TRABAJO</h1>
 
-                        <p>En <span class="variable" id="dato-centro-costo-intro">[Centro de Costo]</span>, a <strong><span class="variable" id="dato-inicio-anexo-intro">[Fecha Anexo]</span></strong>, entre la sociedad <strong>Preomed Salud SpA</strong>, Rut. <strong>76.500.919-7</strong>, representada legalmente por Doña <strong>Yoselyn Valesca Álvarez Duarte</strong>, Rut. <strong>16.135.473-2</strong>, ambos con domicilio comercial en la ciudad de Antofagasta, calle Las Bandurrias n° 9078, en lo sucesivo el empleador, y Don/ña <strong><span class="variable" id="dato-nombres">[Nombres]</span> <span class="variable" id="dato-paterno">[Apellido Paterno]</span> <span class="variable" id="dato-materno">[Apellido Materno]</span></strong>, Rut. <strong><span class="variable" id="dato-rut">[RUT]</span></strong>, en adelante, el/la trabajador/a, se ha convenido actualizar el contrato de trabajo suscrito entre las partes, estableciendo las siguientes cláusulas:</p>
+                            <p>En <span class="variable" id="dato-centro-costo-intro">[Centro de Costo]</span>, a <strong><span class="variable" id="dato-inicio-anexo-intro">[Fecha Anexo]</span></strong>, entre la sociedad <strong>Preomed Salud SpA</strong>, Rut. <strong>76.500.919-7</strong>, representada legalmente por Doña <strong>Yoselyn Valesca Álvarez Duarte</strong>, Rut. <strong>16.135.473-2</strong>, ambos con domicilio comercial en la ciudad de Antofagasta, calle Las Bandurrias n° 9078, en lo sucesivo el empleador, y Don/ña <strong><span class="variable" id="dato-nombres">[Nombres]</span> <span class="variable" id="dato-paterno">[Apellido Paterno]</span> <span class="variable" id="dato-materno">[Apellido Materno]</span></strong>, Rut. <strong><span class="variable" id="dato-rut">[RUT]</span></strong>, en adelante, el/la trabajador/a, se ha convenido actualizar el contrato de trabajo suscrito entre las partes, estableciendo las siguientes cláusulas:</p>
 
-                        <!-- PÁRRAFO INTRODUCTORIO AUTO-NUMERADO FIJO -->
-                        <p class="nueva-clausula sin-sangria" id="texto-primero" style="display: block;"><u><strong><span class="num-anexo"></span>. -</strong></u> Las partes vienen en sustituir y/o complementar las siguientes cláusulas del contrato de trabajo, las que a continuación se detallan:</p>
+                            <p class="nueva-clausula sin-sangria" id="texto-primero" style="display: block;"><u><strong><span class="num-anexo"></span>. -</strong></u> Las partes vienen en sustituir y/o complementar las siguientes cláusulas del contrato de trabajo, las que a continuación se detallan:</p>
 
-                        <!-- CONTENEDOR EDITABLE UBICADO DEBAJO Y CON SANGRÍA -->
-                        <div id="contenedor-clausulas-extra" style="display: none;" contenteditable="true">
-                            <p class="nueva-clausula sin-sangria" style="margin-bottom: 5px;"><u><strong>PRIMERO. - Modificación de las Funciones (Cargo):</strong></u> Las partes acuerdan complementar la cláusula PRIMERA del contrato de trabajo base, en el sentido de ampliar el alcance territorial y de responsabilidades del cargo de “Jefe/a de Sucursal”.<br><br>
-                            A contar de la fecha de firma del presente anexo, el/la trabajador/a asume la coordinación, gestión y supervisión directa de las sucursales ubicadas en Arica, Iquique, Calama y Antofagasta Centro, además de su actual responsabilidad sobre la sucursal Antofagasta Norte. Las funciones y responsabilidades específicas de este rol ampliado se encuentran detalladas en el descriptor de cargo actualizado, documento que el/la trabajador/a declara recibir, conocer y aceptar en este acto, entendiéndose plenamente incorporado al contrato de trabajo. Todas las demás obligaciones de diligencia, lealtad y cumplimiento de instrucciones estipuladas en la cláusula original se mantienen inalterables y plenamente vigentes.</p>
+                            <div id="contenedor-clausulas-extra" style="display: none;" contenteditable="true">
+                                <p class="nueva-clausula sin-sangria" style="margin-bottom: 5px;"><u><strong>PRIMERO. - Modificación de las Funciones (Cargo):</strong></u> Las partes acuerdan complementar la cláusula PRIMERA del contrato de trabajo base, en el sentido de ampliar el alcance territorial y de responsabilidades del cargo de “Jefe/a de Sucursal”.<br><br>
+                                A contar de la fecha de firma del presente anexo, el/la trabajador/a asume la coordinación, gestión y supervisión directa de las sucursales ubicadas en Arica, Iquique, Calama y Antofagasta Centro, además de su actual responsabilidad sobre la sucursal Antofagasta Norte. Las funciones y responsabilidades específicas de este rol ampliado se encuentran detalladas en el descriptor de cargo actualizado, documento que el/la trabajador/a declara recibir, conocer y aceptar en este acto, entendiéndose plenamente incorporado al contrato de trabajo. Todas las demás obligaciones de diligencia, lealtad y cumplimiento de instrucciones estipuladas en la cláusula original se mantienen inalterables y plenamente vigentes.</p>
 
-                            <p class="nueva-clausula sin-sangria" style="margin-bottom: 5px;"><u><strong>SEGUNDO. - Modificación del Lugar de Prestación de Servicios:</strong></u> Las partes acuerdan modificar la cláusula SEGUNDA referida al lugar de trabajo, la cual quedará redactada íntegramente de la siguiente manera:<br><br>
-                            "Los servicios serán prestados teniendo como base de operaciones el local comercial ubicado en Antofagasta Norte, calle Las Bandurrias N° 9078, comuna de Antofagasta.<br><br>
-                            Sin perjuicio de lo anterior, y atendida la nueva naturaleza multisucursal de sus responsabilidades descritas en la cláusula anterior, las partes acuerdan expresamente que el/la trabajador/a deberá desplazarse y prestar servicios presenciales de supervisión y jefatura en las sucursales ubicadas en las ciudades de Arica, Iquique, Calama y Antofagasta Centro, según los requerimientos, frecuencia y programación que defina el empleador.<br><br>
-                            Para todos los efectos legales, el empleador mantendrá la facultad de alterar el sitio o recinto base de los servicios, siempre que quede dentro de la misma ciudad o localidad, de acuerdo con lo establecido en el artículo 12 del Código del Trabajo.<br><br>
-                            Se deja constancia que todos los gastos derivados de los desplazamientos fuera de la ciudad base (Antofagasta) hacia las sucursales de Arica, Iquique y Calama, incluyendo pasajes, alojamiento, movilización y alimentación, serán costeados o reembolsados íntegramente por el empleador, de acuerdo con las políticas de viáticos vigentes en la empresa, garantizando que estos traslados no irrogarán menoscabo económico alguno para el/la trabajador/a."</p>
-                        </div>
-
-                        <div id="contenedor-clausula-cargo" style="margin-left: 40px; display: none; margin-bottom: 15px;">
-                            <p class="nueva-clausula sin-sangria" style="margin-bottom: 5px;"><u><strong>PRIMERO. - DE LAS FUNCIONES Y CARGO:</strong></u> El/La trabajador/a se obliga a desempeñar las funciones propias de “<strong><span class="variable" id="dato-cargo-anexo">[Cargo]</span></strong>” de acuerdo con las instrucciones que al efecto sean impartidas por el empleador, estableciendo de común acuerdo que las funciones y responsabilidades propias del cargo o función que desempeñará el/la trabajador/a se encuentran establecidas en el descriptor de cargo correspondiente, documento que recepcionado por el/la trabajador/a se entiende incorporado al presente contrato. El/La trabajador/a queda obligado a cumplir leal y correctamente con todos los deberes que le imponga este instrumento o aquéllos que se deriven de las funciones y cargo, debiendo ejecutar las instrucciones que le confieran sus superiores. Del mismo modo el/la trabajador/a se obliga a desempeñar en forma eficaz, las funciones y el cargo para el cual ha sido contratado, empleando para ello la mayor diligencia y dedicación.</p>
-                        </div>
-
-                        <div id="contenedor-clausula-horario" style="margin-left: 40px; display: none; margin-bottom: 15px;">
-                            <p class="nueva-clausula sin-sangria" style="margin-bottom: 5px;"><u><strong>TERCERO. - DE LA JORNADA DE TRABAJO:</strong></u> La jornada de trabajo será de <strong><span class="variable" id="dato-jornada-anexo">[Jornada]</span></strong> horas semanales de acuerdo con el artículo 22 del Código del Trabajo, la cual tendrá un descanso de <strong><span class="variable" id="dato-tiempo-colacion-anexo">[Tiempo Colación]</span></strong> no imputable a dicha jornada, la distribution de la jornada será de la siguiente manera de acuerdo con el artículo 28 del Código del Trabajo:<br>
-                            <span class="variable formato-bloque" id="dato-horario-anexo" style="display: block; margin-top: 5px; font-weight: bold;">[Horario]</span></p>
-                        </div>
-
-                        <div id="contenedor-clausula-cuarta" style="margin-left: 40px;">
-                            <p class="nueva-clausula sin-sangria" style="margin-bottom: 5px;"><u><strong>CUARTO. - DE LAS REMUNERACIONES:</strong></u> El empleador se compromete a remunerar al trabajador mensualmente en la forma que se indica:</p>
-                            <ol type="a" style="margin-bottom: 0;">
-                                <li id="li-sueldo" style="margin-top: 0; margin-bottom: 0;">Sueldo Base Mensual <strong><span class="variable" id="dato-sb-indefinido">[SBIndefinido]</span></strong> .- (proporcional a los días trabajados en el mes)</li>
-                                <li id="li-gratificacion" style="margin-top: 0; margin-bottom: 0;">La Gratificación legal mensual corresponderá al 25% de la Remuneración base con un tope según el Art. 50 del Código del Trabajo correspondiente a 4,75 ingresos mínimos mensuales.</li>
-                                
-                                <!-- NUEVO BONO IMPONIBLE SEPARANDO TEXTO Y MONTO -->
-                                <li id="li-bono-imponible" style="display: none; margin-top: 0; margin-bottom: 0;">Bono de <span class="variable"><span id="dato-bono-nombre-imp">[Nombre]</span> <strong><span id="dato-bono-monto-imp">$[Monto]</span></strong></span> .- (proporcional a los días trabajados en el mes)</li>
-                                
-                                <li id="li-colacion" style="margin-top: 0; margin-bottom: 0;">Asignación no Imponible de Colación <strong><span class="variable" id="dato-colacion">[Colación]</span></strong> .- (proporcional a los días trabajados en el mes)</li>
-                                <li id="li-movilizacion" style="margin-top: 0; margin-bottom: 0;">Asignación no Imponible de Movilización <strong><span class="variable" id="dato-movilizacion">[Movilización]</span></strong> .- (proporcional a los días trabajados en el mes)</li>
-                                
-                                <!-- NUEVA ASIGNACIÓN NO IMPONIBLE SEPARANDO TEXTO Y MONTO -->
-                                <li id="li-bono-no-imponible" style="display: none; margin-top: 0; margin-bottom: 0;">Asignación no Imponible de <span class="variable"><span id="dato-bono-nombre-noimp">[Nombre]</span> <strong><span id="dato-bono-monto-noimp">$[Monto]</span></strong></span> .- (proporcional a los días trabajados en el mes)</li>
-                                
-                                <li id="li-comisiones" value="5" style="display: none; margin-top: 10px; margin-bottom: 0;"><strong>Comisiones por Ventas:</strong> Para la determinación de las comisiones... <em>(Mantenido según lógica original)</em></li>
-                            </ol>
-
-                            <!-- TEXTO EDITABLE DE CONDICIONES DEL BONO -->
-                            <div id="contenedor-condiciones-bono" style="display: none;" contenteditable="true">
-                                <p class="sin-sangria" style="margin-top: 0; margin-bottom: 0;"><strong>Condiciones para el Pago del Bono.</strong> El pago del Bono estipulado precedentemente está estricta y exclusivamente supeditado al cumplimiento íntegro, oportuno y satisfactorio de las nuevas funciones y responsabilidades incorporadas en el Descriptor de Cargo.<br><br>
-                                Queda expresamente establecido que, en caso de que el Trabajador no cumpla con las condiciones, no devengará ni tendrá derecho al pago del referido bono en dicho período. El pago de este bono en uno o más períodos no constituye, bajo ninguna circunstancia, un derecho adquirido para períodos futuros si no se cumple la condición que lo origina.</p>
+                                <p class="nueva-clausula sin-sangria" style="margin-bottom: 5px;"><u><strong>SEGUNDO. - Modificación del Lugar de Prestación de Servicios:</strong></u> Las partes acuerdan modificar la cláusula SEGUNDA referida al lugar de trabajo, la cual quedará redactada íntegramente de la siguiente manera:<br><br>
+                                "Los servicios serán prestados teniendo como base de operaciones el local comercial ubicado en Antofagasta Norte, calle Las Bandurrias N° 9078, comuna de Antofagasta.<br><br>
+                                Sin perjuicio de lo anterior, y atendida la nueva naturaleza multisucursal de sus responsabilidades descritas en la cláusula anterior, las partes acuerdan expresamente que el/la trabajador/a deberá desplazarse y prestar servicios presenciales de supervisión y jefatura en las sucursales ubicadas en las ciudades de Arica, Iquique, Calama y Antofagasta Centro, según los requerimientos, frecuencia y programación que defina el empleador.<br><br>
+                                Para todos los efectos legales, el empleador mantendrá la facultad de alterar el sitio o recinto base de los servicios, siempre que quede dentro de la misma ciudad o localidad, de acuerdo con lo establecido en el artículo 12 del Código del Trabajo.<br><br>
+                                Se deja constancia que todos los gastos derivados de los desplazamientos fuera de la ciudad base (Antofagasta) hacia las sucursales de Arica, Iquique y Calama, incluyendo pasajes, alojamiento, movilización y alimentación, serán costeados o reembolsados íntegramente por el empleador, de acuerdo con las políticas de viáticos vigentes en la empresa, garantizando que estos traslados no irrogarán menoscabo económico alguno para el/la trabajador/a."</p>
                             </div>
 
-                        </div>
-
-                        <p class="nueva-clausula sin-sangria" id="contenedor-clausula-sexta" style="margin-left: 40px;"><u><strong>SEXTO. - DE LA VIGENCIA:</strong></u> El presente contrato tendrá una duración hasta el día <strong><span class="variable" id="dato-termino-anexo1">[TerminoAnexo1]</span></strong>.</p>
-
-                        <!-- PÁRRAFO SUSTITUYE REEMPLAZADO DE FORMA PERMANENTE -->
-                        <p class="nueva-clausula sin-sangria" id="parrafo-sustituye"><u><strong><span class="num-anexo"></span>. -</strong></u> En todo lo no modificado expresamente por el presente documento, se mantienen inalterables y plenamente vigentes todas y cada una de las cláusulas del contrato de trabajo original, así como también todas las estipulaciones contenidas en los anexos de contrato suscritos con anterioridad entre las partes.</p>
-
-                        <p class="nueva-clausula sin-sangria" id="contenedor-clausula-tercera"><u><strong><span class="num-anexo"></span>. -</strong></u> El presente anexo de contrato regirá a partir del <strong><span class="variable" id="dato-inicio-anexo">[Fecha Anexo]</span></strong>.-</p>
-
-                        <p class="nueva-clausula sin-sangria" id="clausula-buk"><u><strong><span class="num-anexo"></span>. -</strong></u> El presente anexo se suscribe electrónicamente a través de la plataforma de Gestor Documental de BUK, quedando disponible una copia de respaldo para su descarga en la misma plataforma.</p>
-
-                        <p style="text-align: left; margin-top: 40px; margin-bottom: 0; text-indent: 0;">En señal de aceptación las partes firman electrónicamente a través de la plataforma BUK.</p>
-
-                        <div class="firmas">
-                            <div class="bloque-firma">
-                                <div class="contenedor-firma-digital"></div>
-                                <div class="linea-firma"></div>
-                                <strong>Firma Trabajador</strong><br>
-                                Rut. <strong><span class="variable" id="dato-rut-firma">[RUT]</span></strong>
+                            <div id="contenedor-clausula-cargo" style="margin-left: 40px; display: none; margin-bottom: 15px;">
+                                <p class="nueva-clausula sin-sangria" style="margin-bottom: 5px;"><u><strong>PRIMERO. - DE LAS FUNCIONES Y CARGO:</strong></u> El/La trabajador/a se obliga a desempeñar las funciones propias de “<strong><span class="variable" id="dato-cargo-anexo">[Cargo]</span></strong>” de acuerdo con las instrucciones que al efecto sean impartidas por el empleador, estableciendo de común acuerdo que las funciones y responsabilidades propias del cargo o función que desempeñará el/la trabajador/a se encuentran establecidas en el descriptor de cargo correspondiente, documento que recepcionado por el/la trabajador/a se entiende incorporado al presente contrato. El/La trabajador/a queda obligado a cumplir leal y correctamente con todos los deberes que le imponga este instrumento o aquéllos que se deriven de las funciones y cargo, debiendo ejecutar las instrucciones que le confieran sus superiores. Del mismo modo el/la trabajador/a se obliga a desempeñar en forma eficaz, las funciones y el cargo para el cual ha sido contratado, empleando para ello la mayor diligencia y dedicación.</p>
                             </div>
-                            
-                            <div class="bloque-firma">
-                                <div class="contenedor-firma-digital">
-                                    <img src="https://drive.google.com/thumbnail?id=1cO78xncHSE_AB9J0HhxTqT-3T-GtkVaF&sz=w500" alt="Firma Empleador" class="img-firma-empleador">
+
+                            <div id="contenedor-clausula-horario" style="margin-left: 40px; display: none; margin-bottom: 15px;">
+                                <p class="nueva-clausula sin-sangria" style="margin-bottom: 5px;"><u><strong>TERCERO. - DE LA JORNADA DE TRABAJO:</strong></u> La jornada de trabajo será de <strong><span class="variable" id="dato-jornada-anexo">[Jornada]</span></strong> horas semanales de acuerdo con el artículo 22 del Código del Trabajo, la cual tendrá un descanso de <strong><span class="variable" id="dato-tiempo-colacion-anexo">[Tiempo Colación]</span></strong> no imputable a dicha jornada, la distribution de la jornada será de la siguiente manera de acuerdo con el artículo 28 del Código del Trabajo:<br>
+                                <span class="variable formato-bloque" id="dato-horario-anexo" style="display: block; margin-top: 5px; font-weight: bold;">[Horario]</span></p>
+                            </div>
+
+                            <div id="contenedor-clausula-cuarta" style="margin-left: 40px;">
+                                <p class="nueva-clausula sin-sangria" style="margin-bottom: 5px;"><u><strong>CUARTO. - DE LAS REMUNERACIONES:</strong></u> El empleador se compromete a remunerar al trabajador mensualmente en la forma que se indica:</p>
+                                <ol type="a" style="margin-bottom: 0;">
+                                    <li id="li-sueldo" style="margin-top: 0; margin-bottom: 0;">Sueldo Base Mensual <strong><span class="variable" id="dato-sb-indefinido">[SBIndefinido]</span></strong> .- (proporcional a los días trabajados en el mes)</li>
+                                    <li id="li-gratificacion" style="margin-top: 0; margin-bottom: 0;">La Gratificación legal mensual corresponderá al 25% de la Remuneración base con un tope según el Art. 50 del Código del Trabajo correspondiente a 4,75 ingresos mínimos mensuales.</li>
+                                    <li id="li-bono-imponible" style="display: none; margin-top: 0; margin-bottom: 0;">Bono de <span class="variable"><span id="dato-bono-nombre-imp">[Nombre]</span> <strong><span id="dato-bono-monto-imp">$[Monto]</span></strong></span> .- (proporcional a los días trabajados en el mes)</li>
+                                    <li id="li-colacion" style="margin-top: 0; margin-bottom: 0;">Asignación no Imponible de Colación <strong><span class="variable" id="dato-colacion">[Colación]</span></strong> .- (proporcional a los días trabajados en el mes)</li>
+                                    <li id="li-movilizacion" style="margin-top: 0; margin-bottom: 0;">Asignación no Imponible de Movilización <strong><span class="variable" id="dato-movilizacion">[Movilización]</span></strong> .- (proporcional a los días trabajados en el mes)</li>
+                                    <li id="li-bono-no-imponible" style="display: none; margin-top: 0; margin-bottom: 0;">Asignación no Imponible de <span class="variable"><span id="dato-bono-nombre-noimp">[Nombre]</span> <strong><span id="dato-bono-monto-noimp">$[Monto]</span></strong></span> .- (proporcional a los días trabajados en el mes)</li>
+                                    <li id="li-comisiones" value="5" style="display: none; margin-top: 10px; margin-bottom: 0;"><strong>Comisiones por Ventas:</strong> Para la determinación de las comisiones... <em>(Mantenido según lógica original)</em></li>
+                                </ol>
+
+                                <div id="contenedor-condiciones-bono" style="display: none;" contenteditable="true">
+                                    <p class="sin-sangria" style="margin-top: 0; margin-bottom: 0;"><strong>Condiciones para el Pago del Bono.</strong> El pago del Bono estipulado precedentemente está estricta y exclusivamente supeditado al cumplimiento íntegro, oportuno y satisfactorio de las nuevas funciones y responsabilidades incorporadas en el Descriptor de Cargo.<br><br>
+                                    Queda expresamente establecido que, en caso de que el Trabajador no cumpla con las condiciones, no devengará ni tendrá derecho al pago del referido bono en dicho período. El pago de este bono en uno o más períodos no constituye, bajo ninguna circunstancia, un derecho adquirido para períodos futuros si no se cumple la condición que lo origina.</p>
                                 </div>
-                                <div class="linea-firma"></div>
-                                <strong>Firma Empleador</strong><br>
-                                Rut. <strong>76.500.919-7</strong>
+                            </div>
+
+                            <p class="nueva-clausula sin-sangria" id="contenedor-clausula-sexta" style="margin-left: 40px;"><u><strong>SEXTO. - DE LA VIGENCIA:</strong></u> El presente contrato tendrá una duración hasta el día <strong><span class="variable" id="dato-termino-anexo1">[TerminoAnexo1]</span></strong>.</p>
+
+                            <p class="nueva-clausula sin-sangria" id="parrafo-sustituye"><u><strong><span class="num-anexo"></span>. -</strong></u> En todo lo no modificado expresamente por el presente documento, se mantienen inalterables y plenamente vigentes todas y cada una de las cláusulas del contrato de trabajo original, así como también todas las estipulaciones contenidas en los anexos de contrato suscritos con anterioridad entre las partes.</p>
+
+                            <p class="nueva-clausula sin-sangria" id="contenedor-clausula-tercera"><u><strong><span class="num-anexo"></span>. -</strong></u> El presente anexo de contrato regirá a partir del <strong><span class="variable" id="dato-inicio-anexo">[Fecha Anexo]</span></strong>.-</p>
+
+                            <p class="nueva-clausula sin-sangria" id="clausula-buk"><u><strong><span class="num-anexo"></span>. -</strong></u> El presente anexo se suscribe electrónicamente a través de la plataforma de Gestor Documental de BUK, quedando disponible una copia de respaldo para su descarga en la misma plataforma.</p>
+                        </div>
+                        
+                        <!-- NUEVO CONTENIDO: PACTO HHEE -->
+                        <div id="contenido-pacto" style="display: none;">
+                            <h1>PACTO DE HORAS EXTRAORDINARIAS</h1>
+                            <p>En <span class="variable" id="dato-centro-costo-pacto">[Centro de Costo]</span>, a <span class="variable" id="dato-fecha-pacto">[Nueva Fecha]</span>, entre <strong>Preomed Salud SpA</strong>, RUT <strong>76.500.919-7</strong>, representada legalmente por Doña <strong>Yoselyn Valesca Álvarez Duarte</strong>, Rut. <strong>16.135.473-2</strong>, ambos con domicilio comercial en la ciudad de Antofagasta, calle Las Bandurrias n° 9078, en adelante "el Empleador"; y Don/ña <strong><span class="variable" id="dato-nombres-pacto">[Nombres]</span> <span class="variable" id="dato-paterno-pacto">[Apellido Paterno]</span> <span class="variable" id="dato-materno-pacto">[Apellido Materno]</span></strong>, Rut. <strong><span class="variable" id="dato-rut-pacto">[RUT]</span></strong>, domiciliado en <span class="variable" id="dato-domicilio-pacto">[Domicilio]</span>, <span class="variable" id="dato-comuna-pacto">[Comuna]</span>, en adelante "el Trabajador", se ha convenido el siguiente pacto de horas extraordinarias que pasa a formar parte integrante de su contrato de trabajo:</p>
+                            
+                            <p class="nueva-clausula sin-sangria" style="margin-bottom: 5px;"><u><strong>PRIMERO: Motivo y Justificación</strong></u><br>Atendiendo a necesidades temporales y situaciones transitorias de la empresa derivadas de un aumento excepcional y transitorio en el flujo de pacientes atendidos en la sucursal, las partes acuerdan que el Trabajador laborará horas extraordinarias a continuación de su jornada ordinaria de trabajo.</p>
+                            
+                            <p class="nueva-clausula sin-sangria" style="margin-bottom: 5px;"><u><strong>SEGUNDO: Límite Diario</strong></u><br>Conforme a lo establecido en los artículos 31 y 32 del Código del Trabajo, el Trabajador laborará un máximo de 2 horas extraordinarias por día, las que solo podrán realizarse en la medida que no perjudiquen su salud y se respete su derecho a descanso.</p>
+                            
+                            <p class="nueva-clausula sin-sangria" style="margin-bottom: 5px;"><u><strong>TERCERO: Remuneración y Cálculo</strong></u><br>Las horas extraordinarias laboradas en virtud del presente pacto se pagarán con el recargo legal del 50% sobre el sueldo convenido para la jornada ordinaria. Dichas horas deberán ser liquidadas y pagadas conjuntamente con las remuneraciones ordinarias del respectivo período mensual.</p>
+                            
+                            <p class="nueva-clausula sin-sangria" style="margin-bottom: 5px;"><u><strong>CUARTO: Control y Registro de Asistencia</strong></u><br>Para los efectos del cómputo y pago de las horas extraordinarias, se considerará exclusivamente el tiempo efectivamente trabajado y que conste formalmente en el sistema de registro de asistencia y determinación de las horas de trabajo que mantiene el Empleador, ya sea mediante el sistema biométrico de huella dactilar o a través de la aplicación móvil de asistencia Buk. Es obligación estricta del Trabajador registrar debidamente sus marcaciones de entrada y salida utilizando dichos medios.</p>
+                            
+                            <p class="nueva-clausula sin-sangria" style="margin-bottom: 5px;"><u><strong>QUINTO: Vigencia del Pacto</strong></u><br>El presente pacto tendrá una duración estrictamente temporal de 3 meses, comenzando a regir desde el <strong><span class="variable" id="dato-inicio-pacto">[Nueva Fecha]</span></strong> y expirando de pleno derecho el <strong><span class="variable" id="dato-fin-pacto">[Nueva Fecha + 90 días]</span></strong>. Este acuerdo podrá ser renovado por las partes mediante un nuevo documento escrito, siempre que persistan las circunstancias temporales que lo justifican.</p>
+                            
+                            <p class="nueva-clausula sin-sangria" style="margin-bottom: 5px;"><u><strong>SEXTO: Ejemplares</strong></u><br>El presente acuerdo se suscribe electrónicamente a través de la plataforma de Gestor Documental de BUK, quedando disponible una copia de respaldo para su descarga en la misma plataforma, el cual se adjuntará a la carpeta personal y al contrato de trabajo original. En señal de aceptación las partes firman electrónicamente a través de la plataforma BUK.</p>
+                        </div>
+                        
+                        <!-- FIRMAS GLOBALES COMUNES PARA AMBOS DOCUMENTOS -->
+                        <div id="contenedor-firmas-general">
+                            <p style="text-align: left; margin-top: 25px; margin-bottom: 0; text-indent: 0;" id="texto-previo-firmas">En señal de aceptación las partes firman electrónicamente a través de la plataforma BUK.</p>
+
+                            <div class="firmas">
+                                <div class="bloque-firma">
+                                    <div class="contenedor-firma-digital"></div>
+                                    <div class="linea-firma"></div>
+                                    <strong>Firma Trabajador</strong><br>
+                                    Rut. <strong><span class="variable" id="dato-rut-firma">[RUT]</span></strong>
+                                </div>
+                                
+                                <div class="bloque-firma">
+                                    <div class="contenedor-firma-digital">
+                                        <img src="https://drive.google.com/thumbnail?id=1cO78xncHSE_AB9J0HhxTqT-3T-GtkVaF&sz=w500" alt="Firma Empleador" class="img-firma-empleador">
+                                    </div>
+                                    <div class="linea-firma"></div>
+                                    <strong>Firma Empleador</strong><br>
+                                    Rut. <strong>76.500.919-7</strong>
+                                </div>
                             </div>
                         </div>
 
@@ -266,7 +292,7 @@
             <tfoot>
                 <tr>
                     <td style="text-align: center; vertical-align: bottom;">
-                        <div class="pie-pagina-contenido">
+                        <div class="pie-pagina-contenido" id="texto-pie-pagina">
                             ANEXO CONTRATO DE TRABAJO
                         </div>
                     </td>
@@ -302,7 +328,7 @@
             const ordinales = ["PRIMERO", "SEGUNDO", "TERCERO", "CUARTO", "QUINTO", "SEXTO", "SÉPTIMO", "OCTAVO", "NOVENO", "DÉCIMO", "UNDÉCIMO", "DUODÉCIMO", "DECIMOTERCERO", "DECIMOCUARTO", "DECIMOQUINTO"];
             let contador = 0;
             
-            document.querySelectorAll(".num-anexo").forEach(el => {
+            document.querySelectorAll("#contenido-anexo-normal .num-anexo").forEach(el => {
                 if (el.offsetWidth > 0 || el.offsetHeight > 0 || el.getClientRects().length > 0) {
                     el.innerText = ordinales[contador] || (contador + 1).toString();
                     contador++;
@@ -353,6 +379,30 @@
                 if (!isNaN(d.getTime())) return d;
             }
             return null;
+        }
+        
+        function togglePactoHHEE() {
+            const isChecked = document.getElementById("chk-pacto-hhee").checked;
+            const divAnexo = document.getElementById("contenido-anexo-normal");
+            const divPacto = document.getElementById("contenido-pacto");
+            const textoPiePagina = document.getElementById("texto-pie-pagina");
+            const textoPrevioFirmas = document.getElementById("texto-previo-firmas");
+            const contFechaInicioPacto = document.getElementById("contenedor-fecha-inicio-pacto");
+
+            if (isChecked) {
+                divAnexo.style.display = "none";
+                divPacto.style.display = "block";
+                textoPiePagina.innerText = "PACTO DE HORAS EXTRAORDINARIAS";
+                textoPrevioFirmas.style.display = "none"; // Ya viene en la cláusula SEXTA del pacto
+                contFechaInicioPacto.style.display = "flex";
+            } else {
+                divAnexo.style.display = "block";
+                divPacto.style.display = "none";
+                textoPiePagina.innerText = "ANEXO CONTRATO DE TRABAJO";
+                textoPrevioFirmas.style.display = "block";
+                contFechaInicioPacto.style.display = "none";
+            }
+            actualizarContrato();
         }
 
         function toggleProvisorio() {
@@ -551,7 +601,6 @@
                 case "horario": showHorario = true; break;
             }
 
-            // --- LÓGICA DE BONO EXTRA SEPARANDO MONTO DE TEXTO ---
             const contBonoAdicional = document.getElementById("contenedor-bono-adicional");
             const tipoBonoExtra = document.getElementById("selector-tipo-bono").value;
             const inputTextoBono = document.getElementById("input-texto-bono");
@@ -573,7 +622,6 @@
                 lblChkCondiciones.style.display = (showSueldo && tipoBonoExtra !== "") ? "inline-block" : "none";
             }
 
-            // Mostrar el texto de las condiciones si está tickeado y hay bono configurado
             if (contCondicionesBono) {
                 contCondicionesBono.style.display = (showSueldo && tipoBonoExtra !== "" && chkCondicionesBono && chkCondicionesBono.checked) ? "block" : "none";
             }
@@ -607,7 +655,6 @@
                 if (liBonoImponible) liBonoImponible.style.display = "none";
                 if (liBonoNoImponible) liBonoNoImponible.style.display = "none";
             }
-            // --- FIN LÓGICA DE BONO EXTRA ---
 
 
             if (index !== "") {
@@ -618,20 +665,38 @@
                 const materno = buscarPropiedad(datos, "apellidomaterno") || "";
                 const rutRaw = buscarPropiedad(datos, "rut") || "";
                 
+                // DATOS PACTO HHEE
+                const domicilioRaw = buscarPropiedad(datos, "domicilio") || buscarPropiedad(datos, "direccion") || "[Domicilio]";
+                const comunaRaw = buscarPropiedad(datos, "comuna") || "[Comuna]";
                 const centroCosto = buscarPropiedad(datos, "centrocosto") || "[Centro de Costo]";
+                
                 const terminoContratoRaw = buscarPropiedad(datos, "terminocontrato") || buscarPropiedad(datos, "termino_contrato") || "";
                 const terminoAnexo1Raw = buscarPropiedad(datos, "terminoanexo1") || buscarPropiedad(datos, "termino_anexo1") || "";
                 const inicioContratoRaw = buscarPropiedad(datos, "iniciocontrato") || buscarPropiedad(datos, "inicio_contrato") || "";
 
+                // LÓGICA DE FECHAS PACTO HHEE CON OVERRIDE MANUAL
                 const nuevaFechaRaw = buscarPropiedad(datos, "nuevafecha") || buscarPropiedad(datos, "nueva_fecha") || "";
                 let nuevaFechaFormat = "[Nueva Fecha]";
                 let nuevaFechaObj = null;
+                let fechaFinPactoFormat = "[Nueva Fecha + 90 días]";
                 
-                if (nuevaFechaRaw && !esDatoVacio(nuevaFechaRaw)) {
+                const isPactoChecked = document.getElementById("chk-pacto-hhee").checked;
+                const inputFechaInicioPacto = document.getElementById("fecha-inicio-pacto").value;
+
+                if (isPactoChecked && inputFechaInicioPacto) {
+                    let partes = inputFechaInicioPacto.split('-');
+                    nuevaFechaObj = new Date(partes[0], partes[1] - 1, partes[2]);
+                } else if (nuevaFechaRaw && !esDatoVacio(nuevaFechaRaw)) {
                     nuevaFechaObj = obtenerFechaObjeto(nuevaFechaRaw);
-                    if (nuevaFechaObj) {
-                        nuevaFechaFormat = nuevaFechaObj.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }).replace(',', '');
-                    }
+                }
+
+                if (nuevaFechaObj) {
+                    nuevaFechaFormat = nuevaFechaObj.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }).replace(',', '');
+                    
+                    // Calculo fecha termino pacto hhee (+90 días)
+                    let fechaFinObj = new Date(nuevaFechaObj);
+                    fechaFinObj.setDate(fechaFinObj.getDate() + 90);
+                    fechaFinPactoFormat = fechaFinObj.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }).replace(',', '');
                 }
 
                 const cargoRaw = showCargo ? (buscarPropiedad(datos, "nuevocargo") || "[Nuevo Cargo]") : (buscarPropiedad(datos, "cargo") || "[Cargo]");
@@ -813,6 +878,7 @@
                     }
                 }
 
+                // Asignar variables Anexo normal
                 asignarTextoSeguro("dato-nombres", nombres || "[Nombres]");
                 asignarTextoSeguro("dato-paterno", paterno || "[Apellido Paterno]");
                 asignarTextoSeguro("dato-materno", materno || "[Apellido Materno]");
@@ -827,6 +893,18 @@
                 asignarTextoSeguro("dato-tiempo-colacion-anexo", tiempoColacionRaw);
                 asignarTextoSeguro("dato-horario-anexo", horarioRaw);
                 
+                // Asignar variables Pacto HHEE
+                asignarTextoSeguro("dato-centro-costo-pacto", centroCostoCiudad);
+                asignarTextoSeguro("dato-fecha-pacto", nuevaFechaFormat);
+                asignarTextoSeguro("dato-nombres-pacto", nombres || "[Nombres]");
+                asignarTextoSeguro("dato-paterno-pacto", paterno || "[Apellido Paterno]");
+                asignarTextoSeguro("dato-materno-pacto", materno || "[Apellido Materno]");
+                asignarTextoSeguro("dato-rut-pacto", rutFormateado);
+                asignarTextoSeguro("dato-domicilio-pacto", domicilioRaw);
+                asignarTextoSeguro("dato-comuna-pacto", comunaRaw);
+                asignarTextoSeguro("dato-inicio-pacto", nuevaFechaFormat);
+                asignarTextoSeguro("dato-fin-pacto", fechaFinPactoFormat);
+
                 let primerNombre = nombres.trim().split(" ")[0];
                 let fechaPuntos = "";
                 
@@ -837,8 +915,10 @@
                     fechaPuntos = `${dia}.${mes}.${anio}`;
                 }
                 
+                let prefijoTitulo = isPactoChecked ? "Pacto HHEE" : "Anexo Contrato de Trabajo";
+                
                 if (primerNombre && paterno && fechaPuntos) {
-                    document.title = "Anexo Contrato de Trabajo - " + primerNombre + " " + paterno + " - " + fechaPuntos;
+                    document.title = prefijoTitulo + " - " + primerNombre + " " + paterno + " - " + fechaPuntos;
                 } else {
                     document.title = "Anexo Contrato de Trabajo Dinámico - Preomed";
                 }
@@ -883,6 +963,18 @@
                 asignarTextoSeguro("dato-tiempo-colacion-anexo", "[Tiempo Colación]");
                 asignarTextoSeguro("dato-horario-anexo", "[Horario]");
                 
+                // Limpieza pacto
+                asignarTextoSeguro("dato-centro-costo-pacto", "[Centro de Costo]");
+                asignarTextoSeguro("dato-fecha-pacto", "[Nueva Fecha]");
+                asignarTextoSeguro("dato-nombres-pacto", "[Nombres]");
+                asignarTextoSeguro("dato-paterno-pacto", "[Apellido Paterno]");
+                asignarTextoSeguro("dato-materno-pacto", "[Apellido Materno]");
+                asignarTextoSeguro("dato-rut-pacto", "[RUT]");
+                asignarTextoSeguro("dato-domicilio-pacto", "[Domicilio]");
+                asignarTextoSeguro("dato-comuna-pacto", "[Comuna]");
+                asignarTextoSeguro("dato-inicio-pacto", "[Nueva Fecha]");
+                asignarTextoSeguro("dato-fin-pacto", "[Nueva Fecha + 90 días]");
+
                 document.title = "Anexo Contrato de Trabajo Dinámico - Preomed";
             }
             
