@@ -51,7 +51,7 @@
 
         #login-error { color: #d9534f; margin-top: 15px; font-size: 10pt; display: none; }
 
-        /* --- ESTILOS DEL PORTAL (Oculto por defecto) --- */
+        /* --- ESTILOS DEL PORTAL --- */
         .container { max-width: 1100px; margin: 0 auto; padding: 40px 20px; display: none; }
         header { text-align: center; margin-bottom: 50px; background: var(--card-bg); padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); }
         .logo-empresa { max-height: 60px; width: auto; margin-bottom: 15px; }
@@ -99,7 +99,7 @@
         </header>
 
         <div class="portal-grid">
-            <div class="categoria-modulo">
+            <div class="categoria-modulo" id="modulo-rrhh">
                 <div class="categoria-titulo"><span>👥</span> Recursos Humanos (RRHH)</div>
                 <div class="cards-grid">
                     <a href="https://preomed.github.io/PortalInterno/Contratos/" class="card-link" target="_blank">
@@ -113,7 +113,7 @@
                 </div>
             </div>
 
-            <div class="categoria-modulo">
+            <div class="categoria-modulo" id="modulo-finanzas">
                 <div class="categoria-titulo"><span>💼</span> Finanzas & Contabilidad</div>
                 <div class="cards-grid">
                     <a href="https://preomed.github.io/PortalInterno/Proveedores/" class="card-link" target="_blank">
@@ -136,7 +136,7 @@
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
 
-        // Tu configuración de Firebase
+        // Configuración de Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyAMimbWHOrplArchHjZrheLZlLSIxj1-Hk",
             authDomain: "preomed-salud---portal-interno.firebaseapp.com",
@@ -165,6 +165,22 @@
                 // Usuario logueado: mostrar portal
                 loginScreen.style.display = 'none';
                 mainContent.style.display = 'block';
+                
+                // Lógica de control de acceso
+                const moduloFinanzas = document.getElementById('modulo-finanzas');
+                
+                // Correo con acceso exclusivo a RRHH
+                const usuariosSoloRRHH = [
+                    'valeska.salfate@preomedsalud.cl'
+                ];
+
+                // Ocultar módulo de finanzas si el correo coincide
+                if (usuariosSoloRRHH.includes(user.email)) {
+                    moduloFinanzas.style.display = 'none';
+                } else {
+                    moduloFinanzas.style.display = 'block'; 
+                }
+
             } else {
                 // No hay usuario: mostrar login
                 loginScreen.style.display = 'flex';
